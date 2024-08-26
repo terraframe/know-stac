@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+
+
+
+-->
+<Runway xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- default connection -->
+	<connection>
+	    <label>default</label>
+	    <type>Java</type>
+	    <address>localhost</address>
+	</connection>
+	
+    <!-- default rmi connection used for testing -->
+	<connection>
+	    <label>rmiDefault</label>
+	    <type>RMI</type>
+	    <address>//localhost:1199/</address>
+	</connection>
+</Runway>
