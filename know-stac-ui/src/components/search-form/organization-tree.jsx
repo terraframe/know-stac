@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Badge, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import { useEffectOnce } from 'react-use';
 
 export default function OrganizationTree(props) {
 
@@ -41,8 +42,7 @@ export default function OrganizationTree(props) {
     }
 
     // Load the tree based on the selected organization
-    useEffect(() => {
-
+    useEffectOnce(() => {
         const childrenParams = new URLSearchParams()
         childrenParams.append('pageNumber', 1);
         childrenParams.append('pageSize', 100);
@@ -96,7 +96,7 @@ export default function OrganizationTree(props) {
                 });
             }
         });
-    }, [organization]);
+    }, []);
 
     const handleToggle = (e, nodeIds) => {
         setExpanded(nodeIds);
@@ -130,6 +130,15 @@ export default function OrganizationTree(props) {
         });
     })
 
+    const renderTreeItem = (node) => (
+        <div style={{ paddingBottom: '10px' }}>
+            {node.label.localizedValue}
+            <Badge badgeContent={4} color="primary">
+                <ImageOutlinedIcon />
+            </Badge>
+        </div>
+    )
+
     return (
         <Box sx={{ minHeight: 352 }}>
             <TreeView
@@ -141,15 +150,7 @@ export default function OrganizationTree(props) {
                     content: itemComponent.treeItemContent,
                 }}
                 onNodeSelect={handleSelect}
-                titleRender={(node) => (
-                    <div style={{ 'padding-bottom': '10px' }}>
-                        {node.label.localizedValue}
-                        <Badge badgeContent={4} color="primary">
-                            <ImageOutlinedIcon />
-                        </Badge>
-                    </div>
-                )
-                }
+                titleRender={renderTreeItem}
                 lazyLoadFn={onLazyLoad}
             />
         </Box >);

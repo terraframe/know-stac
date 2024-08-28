@@ -75,14 +75,19 @@ public class LocationResult implements JsonSerializable
 
   public static LocationResult build(Map<String, Object> map)
   {
-    LocationResult result = new LocationResult();
-    result.setRid(map.get("rid"));
-    result.setOid((String) map.get("oid"));
-    result.setUuid((String) map.get("uuid"));
-    result.setCode((String) map.get("code"));
-    result.setLabel((String) map.get("label"));
+    if (map != null)
+    {
+      LocationResult result = new LocationResult();
+      result.setRid(map.get("rid"));
+      result.setOid((String) map.get("oid"));
+      result.setUuid((String) map.get("uuid"));
+      result.setCode((String) map.get("code"));
+      result.setLabel((String) map.get("label"));
 
-    return result;
+      return result;
+    }
+    
+    return null;
   }
 
   @Override

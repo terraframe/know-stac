@@ -122,7 +122,8 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     {
       StringBuilder statement = new StringBuilder();
       statement.append("SELECT @rid AS rid, oid AS oid, code AS code, uuid AS uuid, displayLabel.defaultLocale AS label");
-      statement.append(" TRAVERSE in(\"" + mdEdge.getDBClassName() + "\") FROM :rid");
+      statement.append(" FROM (");      
+      statement.append("  TRAVERSE in(\"" + mdEdge.getDBClassName() + "\") FROM :rid");
       statement.append(")");
 
       query = new GraphQuery<Map<String, Object>>(statement.toString());
@@ -227,7 +228,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
   private List<LocationResult> getRoots(GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType)
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchyType.getGraphMdEdgeOid());
-    MdVertexDAOIF mdVertex = MdVertexDAO.get(rootType.getOid());
+    MdVertexDAOIF mdVertex = MdVertexDAO.get(rootType.getGraphMdVertexOid());
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT @rid AS rid, oid AS oid, code AS code, uuid AS uuid, displayLabel.defaultLocale AS label");
@@ -246,10 +247,9 @@ public class LocationBusinessService implements LocationBusinessServiceIF
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT @rid AS rid, oid AS oid, code AS code, uuid AS uuid, displayLabel.defaultLocale AS label");
-    statement.append("FROM (");
+    statement.append(" FROM (");
     statement.append("  SELECT EXPAND(out('" + mdEdge.getDBClassName() + "')) FROM :rid");
     statement.append("  ORDER BY displayLabel.defaultLocale");
-    statement.append(")");
 
     if (pageSize != null && pageNumber != null)
     {
@@ -258,6 +258,8 @@ public class LocationBusinessService implements LocationBusinessServiceIF
 
       statement.append(" SKIP " + first + " LIMIT " + rows);
     }
+    
+    statement.append(")");
 
     GraphQuery<Map<String, Object>> query = new GraphQuery<Map<String, Object>>(statement.toString());
     query.setParameter("rid", parent.getRid());
