@@ -34,7 +34,7 @@ export default function SearchForm(props) {
             valiation = yup.date().notRequired()
         }
         else {
-            valiation = yup.string()
+            valiation = yup.string().notRequired()
         }
 
         return [field.name, valiation];
@@ -58,6 +58,8 @@ export default function SearchForm(props) {
                     delete vals[key];
                 }
             });
+
+            console.log(vals);
 
             const parameters = btoa(JSON.stringify({ properties: vals }));
 
@@ -161,6 +163,9 @@ export default function SearchForm(props) {
                                 case 'ORGANIZATION': return (
                                     <OrganizationField field={field} formik={formik} />
                                 );
+                                case 'LOCATION':
+                                    // Location fields are managed inside of the organization field component
+                                    return null;
                                 default: return (
                                     <TextField
                                         margin="dense"

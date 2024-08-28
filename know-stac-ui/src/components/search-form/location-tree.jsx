@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 
-export default function OrganizationTree(props) {
+export default function LocationTree(props) {
 
     const { organization, onChange } = props;
 

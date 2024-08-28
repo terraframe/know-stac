@@ -22,4 +22,10 @@ public class StacPropertyService
   {
     return this.service.getAll();
   }
+
+  @Request(RequestType.SESSION)
+  public List<StacProperty> getForOrganization(String sessionId, String code)
+  {
+    return this.service.getForOrganization(code);
+  }
 }

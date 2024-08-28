@@ -18,7 +18,6 @@ package gov.geoplatform.knowstac.web.controller;
 import java.text.ParseException;
 import java.util.List;
 
-import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,57 +28,51 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import gov.geoplatform.knowstac.core.service.request.OrganizationService;
+import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.service.request.LocationServiceIF;
 import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
-public class OrganizationController extends RunwaySpringController
+public class LocationController extends RunwaySpringController
 {
-  public static final String  API_PATH = "organization";
+  public static final String API_PATH = "location";
 
   @Autowired
-  private OrganizationService service;
+  private LocationServiceIF  service;
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam String code) throws ParseException
+  public ResponseEntity<LocationResult> get(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String uuid) throws ParseException
   {
-    OrganizationDTO org = this.service.get(this.getSessionId(), code);
+    LocationResult location = this.service.get(this.getSessionId(), synchronizationId, uuid);
 
-    return new ResponseEntity<String>(org.toJSON().toString(), HttpStatus.OK);
+    return new ResponseEntity<LocationResult>(location, HttpStatus.OK);
   }
 
   @ResponseBody
   @GetMapping(API_PATH + "/search")
-  public ResponseEntity<String> search(@NotEmpty @RequestParam String text) throws ParseException
+  public ResponseEntity<List<LocationResult>> search(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String text) throws ParseException
   {
-    List<OrganizationDTO> orgs = this.service.search(this.getSessionId(), text);
+    List<LocationResult> locations = this.service.search(this.getSessionId(), synchronizationId, text);
 
-    JsonArray orgsJson = new JsonArray();
-    for (OrganizationDTO org : orgs)
-    {
-      orgsJson.add(org.toJSON());
-    }
-
-    return new ResponseEntity<String>(orgsJson.toString(), HttpStatus.OK);
+    return new ResponseEntity<List<LocationResult>>(locations, HttpStatus.OK);
   }
 
   @GetMapping(API_PATH + "/get-children")
-  public ResponseEntity<String> getChildren(@RequestParam(required = false) String code, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> getChildren(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String uuid, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
   {
-    JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
+    JsonObject page = this.service.getChildren(this.getSessionId(), synchronizationId, uuid, pageSize, pageNumber);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
   @GetMapping(API_PATH + "/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@RequestParam(required = false) String rootCode, @NotEmpty @RequestParam String code, @RequestParam(required = false) Integer pageSize)
+  public ResponseEntity<String> getAncestorTree(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String rootUuid, @NotEmpty @RequestParam String uuid, @RequestParam(required = false) Integer pageSize)
   {
-    JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
+    JsonObject page = this.service.getAncestorTree(this.getSessionId(), synchronizationId, rootUuid, uuid, pageSize);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
