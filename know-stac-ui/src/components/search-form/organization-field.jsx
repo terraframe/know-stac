@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { Autocomplete, Box, Button, debounce, Modal, TextField, Typography } from '@mui/material';
+import { useUpdateEffect } from 'react-use';
 import OrganizationTree from './organization-tree';
 import LocationField from './location-field';
 
@@ -19,7 +20,7 @@ const modalStyle = {
 };
 
 const style = {
-    'margin-top': '10px'
+    marginTop: '10px'
 };
 
 export default function OrganizationField(props) {
@@ -45,20 +46,22 @@ export default function OrganizationField(props) {
         [],
     );
 
-    useEffect(() => {
-        const params = new URLSearchParams()
-        params.append('text', inputValue);
+    useUpdateEffect(() => {
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/organization/search?${params.toString()}`, {
-            method: 'GET',
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((organizations) => {
-                    setOptions(organizations);
-                });
-            }
-        });
+        if (organization == null || inputValue !== organization.label.localizedValue) {
+            const params = new URLSearchParams()
+            params.append('text', inputValue);
 
+            fetch(`${process.env.REACT_APP_API_URL}/api/organization/search?${params.toString()}`, {
+                method: 'GET',
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((organizations) => {
+                        setOptions(organizations);
+                    });
+                }
+            });
+        }
     }, [inputValue]);
 
     useEffect(() => {
