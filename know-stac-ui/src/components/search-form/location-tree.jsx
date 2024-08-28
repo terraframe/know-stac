@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Badge, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import { useEffectOnce } from 'react-use';
 
 export default function LocationTree(props) {
 
@@ -21,7 +22,7 @@ export default function LocationTree(props) {
 
     const handleNode = ({ object, children }) => {
 
-        const node = { ...object, key: object.uuid, children: [] };
+        const node = { ...object, key: object.uuid, children: object.size > 0 ? [] : undefined };
 
         if (children != null) {
             node.children = children.resultSet.map(n => handleNode(n))
@@ -40,7 +41,7 @@ export default function LocationTree(props) {
     }
 
     // Load the tree based on the selected location
-    useEffect(() => {
+    useEffectOnce(() => {
 
         const childrenParams = new URLSearchParams()
         childrenParams.append('pageNumber', 1);
@@ -100,7 +101,7 @@ export default function LocationTree(props) {
                 });
             }
         });
-    }, [location]);
+    }, []);
 
     const handleToggle = (e, nodeIds) => {
         setExpanded(nodeIds);
@@ -115,14 +116,15 @@ export default function LocationTree(props) {
     const renderTreeItem = (node) => (
         <div style={{ paddingBottom: '10px' }}>
             {node.label}
-            <Badge badgeContent={4} color="primary">
-                <ImageOutlinedIcon />
-            </Badge>
+            {node.items > 0 && (
+                <Badge badgeContent={node.items} color="primary">
+                    <ImageOutlinedIcon />
+                </Badge>
+            )}
         </div>
     )
 
     const onLazyLoad = ({ key, children }) => new Promise((resolve) => {
-
         if (children && children.length) {
             resolve([]);
         }

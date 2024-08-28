@@ -54,20 +54,22 @@ export default function LocationField(props) {
     }, [criteria])
 
     useUpdateEffect(() => {
-        const params = new URLSearchParams()
-        params.append('synchronizationId', field.location.synchronizationId);
-        params.append('text', inputValue);
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/location/search?${params.toString()}`, {
-            method: 'GET',
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((locations) => {
-                    setOptions(locations);
-                });
-            }
-        });
+        if (location == null || inputValue !== location.label) {
+            const params = new URLSearchParams()
+            params.append('synchronizationId', field.location.synchronizationId);
+            params.append('text', inputValue);
 
+            fetch(`${process.env.REACT_APP_API_URL}/api/location/search?${params.toString()}`, {
+                method: 'GET',
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((locations) => {
+                        setOptions(locations);
+                    });
+                }
+            });
+        }
     }, [inputValue]);
 
     useEffect(() => {

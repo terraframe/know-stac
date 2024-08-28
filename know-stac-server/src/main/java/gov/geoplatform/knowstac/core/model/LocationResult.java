@@ -13,15 +13,19 @@ import net.geoprism.registry.view.JsonSerializable;
 public class LocationResult implements JsonSerializable
 {
   @JsonIgnore
-  private Object rid;
+  private Object  rid;
 
-  private String oid;
+  private String  oid;
 
-  private String uuid;
+  private String  uuid;
 
-  private String code;
+  private String  code;
 
-  private String label;
+  private String  label;
+
+  private Integer size;
+
+  private Integer items;
 
   public Object getRid()
   {
@@ -73,6 +77,26 @@ public class LocationResult implements JsonSerializable
     this.label = label;
   }
 
+  public Integer getSize()
+  {
+    return size;
+  }
+
+  public void setSize(Integer size)
+  {
+    this.size = size;
+  }
+
+  public Integer getItems()
+  {
+    return items;
+  }
+
+  public void setItems(Integer items)
+  {
+    this.items = items;
+  }
+
   public static LocationResult build(Map<String, Object> map)
   {
     if (map != null)
@@ -84,9 +108,19 @@ public class LocationResult implements JsonSerializable
       result.setCode((String) map.get("code"));
       result.setLabel((String) map.get("label"));
 
+      if (map.containsKey("size"))
+      {
+        result.setSize((Integer) map.get("size"));
+      }
+
+      if (map.containsKey("items"))
+      {
+        result.setItems((Integer) map.get("items"));
+      }
+
       return result;
     }
-    
+
     return null;
   }
 
