@@ -38,7 +38,7 @@ import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.metadata.MdGraphClassQuery;
 import com.runwaysdk.system.metadata.MdVertex;
 
-import gov.geoplatform.knowstac.LocationTotal;
+import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.TotalEdge;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeEntry;
@@ -79,12 +79,13 @@ public class LabeledPropertyGraphTypeVersionBusinessService extends net.geoprism
   {
     super.truncate(version);
 
-    GraphDBService service = GraphDBService.getInstance();
-
-    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(LocationTotal.CLASS);
-
-    GraphRequest request = service.getGraphDBRequest();
-    service.command(request, "DELETE FROM " + mdVertex.getDBClassName(), new HashMap<>());
+    // TODO delete all the orphaned item nodes
+//    GraphDBService service = GraphDBService.getInstance();
+//
+//    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ItemTotal.CLASS);
+//
+//    GraphRequest request = service.getGraphDBRequest();
+//    service.command(request, "DELETE VERTEX FROM " + mdVertex.getDBClassName(), new HashMap<>());
   }
 
   @Override
@@ -96,7 +97,7 @@ public class LabeledPropertyGraphTypeVersionBusinessService extends net.geoprism
     if (TotalEdge.get(version) == null)
     {
       MdVertex root = this.getRootType(version).getGraphMdVertex();
-      MdVertexDAOIF site = MdVertexDAO.getMdVertexDAO(LocationTotal.CLASS);
+      MdVertexDAOIF site = MdVertexDAO.getMdVertexDAO(ItemTotal.CLASS);
       LabeledPropertyGraphType type = version.getGraphType();
 
       String code = type.getCode();

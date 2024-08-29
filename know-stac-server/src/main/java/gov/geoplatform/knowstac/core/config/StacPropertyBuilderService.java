@@ -11,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.knowstac.LocationTotal;
+import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.model.OrganizationResult;
 import gov.geoplatform.knowstac.core.service.business.LocationBusinessServiceIF;
+import gov.geoplatform.knowstac.core.service.business.OrganizationResultBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
@@ -45,6 +49,9 @@ public class StacPropertyBuilderService implements Runnable
 
   @Autowired
   private LocationBusinessServiceIF                            locationService;
+
+  @Autowired
+  private OrganizationResultBusinessService                    resultService;
 
   @Autowired
   private GeoObjectTypeSnapshotBusinessServiceIF               gTypeService;
@@ -105,7 +112,7 @@ public class StacPropertyBuilderService implements Runnable
       LocationResult child = this.locationService.get(synchronization.getOid(), uuid);
 
       this.locationService.getAncestors(version, type, hierarchyType, child, null).forEach(location -> {
-        LocationTotal.getForRid(version, location.getRid()).ifPresent(total -> {
+        ItemTotal.getForRid(version, location.getRid()).ifPresent(total -> {
           logger.error("Updating total for location [" + location.getLabel() + "]");
 
           total.setNumberOfItems(total.getNumberOfItems() + 1);
@@ -114,6 +121,25 @@ public class StacPropertyBuilderService implements Runnable
       });
     }
 
+    logger.error("Assigning item totals to organizations");
+
+    List<String> codes = Arrays.asList("100013241");
+
+    MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(ItemTotal.ORGANIZATION_HAS_TOTAL);
+
+    for (String code : codes)
+    {
+      OrganizationResult child = this.resultService.get(code);
+
+      this.resultService.getAncestors(child, null).forEach(organization -> {
+        ItemTotal.getForRid(mdEdge, organization.getRid()).ifPresent(total -> {
+          logger.error("Updating total for location [" + organization.getLabel() + "]");
+
+          total.setNumberOfItems(total.getNumberOfItems() + 1);
+          total.apply();
+        });
+      });
+    }
   }
 
   @Transaction

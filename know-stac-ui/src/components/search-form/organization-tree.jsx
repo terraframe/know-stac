@@ -23,7 +23,7 @@ export default function OrganizationTree(props) {
 
     const handleNode = ({ object, children }) => {
 
-        const node = { ...object, key: object.code, children: [] };
+        const node = { ...object, key: object.code, children: object.size > 0 ? [] : undefined };
 
         if (children != null) {
             node.children = children.resultSet.map(n => handleNode(n))
@@ -132,10 +132,12 @@ export default function OrganizationTree(props) {
 
     const renderTreeItem = (node) => (
         <div style={{ paddingBottom: '10px' }}>
-            {node.label.localizedValue}
-            <Badge badgeContent={4} color="primary">
-                <ImageOutlinedIcon />
-            </Badge>
+            {node.label}
+            {node.items > 0 && (
+                <Badge badgeContent={node.items} color="primary">
+                    <ImageOutlinedIcon />
+                </Badge>
+            )}
         </div>
     )
 

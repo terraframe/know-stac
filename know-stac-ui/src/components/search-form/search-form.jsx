@@ -2,8 +2,9 @@
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
 import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
+import dayjs from 'dayjs';
 
-import { DateField } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Search } from '@mui/icons-material';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
@@ -22,7 +23,10 @@ export default function SearchForm(props) {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const initialValues = useMemo(() => Object.fromEntries(properties.map((field) => {
-        const initialValue = field.type !== 'DATE_TIME' ? '' : null;
+        const initialValue = field.type !== 'DATE_TIME' ? '' : {
+            startDate: null,
+            endDate: null
+        };
 
         return [field.name, initialValue];
     })), [properties]);
@@ -31,7 +35,10 @@ export default function SearchForm(props) {
         let valiation = null;
 
         if (field.type === 'DATE_TIME') {
-            valiation = yup.date().notRequired()
+            valiation = yup.object({
+                startDate: yup.date().notRequired(),
+                endDate: yup.date().notRequired()
+            }).notRequired();
         }
         else {
             valiation = yup.string().notRequired()
@@ -59,8 +66,6 @@ export default function SearchForm(props) {
                 }
             });
 
-            console.log(vals);
-
             const parameters = btoa(JSON.stringify({ properties: vals }));
 
             setSearchParams({ criteria: parameters });
@@ -72,8 +77,16 @@ export default function SearchForm(props) {
             // Update the form values
             const parameters = JSON.parse(atob(criteria)).properties;
 
-            Object.keys(parameters).forEach(name => {
-                formik.setFieldValue(name, parameters[name]);
+            properties.forEach(field => {
+                if (parameters[field.name] != null) {
+                    if (field.type === 'DATE_TIME') {
+                        formik.setFieldValue(`${field.name}.startDate`, parameters[field.name].startDate != null ? dayjs(parameters[field.name].startDate) : null);
+                        formik.setFieldValue(`${field.name}.endDate`, parameters[field.name].endDate != null ? dayjs(parameters[field.name].endDate) : null);
+                    }
+                    else {
+                        formik.setFieldValue(field.name, parameters[field.name]);
+                    }
+                }
             });
         }
     }, [criteria])
@@ -134,17 +147,38 @@ export default function SearchForm(props) {
                         {(() => {
                             switch (field.type) {
                                 case 'DATE_TIME': return (
-                                    <DateField
-                                        margin="dense"
-                                        fullWidth
-                                        name={field.name}
-                                        label={field.label}
-                                        value={formik.values[field.name]}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
-                                        helperText={formik.touched[field.name] && formik.errors[field.name]}
-                                    />
+                                    <Box>
+                                        <Typography variant="p">
+                                            {field.label}
+                                        </Typography>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={6}>
+                                                <DatePicker
+                                                    margin="dense"
+                                                    name={`${field.name}.startDate`}
+                                                    label="Start"
+                                                    value={formik.values[field.name].startDate}
+                                                    onChange={(val) => formik.setFieldValue(`${field.name}.startDate`, val)}
+                                                    onBlur={formik.handleBlur}
+                                                    error={formik.touched[`${field.name}.startDate`] && Boolean(formik.errors[`${field.name}.startDate`])}
+                                                    helperText={formik.touched[`${field.name}.startDate`] && formik.errors[`${field.name}.startDate`]}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+
+                                                <DatePicker
+                                                    margin="dense"
+                                                    name={`${field.name}.endDate`}
+                                                    label="End"
+                                                    value={formik.values[field.name].endDate}
+                                                    onChange={(val) => formik.setFieldValue(`${field.name}.endDate`, val)}
+                                                    onBlur={formik.handleBlur}
+                                                    error={formik.touched[`${field.name}.endDate`] && Boolean(formik.errors[`${field.name}.endDate`])}
+                                                    helperText={formik.touched[`${field.name}.endDate`] && formik.errors[`${field.name}.endDate`]}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
                                 );
                                 case 'NUMBER': return (
                                     <TextField

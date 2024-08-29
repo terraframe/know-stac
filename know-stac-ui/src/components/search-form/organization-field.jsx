@@ -33,9 +33,7 @@ export default function OrganizationField(props) {
     const [inputValue, setInputValue] = React.useState('');
     const [organization, setOrganization] = React.useState({
         code: null,
-        label: {
-            localizedValue: ''
-        }
+        label: ''
     });
 
     const setInputValueDebounce = React.useMemo(
@@ -48,7 +46,7 @@ export default function OrganizationField(props) {
 
     useUpdateEffect(() => {
 
-        if (organization == null || inputValue !== organization.label.localizedValue) {
+        if (organization == null || inputValue !== organization.label) {
             const params = new URLSearchParams()
             params.append('text', inputValue);
 
@@ -122,7 +120,7 @@ export default function OrganizationField(props) {
                     getOptionLabel={(option) => {
                         if (typeof option === 'string') return option;
 
-                        return option.label.localizedValue;
+                        return option.label;
                     }}
                     noOptionsText="No organizations exists"
                     isOptionEqualToValue={(option, value) => option.oid === value.oid}
@@ -156,7 +154,7 @@ export default function OrganizationField(props) {
                     }
                     renderOption={(innerProps, option) =>
                         <li {...innerProps} key={option.code}>
-                            {option.label.localizedValue}
+                            {option.label}
                         </li>
                     }
                 />
@@ -169,7 +167,7 @@ export default function OrganizationField(props) {
             >
                 <Box sx={modalStyle}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Organizations
+                        {field.label}
                     </Typography>
                     <OrganizationTree organization={organization} onChange={(code) => {
                         formik.setFieldValue(field.name, code);

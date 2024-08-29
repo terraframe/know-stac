@@ -27,7 +27,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.system.metadata.MdVertex;
 
-import gov.geoplatform.knowstac.LocationTotal;
+import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.TotalEdge;
 import net.geoprism.registry.service.request.JsonGraphVersionPublisherServiceIF;
 
@@ -54,7 +54,7 @@ public class JsonGraphVersionPublisherService extends net.geoprism.registry.serv
 
     MdEdgeDAOIF mdEdge = (MdEdgeDAOIF) cache.get("total-edge");
 
-    LocationTotal total = new LocationTotal();
+    ItemTotal total = new ItemTotal();
     total.setNumberOfItems(0);
     total.apply();
 

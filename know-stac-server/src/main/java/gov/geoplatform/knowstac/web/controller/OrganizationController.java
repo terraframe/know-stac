@@ -18,7 +18,6 @@ package gov.geoplatform.knowstac.web.controller;
 import java.text.ParseException;
 import java.util.List;
 
-import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import gov.geoplatform.knowstac.core.service.request.OrganizationService;
+import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.service.request.OrganizationResultService;
 import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
@@ -42,30 +41,24 @@ public class OrganizationController extends RunwaySpringController
   public static final String  API_PATH = "organization";
 
   @Autowired
-  private OrganizationService service;
+  private OrganizationResultService service;
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam String code) throws ParseException
+  public ResponseEntity<OrganizationResult> get(@NotEmpty @RequestParam String code) throws ParseException
   {
-    OrganizationDTO org = this.service.get(this.getSessionId(), code);
+    OrganizationResult org = this.service.get(this.getSessionId(), code);
 
-    return new ResponseEntity<String>(org.toJSON().toString(), HttpStatus.OK);
+    return new ResponseEntity<OrganizationResult>(org, HttpStatus.OK);
   }
 
   @ResponseBody
   @GetMapping(API_PATH + "/search")
-  public ResponseEntity<String> search(@NotEmpty @RequestParam String text) throws ParseException
+  public ResponseEntity<List<OrganizationResult>> search(@NotEmpty @RequestParam String text) throws ParseException
   {
-    List<OrganizationDTO> orgs = this.service.search(this.getSessionId(), text);
+    List<OrganizationResult> orgs = this.service.search(this.getSessionId(), text);
 
-    JsonArray orgsJson = new JsonArray();
-    for (OrganizationDTO org : orgs)
-    {
-      orgsJson.add(org.toJSON());
-    }
-
-    return new ResponseEntity<String>(orgsJson.toString(), HttpStatus.OK);
+    return new ResponseEntity<List<OrganizationResult>>(orgs, HttpStatus.OK);
   }
 
   @GetMapping(API_PATH + "/get-children")
