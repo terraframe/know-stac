@@ -139,4 +139,21 @@ public class LocationResult implements JsonSerializable
     }
   }
 
+  @Override
+  public String toString()
+  {
+    return this.code + " - " + this.label;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj instanceof LocationResult)
+    {
+      return this.uuid.equals( ( (LocationResult) obj ).uuid);
+    }
+
+    return super.equals(obj);
+  }
+
 }

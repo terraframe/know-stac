@@ -169,9 +169,13 @@ export default function OrganizationField(props) {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         {field.label}
                     </Typography>
-                    <OrganizationTree organization={organization} onChange={(code) => {
-                        formik.setFieldValue(field.name, code);
-                    }} />
+                    <OrganizationTree
+                        organization={organization}
+                        onSelect={(code) => {
+                            formik.setFieldValue(field.name, code);
+                        }}
+                        onClose={() => setOpen(false)}
+                    />
                 </Box>
             </Modal>
             {fields.map((location) =>

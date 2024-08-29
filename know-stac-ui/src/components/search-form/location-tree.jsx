@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Badge, Box } from '@mui/material';
+import { Badge, Box, Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
@@ -8,7 +8,7 @@ import { useEffectOnce } from 'react-use';
 
 export default function LocationTree(props) {
 
-    const { location, field, onChange } = props;
+    const { location, field, onSelect, onClose } = props;
 
     const [treeData, setTreeData] = useState([]);
     const [expanded, setExpanded] = useState([]);
@@ -109,8 +109,6 @@ export default function LocationTree(props) {
 
     const handleSelect = (e, nodeId) => {
         setSelected(nodeId);
-
-        onChange(nodeId);
     };
 
     const renderTreeItem = (node) => (
@@ -160,5 +158,15 @@ export default function LocationTree(props) {
                 titleRender={renderTreeItem}
                 lazyLoadFn={onLazyLoad}
             />
-        </Box >);
+            <Grid container spacing={2}>
+                <Grid item> 
+                    <Button color='primary' onClick={() => {
+                        onSelect(selected)
+                        onClose()
+                    }}>Select</Button>
+                    <Button color='secondary' onClick={onClose}>Canel</Button>
+                </Grid>
+            </Grid>
+        </Box >
+    );
 }

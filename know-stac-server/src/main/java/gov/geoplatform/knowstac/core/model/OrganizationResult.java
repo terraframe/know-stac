@@ -130,4 +130,21 @@ public class OrganizationResult implements JsonSerializable
     }
   }
 
+  @Override
+  public String toString()
+  {
+    return this.code + " - " + this.label;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj instanceof OrganizationResult)
+    {
+      return this.code.equals( ( (OrganizationResult) obj ).code);
+    }
+
+    return super.equals(obj);
+  }
+
 }

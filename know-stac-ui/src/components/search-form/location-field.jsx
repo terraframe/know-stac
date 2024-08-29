@@ -155,9 +155,14 @@ export default function LocationField(props) {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         {field.label}
                     </Typography>
-                    <LocationTree location={location} field={field} onChange={(uuid) => {
-                        formik.setFieldValue(field.name, uuid);
-                    }} />
+                    <LocationTree
+                        location={location}
+                        field={field}
+                        onSelect={(uuid) => {
+                            formik.setFieldValue(field.name, uuid);
+                        }}
+                        onClose={() => setOpen(false)}
+                    />
                 </Box>
             </Modal>
         </>
