@@ -1,7 +1,6 @@
 package gov.geoplatform.knowstac.core.config;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
@@ -17,8 +16,10 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.knowstac.ItemTotal;
+import gov.geoplatform.knowstac.Property;
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.service.business.LocationBusinessServiceIF;
 import gov.geoplatform.knowstac.core.service.business.OrganizationResultBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
@@ -37,9 +38,9 @@ import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizatio
 import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 
 @Service
-public class StacPropertyBuilderService implements Runnable
+public class DataBuilderService implements Runnable
 {
-  private static final Logger                                  logger = LoggerFactory.getLogger(StacPropertyBuilderService.class);
+  private static final Logger                                  logger = LoggerFactory.getLogger(DataBuilderService.class);
 
   @Autowired
   private LabeledPropertyGraphSynchronizationBusinessServiceIF lpgService;
@@ -140,6 +141,24 @@ public class StacPropertyBuilderService implements Runnable
         });
       });
     }
+
+    logger.error("Building STAC properties");
+
+    Property.create("operational", label.getValue(), PropertyType.LOCATION, synchronization);
+    Property.create("title", "Title", PropertyType.STRING);
+    Property.create("description", "Description", PropertyType.STRING);
+    Property.create("datetime", "Date Time", PropertyType.DATE_TIME);
+    Property.create("start_datetime", "Start Date", PropertyType.DATE_TIME);
+    Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
+    Property.create("created", "Create Date", PropertyType.DATE_TIME);
+    Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
+    Property.create("platform", "Platform", PropertyType.STRING);
+    Property.create("sensor", "Sensor", PropertyType.STRING);
+    Property.create("collection", "Collection", PropertyType.STRING);
+    Property.create("project", "Project", PropertyType.STRING);
+    Property.create("site", "Site", PropertyType.STRING);
+    Property.create("faaNumber", "UAV FAA Number", PropertyType.ENUMERATION);
+    Property.create("serialNumber", "UAV Serial Number", PropertyType.ENUMERATION);
   }
 
   @Transaction

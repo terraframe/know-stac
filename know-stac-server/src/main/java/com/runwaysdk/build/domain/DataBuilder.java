@@ -5,9 +5,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 
 import gov.geoplatform.knowstac.core.config.CoreConfig;
-import gov.geoplatform.knowstac.core.config.StacPropertyBuilderService;
+import gov.geoplatform.knowstac.core.config.DataBuilderService;
 
-public class StacPropertyBuilder
+public class DataBuilder
 {
   public static void main(String[] args)
   {
@@ -15,7 +15,7 @@ public class StacPropertyBuilder
     {
       try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CoreConfig.class))
       {
-        StacPropertyBuilderService obj = context.getBean(StacPropertyBuilderService.class);
+        DataBuilderService obj = context.getBean(DataBuilderService.class);
         obj.run();
       }
     }

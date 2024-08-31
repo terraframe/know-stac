@@ -1,0 +1,78 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdBusiness name="gov.geoplatform.knowstac.Property" label="Property" generateController="false" publish="false">
+        <attributes>
+          <text name="propertyName" label="Name" required="true" index="unique"></text>
+          <text name="label" label="Label" required="true"></text>
+          <text name="propertyType" label="Property Type" required="true"></text>
+          <reference name="synchronization" label="Synchronization" type="net.geoprism.graph.LabeledPropertyGraphSynchronization"></reference>          
+        </attributes>
+      </mdBusiness>      
+    
+      <mdVertex name="gov.geoplatform.knowstac.ItemTotal" label="Item Total" >
+          <attributes>
+            <integer name="numberOfItems" label="Number of Items" />
+          </attributes>      
+      </mdVertex>      
+      
+      <mdBusiness name="gov.geoplatform.knowstac.TotalEdge" label="Total Edge" generateController="false"  publish="false">
+        <attributes>
+          <reference name="graphEdge" label="Graph Edge" type="com.runwaysdk.system.metadata.MdEdge" required="true" index="unique"></reference>
+          <reference name="version" label="version" type="net.geoprism.graph.LabeledPropertyGraphTypeVersion" required="true" index="unique"></reference>
+        </attributes>
+      </mdBusiness>
+      
+      <mdEdge name="gov.geoplatform.knowstac.OrganizationHasTotal" label="Component Has Document" parent="net.geoprism.registry.graph.GraphOrganization" child="gov.geoplatform.knowstac.ItemTotal">
+      </mdEdge>            
+    </create>      
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.knowstac.Property">
+            <operation name="ALL" />
+          </mdBusinessPermission>        
+          <mdBusinessPermission type="gov.geoplatform.knowstac.ItemTotal">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.knowstac.TotalEdge">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.knowstac.OrganizationHasTotal">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    
+      <role roleName="PUBLIC">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.knowstac.Property">
+            <operation name="READ" />
+            <operation name="READ_ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.knowstac.ItemTotal">
+            <operation name="READ" />
+            <operation name="READ_ALL" />
+          </mdBusinessPermission>
+          <mdBusinessPermission type="gov.geoplatform.knowstac.TotalEdge">
+            <operation name="READ" />
+            <operation name="READ_ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.knowstac.OrganizationHasTotal">
+            <operation name="READ" />
+            <operation name="READ_ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
+    
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.knowstac.OrganizationHasTotal" type="com.runwaysdk.system.metadata.MdEdge"/>
+      <object key="gov.geoplatform.knowstac.TotalEdge" type="com.runwaysdk.system.metadata.MdBusiness"/>
+      <object key="gov.geoplatform.knowstac.ItemTotal" type="com.runwaysdk.system.metadata.MdVertex"/>
+      <object key="gov.geoplatform.knowstac.Property" type="com.runwaysdk.system.metadata.MdBusiness"/>
+    </delete>
+  </undoIt>
+</version>

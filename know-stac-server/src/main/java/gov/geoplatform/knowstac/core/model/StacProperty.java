@@ -72,9 +72,6 @@ public class StacProperty
   // Optional properties for location types
   private Location     location;
 
-  // Name of property used to filter the values of this property
-  private String       dependency;
-
   public String getName()
   {
     return name;
@@ -105,16 +102,6 @@ public class StacProperty
     this.type = type;
   }
 
-  public String getDependency()
-  {
-    return dependency;
-  }
-
-  public void setDependency(String dependency)
-  {
-    this.dependency = dependency;
-  }
-
   public Location getLocation()
   {
     return location;
@@ -135,13 +122,12 @@ public class StacProperty
     return property;
   }
 
-  public static StacProperty build(String name, String label, PropertyType type, String dependency, Location location)
+  public static StacProperty build(String name, String label, PropertyType type, Location location)
   {
     StacProperty property = new StacProperty();
     property.setName(name);
     property.setLabel(label);
     property.setType(type);
-    property.setDependency(dependency);
     property.setLocation(location);
 
     return property;

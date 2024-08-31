@@ -2,6 +2,7 @@ package gov.geoplatform.knowstac.core.service.business;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.SelectableReference;
 
+import gov.geoplatform.knowstac.Property;
+import gov.geoplatform.knowstac.PropertyQuery;
 import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.StacProperty;
 import gov.geoplatform.knowstac.core.model.StacProperty.Location;
@@ -33,40 +37,13 @@ public class StacPropertyBusinessService
 
   public List<StacProperty> getAll()
   {
-    LabeledPropertyGraphSynchronizationQuery query = new LabeledPropertyGraphSynchronizationQuery(new QueryFactory());
+    PropertyQuery query = new PropertyQuery(new QueryFactory());
+    query.ORDER_BY(query.getPropertyName(), SortOrder.ASC);
 
-    List<StacProperty> properties = new LinkedList<>();
-    properties.add(StacProperty.build("agency", "Agency", PropertyType.ORGANIZATION));
-
-    try (OIterator<? extends LabeledPropertyGraphSynchronization> it = query.getIterator())
+    try (OIterator<? extends Property> it = query.getIterator())
     {
-      if (it.hasNext())
-      {
-        LabeledPropertyGraphSynchronization synchronization = it.next();
-
-        String label = synchronization.getDisplayLabel().getValue();
-        Location location = StacProperty.Location.build(synchronization.getOid(), synchronization.getForDate(), label);
-
-        properties.add(StacProperty.build("operational", label, PropertyType.LOCATION, "agency", location));
-      }
+      return it.getAll().stream().map(p -> p.toDTO()).collect(Collectors.toList());
     }
-
-    properties.add(StacProperty.build("title", "Title", PropertyType.STRING));
-    properties.add(StacProperty.build("description", "Description", PropertyType.STRING));
-    properties.add(StacProperty.build("datetime", "Date Time", PropertyType.DATE_TIME));
-    properties.add(StacProperty.build("start_datetime", "Start Date", PropertyType.DATE_TIME));
-    properties.add(StacProperty.build("end_datetime", "End Date", PropertyType.DATE_TIME));
-    properties.add(StacProperty.build("created", "Create Date", PropertyType.DATE_TIME));
-    properties.add(StacProperty.build("updated", "Last Update Date", PropertyType.DATE_TIME));
-    properties.add(StacProperty.build("platform", "Platform", PropertyType.STRING));
-    properties.add(StacProperty.build("sensor", "Sensor", PropertyType.STRING));
-    properties.add(StacProperty.build("collection", "Collection", PropertyType.STRING));
-    properties.add(StacProperty.build("project", "Project", PropertyType.STRING));
-    properties.add(StacProperty.build("site", "Site", PropertyType.STRING));
-    properties.add(StacProperty.build("faaNumber", "UAV FAA Number", PropertyType.ENUMERATION));
-    properties.add(StacProperty.build("serialNumber", "UAV Serial Number", PropertyType.ENUMERATION));
-
-    return properties;
   }
 
   public List<StacProperty> getForOrganization(String code)
@@ -103,7 +80,7 @@ public class StacPropertyBusinessService
           String label = synchronization.getDisplayLabel().getValue();
           Location location = StacProperty.Location.build(synchronization.getOid(), synchronization.getForDate(), label);
 
-          properties.add(StacProperty.build("operational", label, PropertyType.LOCATION, "agency", location));
+          properties.add(StacProperty.build("operational", label, PropertyType.LOCATION, location));
         }
       }
 
