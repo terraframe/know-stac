@@ -27,13 +27,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
-public class DateDeserializer extends JsonDeserializer<Date>
+public class DateTimeDeserializer extends JsonDeserializer<Date>
 {
   private SimpleDateFormat format;
 
-  public DateDeserializer()
+  public DateTimeDeserializer()
   {
-    this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     this.format.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
 

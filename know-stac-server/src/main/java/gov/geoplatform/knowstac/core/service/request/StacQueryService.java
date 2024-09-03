@@ -1,5 +1,6 @@
 package gov.geoplatform.knowstac.core.service.request;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class StacQueryService
     List<StacItem> items = this.service.find(criteria);
 
     Spatial spatial = Spatial.build(items.stream().map(item -> item.getBbox()).collect(Collectors.toList()));
-    TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> item.getProperties().getDatetime()).collect(Collectors.toList()));
+    TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> (Date) item.getProperty("datetime")).collect(Collectors.toList()));
 
     String id = criteria.toEncodedId();
     StacCollection collection = new StacCollection();
@@ -50,7 +51,7 @@ public class StacQueryService
       // Assumption that there is a self link in the uploaded s3 item so that we
       // know where to get it
       item.getLinks().stream().filter(link -> link.getRel().equalsIgnoreCase("self")).findAny().ifPresent(link -> {
-        collection.addLink(StacLink.build(link.getHref(), "item", "application/geo+json", item.getProperties().getTitle()));
+        collection.addLink(StacLink.build(link.getHref(), "item", "application/geo+json", item.getProperty("title")));
       });
 
     }

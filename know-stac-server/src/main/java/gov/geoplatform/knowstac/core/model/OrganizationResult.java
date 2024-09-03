@@ -7,7 +7,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Request;
 
+import net.geoprism.registry.Organization;
+import net.geoprism.registry.OrganizationQuery;
+import net.geoprism.registry.cache.ServerOrganizationCache;
+import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.view.JsonSerializable;
 
 public class OrganizationResult implements JsonSerializable
@@ -145,6 +152,31 @@ public class OrganizationResult implements JsonSerializable
     }
 
     return super.equals(obj);
+  }
+
+  @Request
+  public static synchronized void populateCache(ServerOrganizationCache cache)
+  {
+    cache.rebuild();
+
+    try
+    {
+      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory());
+
+      try (OIterator<? extends Organization> iterator = oQ.getIterator())
+      {
+        while (iterator.hasNext())
+        {
+          Organization organization = iterator.next();
+
+          cache.addOrganization(ServerOrganization.get(organization));
+        }
+      }
+    }
+    catch (com.runwaysdk.dataaccess.cache.DataNotFoundException e)
+    {
+      // skip for now
+    }
   }
 
 }

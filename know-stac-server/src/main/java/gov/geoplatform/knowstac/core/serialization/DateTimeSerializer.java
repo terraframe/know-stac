@@ -24,13 +24,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-public class DateSerializer extends JsonSerializer<Date>
+public class DateTimeSerializer extends JsonSerializer<Date>
 {
   private SimpleDateFormat format;
 
-  public DateSerializer()
+  public DateTimeSerializer()
   {
-    this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     this.format.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
 
@@ -42,6 +42,8 @@ public class DateSerializer extends JsonSerializer<Date>
 
   public String serialize(Date value)
   {
-    return this.format.format(value);
+    String dateStr = this.format.format(value);
+
+    return dateStr;
   }
 }

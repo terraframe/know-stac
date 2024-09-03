@@ -115,6 +115,14 @@
       <artifactId>s3</artifactId>
       <version>${s3.version}</version>
     </dependency>		
+    
+        <!-- Elastic search dependencies-->
+    <dependency>
+      <groupId>co.elastic.clients</groupId>
+      <artifactId>elasticsearch-java</artifactId>
+      <version>8.12.1</version>
+    </dependency>
+
 	</dependencies>
 
 	<!-- These profiles allow for Maven execution of Runway-SDK's Java Tools,

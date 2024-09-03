@@ -24,6 +24,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.knowstac.core.model.OrganizationResult;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.OrganizationQuery;
 import net.geoprism.registry.cache.ServerOrganizationCache;
@@ -36,36 +37,10 @@ public class ServerStartupListener implements ApplicationListener<ContextRefresh
   @Autowired
   private CacheProviderIF provider;
 
-  @Request
-  public synchronized void populateCache()
-  {
-    ServerOrganizationCache cache = this.provider.getServerCache();
-    cache.rebuild();
-
-    try
-    {
-      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory());
-
-      try (OIterator<? extends Organization> iterator = oQ.getIterator())
-      {
-        while (iterator.hasNext())
-        {
-          Organization organization = iterator.next();
-
-          cache.addOrganization(ServerOrganization.get(organization));
-        }
-      }
-    }
-    catch (com.runwaysdk.dataaccess.cache.DataNotFoundException e)
-    {
-      // skip for now
-    }
-  }
-
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event)
   {
-    this.populateCache();
+    OrganizationResult.populateCache(this.provider.getServerCache());
   }
 
 }

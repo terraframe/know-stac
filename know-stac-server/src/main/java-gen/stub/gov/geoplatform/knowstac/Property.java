@@ -26,10 +26,10 @@ public class Property extends PropertyBase
 
       Location location = Location.build(synchronization.getOid(), synchronization.getForDate(), synchronization.getDisplayLabel().getValue());
 
-      return StacProperty.build(this.getPropertyType(), this.getLabel(), PropertyType.valueOf(this.getPropertyType()), location);
+      return StacProperty.build(this.getPropertyName(), this.getLabel(), PropertyType.valueOf(this.getPropertyType()), location);
     }
 
-    return StacProperty.build(this.getPropertyType(), this.getLabel(), PropertyType.valueOf(this.getPropertyType()));
+    return StacProperty.build(this.getPropertyName(), this.getLabel(), PropertyType.valueOf(this.getPropertyType()));
   }
 
   public static Property create(String name, String label, PropertyType type, LabeledPropertyGraphSynchronization synchronization)
