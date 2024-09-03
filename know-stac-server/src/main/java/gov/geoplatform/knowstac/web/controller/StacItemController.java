@@ -24,7 +24,7 @@ public class StacItemController extends RunwaySpringController
   @Autowired
   private StacItemService service;
 
-  @PostMapping("stac-item/add")
+  @PostMapping("item/add")
   public ResponseEntity<StacItem> add(@Valid @RequestBody StacItem item) throws IOException
   {
     StacItem response = this.service.add(getSessionId(), item);
@@ -32,10 +32,10 @@ public class StacItemController extends RunwaySpringController
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
-  @GetMapping("stac-item/get")
-  public ResponseEntity<StacItem> get(@RequestParam(name = "oid", required = false) String oid) throws IOException
+  @GetMapping("item/get")
+  public ResponseEntity<StacItem> get(@RequestParam(name = "id", required = false) String id) throws IOException
   {
-    StacItem response = this.service.get(getSessionId(), oid);
+    StacItem response = this.service.get(getSessionId(), id);
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }

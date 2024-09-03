@@ -26,8 +26,8 @@ public class StacItemService
   }
 
   @Request(RequestType.SESSION)
-  public StacItem get(String sessionId, String oid)
+  public StacItem get(String sessionId, String id)
   {
-    return this.service.get(oid);
+    return this.service.get(id);
   }
 }

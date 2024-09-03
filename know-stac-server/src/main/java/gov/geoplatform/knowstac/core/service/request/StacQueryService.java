@@ -1,5 +1,7 @@
 package gov.geoplatform.knowstac.core.service.request;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,16 +46,11 @@ public class StacQueryService
     collection.setLicense("Apache-2.0");
     collection.setExtent(Extent.build(spatial, temporal));
 
-    collection.addLink(StacLink.build("api/query/collection?criteria=" + id, "self", "application/json"));
+    collection.addLink(StacLink.build("/api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
 
     for (StacItem item : items)
     {
-      // Assumption that there is a self link in the uploaded s3 item so that we
-      // know where to get it
-      item.getLinks().stream().filter(link -> link.getRel().equalsIgnoreCase("self")).findAny().ifPresent(link -> {
-        collection.addLink(StacLink.build(link.getHref(), "item", "application/geo+json", item.getProperty("title")));
-      });
-
+      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", item.getProperty("title")));
     }
 
     return collection;

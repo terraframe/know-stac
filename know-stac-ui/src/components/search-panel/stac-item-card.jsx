@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect } from 'react';
-import { Button, Card, CardActions, CardContent, CardMedia, Collapse, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Collapse, Grid, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { setMapItem, bbox } from '../viewer/viewer-slice';
 
 export default function StacItemCard(props) {
-    const { properties, collection, link } = props;
+    const { properties, link } = props;
     const [open, setOpen] = React.useState(false);
     const [item, setItem] = React.useState(null);
     const [icon, setIcon] = React.useState(null);
@@ -19,11 +19,9 @@ export default function StacItemCard(props) {
 
     useEffect(() => {
         if (open && item == null) {
-            const params = new URLSearchParams()
-            params.append('id', collection.id);
-            params.append('href', link.href);
+            const url = link.href.startsWith("/") ? (process.env.REACT_APP_API_URL + link.href) : link.href;
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/query/item?${params.toString()}`, {
+            fetch(url, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -79,7 +77,46 @@ export default function StacItemCard(props) {
                                         <Typography>{field.label}</Typography>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        {item.properties[field.name]}
+                                        {(() => {
+                                            switch (field.type) {
+                                                // case 'DATE_TIME': return (
+                                                //     { item.properties[field.name] }
+                                                // );
+                                                // case 'NUMBER': return (
+                                                //     <TextField
+                                                //         margin="dense"
+                                                //         type="number"
+                                                //         fullWidth
+                                                //         name={field.name}
+                                                //         label={field.label}
+                                                //         value={formik.values[field.name]}
+                                                //         onChange={formik.handleChange}
+                                                //         onBlur={formik.handleBlur}
+                                                //         error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
+                                                //         helperText={formik.touched[field.name] && formik.errors[field.name]}
+                                                //     />
+                                                // );
+                                                case 'ORGANIZATION': return (
+                                                    <List>
+                                                        {item.properties[field.name].map(organization => (
+                                                            <ListItem key={organization.code}>
+                                                                {organization.label}
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                );
+                                                case 'LOCATION': return (
+                                                    <List>
+                                                        {item.properties[field.name].map(location => (
+                                                            <ListItem key={location.uuid}>
+                                                                {location.label}
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                );
+                                                default: return item.properties[field.name]
+                                            }
+                                        })()}
                                     </Grid>
                                 </Grid>
                             )}

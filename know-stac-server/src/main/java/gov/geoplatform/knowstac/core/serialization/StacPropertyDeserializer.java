@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.runwaysdk.session.Request;
 
 import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.StacLocation;
@@ -33,6 +34,7 @@ public class StacPropertyDeserializer extends JsonDeserializer<Map<String, Objec
 
   @SuppressWarnings("unchecked")
   @Override
+  @Request
   public Map<String, Object> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException
   {
     Map<String, StacProperty> properties = this.service.getAll().stream().collect(Collectors.toMap(v -> v.getName(), v -> v));

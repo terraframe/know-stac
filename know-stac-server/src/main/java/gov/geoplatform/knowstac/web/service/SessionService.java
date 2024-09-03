@@ -18,8 +18,8 @@ public class SessionService extends net.geoprism.registry.service.request.Sessio
   {
     Set<String> endpoints = super.getPublicEndpoints();
 
-    endpoints.add("api/stac-item/add");
-    endpoints.add("api/stac-item/get");
+    endpoints.add("api/item/add");
+    endpoints.add("api/item/get");
     
     endpoints.add("api/query/collection");
     endpoints.add("api/query/item");
