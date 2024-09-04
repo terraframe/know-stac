@@ -54,7 +54,7 @@ public class StacItemBusinessService
 
   public StacItem put(StacItem item)
   {
-    // TODO: Validate values for organization and location properties
+    this.validateProperties(item);
 
     Optional<StacItem> existing = this.index.getItem(item.getId());
 
@@ -68,6 +68,50 @@ public class StacItemBusinessService
     updateTotals(item, 1);
 
     return item;
+  }
+
+  private void validateProperties(StacItem item)
+  {
+    // Validate location values
+    this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.LOCATION)).forEach(property -> {
+
+      Optional<List<StacLocation>> optional = item.getProperty(property.getName());
+
+      optional.ifPresent(locations -> {
+        String synchronizationId = property.getLocation().getSynchronizationId();
+
+        for (StacLocation location : locations)
+        {
+          LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
+
+          LocationResult child = this.locationService.get(synchronization.getOid(), location.getUuid());
+
+          if (child == null)
+          {
+            // TODO Better exception
+            throw new ProgrammingErrorException("A location doesn't exist with the UUID [" + location.getUuid() + "]");
+          }
+        }
+      });
+    });
+
+    this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.ORGANIZATION)).forEach(property -> {
+
+      Optional<List<StacOrganization>> optional = item.getProperty(property.getName());
+
+      optional.ifPresent(organizations -> {
+        for (StacOrganization organization : organizations)
+        {
+          OrganizationResult child = this.resultService.get(organization.getCode());
+
+          if (child == null)
+          {
+            // TODO Better exception
+            throw new ProgrammingErrorException("A location doesn't exist with the code [" + organization.getCode() + "]");
+          }
+        }
+      });
+    });
   }
 
   private void updateTotals(final StacItem item, final int amount)
@@ -140,17 +184,5 @@ public class StacItemBusinessService
   public List<StacItem> find(QueryCriteria criteria)
   {
     return this.index.getItems(criteria);
-  }
-
-  public StacItem get(String id, String href)
-  {
-    List<StacItem> items = this.index.getItems(null);
-
-    if (href.contains("bdfe18f9-04dd-4df5-ac4b-63237c5c3d10"))
-    {
-      return items.get(1);
-    }
-
-    return items.get(0);
   }
 }

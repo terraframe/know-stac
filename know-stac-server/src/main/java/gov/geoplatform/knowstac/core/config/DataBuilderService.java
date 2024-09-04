@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
-import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
@@ -78,8 +77,6 @@ public class DataBuilderService implements Runnable
   @Request
   public void run()
   {
-    transaction();
-
     String url = "https://idm-gpr-alpha.geoprism.net";
 
     logger.error("Synchronizing organizations from [" + url + "]");
@@ -218,10 +215,4 @@ public class DataBuilderService implements Runnable
       throw new RuntimeException(e);
     }
   }
-
-  @Transaction
-  protected void transaction()
-  {
-  }
-
 }

@@ -55,9 +55,4 @@ public class StacQueryService
 
     return collection;
   }
-
-  public StacItem item(String sessionId, String id, String href)
-  {
-    return this.service.get(id, href);
-  }
 }
