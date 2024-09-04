@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.runwaysdk.session.Request;
 
 import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.StacLocation;
@@ -46,7 +45,6 @@ public class StacPropertySerializer extends JsonSerializer<Map<String, Object>>
 
   @SuppressWarnings("unchecked")
   @Override
-  @Request
   public void serialize(Map<String, Object> map, JsonGenerator gen, SerializerProvider serializers) throws IOException
   {
     gen.writeStartObject();

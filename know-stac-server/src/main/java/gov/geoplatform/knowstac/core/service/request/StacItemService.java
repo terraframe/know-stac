@@ -22,7 +22,7 @@ public class StacItemService
   @Request(RequestType.SESSION)
   public StacItem add(String sessionId, StacItem item)
   {
-    return this.service.add(item);
+    return this.service.put(item);
   }
 
   @Request(RequestType.SESSION)

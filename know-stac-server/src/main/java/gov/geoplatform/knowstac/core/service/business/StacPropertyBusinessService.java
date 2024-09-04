@@ -14,6 +14,7 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.OrderBy.SortOrder;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.query.SelectableReference;
+import com.runwaysdk.session.Request;
 
 import gov.geoplatform.knowstac.Property;
 import gov.geoplatform.knowstac.PropertyQuery;
@@ -30,12 +31,35 @@ import net.geoprism.registry.service.request.CacheProviderIF;
 @Service
 public class StacPropertyBusinessService
 {
-  private static Logger   logger = LoggerFactory.getLogger(StacPropertyBusinessService.class);
+  private static Logger      logger = LoggerFactory.getLogger(StacPropertyBusinessService.class);
 
   @Autowired
-  private CacheProviderIF provider;
+  private CacheProviderIF    provider;
+
+  // Simple cache because we StacProperties are only defined at build time, not
+  // during the run time of the application
+  private List<StacProperty> cache;
+
+  public StacPropertyBusinessService()
+  {
+    this.cache = null;
+  }
 
   public List<StacProperty> getAll()
+  {
+    synchronized (this)
+    {
+      if (this.cache == null)
+      {
+        this.cache = this.getAllFromDatabase();
+      }
+    }
+
+    return this.cache;
+  }
+
+  @Request
+  private List<StacProperty> getAllFromDatabase()
   {
     PropertyQuery query = new PropertyQuery(new QueryFactory());
     query.ORDER_BY(query.getPropertyName(), SortOrder.ASC);
@@ -50,9 +74,9 @@ public class StacPropertyBusinessService
   {
     return provider.getServerCache().getOrganization(code).map(organization -> {
       // Two phase query. The first phase traverses the graph tree to find all
-      // of
-      // the child organizations of a node in the tree. The second phase then
-      // queries postgres with the list of child organizations as criteria
+      // of the child organizations of a node in the tree. The second phase
+      // then queries postgres with the list of child organizations as
+      // criteria
 
       StringBuilder statement = new StringBuilder();
       statement.append("TRAVERSE OUT('organization_hierarchy') FROM :organization");
@@ -70,17 +94,16 @@ public class StacPropertyBusinessService
       LabeledPropertyGraphSynchronizationQuery sQuery = new LabeledPropertyGraphSynchronizationQuery(factory);
       sQuery.WHERE(sQuery.getGraphType().EQ(query));
 
+      PropertyQuery pQuery = new PropertyQuery(factory);
+      pQuery.WHERE(pQuery.getSynchronization().EQ(sQuery));
+
       List<StacProperty> properties = new LinkedList<StacProperty>();
 
-      try (OIterator<? extends LabeledPropertyGraphSynchronization> iterator = sQuery.getIterator())
+      try (OIterator<? extends Property> iterator = pQuery.getIterator())
       {
         while (iterator.hasNext())
         {
-          LabeledPropertyGraphSynchronization synchronization = iterator.next();
-          String label = synchronization.getDisplayLabel().getValue();
-          Location location = StacProperty.Location.build(synchronization.getOid(), synchronization.getForDate(), label);
-
-          properties.add(StacProperty.build("operational", label, PropertyType.LOCATION, location));
+          properties.add(iterator.next().toDTO());
         }
       }
 

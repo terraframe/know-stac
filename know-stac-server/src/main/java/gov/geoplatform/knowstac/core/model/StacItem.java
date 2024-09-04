@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.locationtech.jts.geom.Envelope;
@@ -285,9 +286,9 @@ public class StacItem
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getProperty(String name)
+  public <T> Optional<T> getProperty(String name)
   {
-    return (T) properties.get(name);
+    return Optional.ofNullable((T) properties.get(name));
   }
 
   public void setProperty(String name, Object value)

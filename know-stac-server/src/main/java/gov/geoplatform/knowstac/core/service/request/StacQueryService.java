@@ -37,7 +37,7 @@ public class StacQueryService
     List<StacItem> items = this.service.find(criteria);
 
     Spatial spatial = Spatial.build(items.stream().map(item -> item.getBbox()).collect(Collectors.toList()));
-    TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> (Date) item.getProperty("datetime")).collect(Collectors.toList()));
+    TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> (Date) item.getProperty("datetime").orElse(null)).collect(Collectors.toList()));
 
     String id = criteria.toEncodedId();
     StacCollection collection = new StacCollection();
@@ -50,7 +50,7 @@ public class StacQueryService
 
     for (StacItem item : items)
     {
-      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", item.getProperty("title")));
+      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
     }
 
     return collection;

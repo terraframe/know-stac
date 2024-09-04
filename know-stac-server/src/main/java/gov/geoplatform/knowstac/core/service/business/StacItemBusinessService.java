@@ -1,31 +1,132 @@
 package gov.geoplatform.knowstac.core.service.business;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
+import gov.geoplatform.knowstac.ItemTotal;
+import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.QueryCriteria;
 import gov.geoplatform.knowstac.core.model.StacItem;
+import gov.geoplatform.knowstac.core.model.StacLocation;
+import gov.geoplatform.knowstac.core.model.StacOrganization;
 import gov.geoplatform.knowstac.core.service.index.IndexIF;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.HierarchyTypeSnapshot;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphType;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 
 @Service
 public class StacItemBusinessService
 {
-  private static Logger logger = LoggerFactory.getLogger(StacItemBusinessService.class);
+  private static Logger                          logger = LoggerFactory.getLogger(StacItemBusinessService.class);
 
   @Autowired
-  private IndexIF       index;
+  private IndexIF                                index;
 
-  public StacItem add(StacItem item)
+  @Autowired
+  private StacPropertyBusinessService            propertyService;
+
+  @Autowired
+  private GeoObjectTypeSnapshotBusinessServiceIF gTypeService;
+
+  @Autowired
+  private HierarchyTypeSnapshotBusinessServiceIF hTypeService;
+
+  @Autowired
+  private LocationBusinessServiceIF              locationService;
+
+  @Autowired
+  private OrganizationResultBusinessService      resultService;
+
+  public StacItem put(StacItem item)
   {
-    // TODO: Handle adding a stac item
+    // TODO: Validate values for organization and location properties
+
+    Optional<StacItem> existing = this.index.getItem(item.getId());
+
+    this.index.put(item);
+
+    // Remove from the total the existing hierarchy/organization values because
+    // they might have changed
+    existing.ifPresent(i -> updateTotals(i, -1));
+
+    // Update the totals for the new locations and organization values
+    updateTotals(item, 1);
 
     return item;
+  }
+
+  private void updateTotals(final StacItem item, final int amount)
+  {
+    this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.LOCATION)).forEach(property -> {
+
+      Optional<List<StacLocation>> optional = item.getProperty(property.getName());
+
+      optional.ifPresent(locations -> {
+        String synchronizationId = property.getLocation().getSynchronizationId();
+
+        StacLocation stacLocation = locations.get(0);
+
+        LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
+        LabeledPropertyGraphType graphType = synchronization.getGraphType();
+        LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+
+        GeoObjectTypeSnapshot type = this.gTypeService.getRoot(version);
+        HierarchyTypeSnapshot hierarchyType = this.hTypeService.get(version, graphType.getHierarchy());
+
+        logger.info("Assigning item totals to locations for the hierarchy [" + synchronization.getDisplayLabel().getValue() + "]");
+
+        LocationResult child = this.locationService.get(synchronization.getOid(), stacLocation.getUuid());
+
+        this.locationService.getAncestors(version, type, hierarchyType, child, null).forEach(location -> {
+          ItemTotal.getForRid(version, location.getRid()).ifPresent(total -> {
+            logger.info("Updating total for location [" + location.getLabel() + "]");
+
+            total.setNumberOfItems(total.getNumberOfItems() + amount);
+            total.apply();
+          });
+        });
+      });
+    });
+
+    logger.info("Assigning item totals to organizations");
+
+    // Update the location totals
+    this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.ORGANIZATION)).forEach(property -> {
+
+      Optional<List<StacOrganization>> optional = item.getProperty(property.getName());
+
+      optional.ifPresent(organizations -> {
+        StacOrganization stacOrganization = organizations.get(0);
+
+        MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(ItemTotal.ORGANIZATION_HAS_TOTAL);
+
+        OrganizationResult child = this.resultService.get(stacOrganization.getCode());
+
+        this.resultService.getAncestors(child, null).forEach(organization -> {
+          ItemTotal.getForRid(mdEdge, organization.getRid()).ifPresent(total -> {
+            logger.info("Updating total for location [" + organization.getLabel() + "]");
+
+            total.setNumberOfItems(total.getNumberOfItems() + amount);
+            total.apply();
+          });
+        });
+      });
+    });
   }
 
   public StacItem get(String id)

@@ -79,23 +79,7 @@ export default function StacItemCard(props) {
                                     <Grid item xs={6}>
                                         {(() => {
                                             switch (field.type) {
-                                                // case 'DATE_TIME': return (
-                                                //     { item.properties[field.name] }
-                                                // );
-                                                // case 'NUMBER': return (
-                                                //     <TextField
-                                                //         margin="dense"
-                                                //         type="number"
-                                                //         fullWidth
-                                                //         name={field.name}
-                                                //         label={field.label}
-                                                //         value={formik.values[field.name]}
-                                                //         onChange={formik.handleChange}
-                                                //         onBlur={formik.handleBlur}
-                                                //         error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
-                                                //         helperText={formik.touched[field.name] && formik.errors[field.name]}
-                                                //     />
-                                                // );
+ 
                                                 case 'ORGANIZATION': return (
                                                     <List>
                                                         {item.properties[field.name].map(organization => (

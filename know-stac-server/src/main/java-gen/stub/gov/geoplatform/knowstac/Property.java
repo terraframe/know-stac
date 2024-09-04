@@ -21,7 +21,6 @@ public class Property extends PropertyBase
   {
     if (!StringUtils.isBlank(this.getSynchronizationOid()))
     {
-
       LabeledPropertyGraphSynchronization synchronization = this.getSynchronization();
 
       Location location = Location.build(synchronization.getOid(), synchronization.getForDate(), synchronization.getDisplayLabel().getValue());

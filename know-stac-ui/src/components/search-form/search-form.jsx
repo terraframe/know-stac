@@ -23,7 +23,7 @@ export default function SearchForm(props) {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const initialValues = useMemo(() => Object.fromEntries(properties.map((field) => {
-        const initialValue = field.type !== 'DATE_TIME' ? '' : {
+        const initialValue = field.type !== 'DATE_TIME' && field.type !== 'DATE' ? '' : {
             startDate: null,
             endDate: null
         };
@@ -34,7 +34,7 @@ export default function SearchForm(props) {
     const validationSchema = yup.object(Object.fromEntries(properties.map((field) => {
         let valiation = null;
 
-        if (field.type === 'DATE_TIME') {
+        if (field.type === 'DATE_TIME' || field.type === 'DATE') {
             valiation = yup.object({
                 startDate: yup.date().notRequired(),
                 endDate: yup.date().notRequired()
@@ -61,8 +61,17 @@ export default function SearchForm(props) {
             const vals = { ...values };
 
             Object.keys(vals).forEach(key => {
+
+                const property = properties.find(p => p.name === key);
+
                 if (vals[key] == null || vals[key].length === 0) {
                     delete vals[key];
+                }
+                else if (property != null && (property.type === 'DATE' || property.type === 'DATE_TIME')) {
+                    if ((vals[key].startDate == null || vals[key].startDate.length === 0)
+                        && (vals[key].endDate == null || vals[key].endDate.length === 0)) {
+                        delete vals[key];
+                    }
                 }
             });
 
@@ -79,7 +88,7 @@ export default function SearchForm(props) {
 
             properties.forEach(field => {
                 if (parameters[field.name] != null) {
-                    if (field.type === 'DATE_TIME') {
+                    if (field.type === 'DATE_TIME' || field.type === 'DATE') {
                         formik.setFieldValue(`${field.name}.startDate`, parameters[field.name].startDate != null ? dayjs(parameters[field.name].startDate) : null);
                         formik.setFieldValue(`${field.name}.endDate`, parameters[field.name].endDate != null ? dayjs(parameters[field.name].endDate) : null);
                     }
@@ -146,6 +155,7 @@ export default function SearchForm(props) {
                     <Fragment key={field.name}>
                         {(() => {
                             switch (field.type) {
+                                case 'DATE':
                                 case 'DATE_TIME': return (
                                     <Box>
                                         <Typography variant="p">
