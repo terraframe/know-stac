@@ -19,7 +19,10 @@ export const viewerSlice = createSlice({
         // STAC item assets being mapped
         item: null,
 
-        bbox: null
+        bbox: null,
+
+        // Current extent of the map
+        extent: null
     },
     reducers: {
         setMapItem: (state, action) => {
@@ -40,6 +43,9 @@ export const viewerSlice = createSlice({
                 state.criteria = action.payload;
             }
         },
+        setExtent: (state, action) => {
+            state.extent = action.payload;
+        },
         bbox: (state, action) => {
             state.bbox = action.payload;
         },
@@ -48,6 +54,6 @@ export const viewerSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setMapItem, setActive, setMessages, setCollection, setCriteria, bbox } = viewerSlice.actions
+export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox } = viewerSlice.actions
 
 export default viewerSlice.reducer

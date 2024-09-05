@@ -47,7 +47,7 @@ export default function LocationField(props) {
             // Update the form values
             const { properties } = JSON.parse(atob(criteria));
 
-            if (properties[field.name] != null) {
+            if (properties != null && properties[field.name] != null) {
                 formik.setFieldValue(field.name, properties[field.name]);
             }
         }

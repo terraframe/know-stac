@@ -73,7 +73,7 @@ export default function SearchPanel() {
                     )}
                 </CustomTabPanel>
                 <CustomTabPanel value={tab} index={1}>
-                    {collection != null && (
+                    {collection != null && collection.links.length > 1 && (
                         <Box>
                             <Typography variant="h3" component="h3">Collection</Typography>
                             <Grid container spacing={2}>
@@ -130,6 +130,12 @@ export default function SearchPanel() {
                         </Box>
 
                     )}
+                    {collection != null && collection.links.length === 1 && (
+                        <Box>
+                            <Typography variant="h3" component="h3">No Items found</Typography>
+                        </Box>
+                    )}
+
                 </CustomTabPanel>
             </LoadingOverlay>
 

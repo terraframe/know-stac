@@ -22,7 +22,7 @@ public class StacQueryController extends RunwaySpringController
   @GetMapping("query/collection")
   public ResponseEntity<StacCollection> collection(@RequestParam(name = "criteria", required = false) QueryCriteria criteria)
   {
-    StacCollection response = this.service.collection(getSessionId(), new QueryCriteria());
+    StacCollection response = this.service.collection(getSessionId(), criteria);
 
     return new ResponseEntity<StacCollection>(response, HttpStatus.OK);
   }

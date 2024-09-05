@@ -18,7 +18,9 @@ package gov.geoplatform.knowstac.core.service.index;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -29,6 +31,12 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -39,12 +47,15 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
 import co.elastic.clients.elasticsearch._types.mapping.TypeMapping.Builder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -323,118 +334,79 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
       SearchRequest.Builder s = new SearchRequest.Builder();
       s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+
       // s.size(pageSize);
       // s.from(pageSize * ( pageNumber - 1 ));
-      //
-      // if (criteria.has("must") || criteria.has("should"))
-      // {
-      //
-      // s.query(q -> q.bool(b -> {
-      // if (criteria.has("must"))
-      // {
-      // JSONArray filters = criteria.getJSONArray("must");
-      //
-      // if (filters != null && filters.length() > 0)
-      // {
-      // List<Query> conditions = new LinkedList<Query>();
-      //
-      // for (int i = 0; i < filters.length(); i++)
-      // {
-      // JSONObject filter = filters.getJSONObject(i);
-      // String field = filter.getString("field");
-      //
-      // if (field.equals("datetime"))
-      // {
-      // if (filter.has("startDate") || filter.has("endDate"))
-      // {
-      // conditions.add(new Query.Builder().range(r -> {
-      // r.field("properties.datetime");
-      //
-      // if (filter.has("startDate"))
-      // {
-      // r.gte(JsonData.of(filter.getString("startDate")));
-      // }
-      //
-      // if (filter.has("endDate"))
-      // {
-      // r.lte(JsonData.of(filter.getString("endDate")));
-      // }
-      //
-      // return r;
-      // }).build());
-      // }
-      //
-      // }
-      // else
-      // {
-      // String value = filter.getString("value");
-      //
-      // conditions.add(new Query.Builder().queryString(qs ->
-      // qs.fields("properties." + field).query("*" +
-      // ClientUtils.escapeQueryChars(value) + "*")).build());
-      // }
-      // }
-      //
-      // b.filter(conditions);
-      // }
-      // }
-      // else
-      // {
-      // b.must(m -> m.matchAll(ma -> ma.boost(0F)));
-      // }
-      //
-      // if (criteria.has("should"))
-      // {
-      // JSONArray filters = criteria.getJSONArray("should");
-      //
-      // if (filters != null && filters.length() > 0)
-      // {
-      // List<Query> conditions = new LinkedList<Query>();
-      //
-      // for (int i = 0; i < filters.length(); i++)
-      // {
-      // JSONObject filter = filters.getJSONObject(i);
-      // String field = filter.getString("field");
-      //
-      // if (field.equalsIgnoreCase("bounds"))
-      // {
-      // JSONObject object = filter.getJSONObject("value");
-      //
-      // JSONObject sw = object.getJSONObject("_sw");
-      // JSONObject ne = object.getJSONObject("_ne");
-      //
-      // double x1 = sw.getDouble("lng");
-      // double x2 = ne.getDouble("lng");
-      // double y1 = sw.getDouble("lat");
-      // double y2 = ne.getDouble("lat");
-      //
-      // Envelope envelope = new Envelope(x1, x2, y1, y2);
-      // GeometryFactory factory = new GeometryFactory();
-      // Geometry geometry = factory.toGeometry(envelope);
-      // WKTWriter writer = new WKTWriter();
-      //
-      // conditions.add(new Query.Builder().geoShape(qs ->
-      // qs.boost(10F).field("geometry").shape(bb ->
-      // bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry))))).build());
-      // }
-      // else
-      // {
-      // String value = filter.getString("value");
-      // conditions.add(new Query.Builder().queryString(qs ->
-      // qs.boost(1.2F).fields("properties." + field).query("*" +
-      // ClientUtils.escapeQueryChars(value) + "*")).build());
-      // }
-      // }
-      //
-      // b.should(conditions);
-      // }
-      // }
-      //
-      // return b;
-      // }));
-      //
-      // }
-      //
+
+      if (criteria.hasConditions())
+      {
+        Map<String, StacProperty> properties = this.service.getAll().stream().collect(Collectors.toMap(p -> p.getName(), p -> p));
+
+        s.query(q -> q.bool(b -> {
+          Map<String, Object> propertyValues = criteria.getProperties();
+
+          if (propertyValues.size() > 0)
+          {
+            List<Query> conditions = new LinkedList<Query>();
+
+            propertyValues.forEach((name, value) -> {
+
+              StacProperty property = properties.get(name);
+
+              if (property != null)
+              {
+                if (property.getType().equals(PropertyType.DATE) || property.getType().equals(PropertyType.DATE_TIME))
+                {
+                  conditions.add(new Query.Builder().range(r -> {
+                    r.field("properties." + name);
+
+                    // if (filter.has("startDate"))
+                    // {
+                    // r.gte(JsonData.of(filter.getString("startDate")));
+                    // }
+                    //
+                    // if (filter.has("endDate"))
+                    // {
+                    // r.lte(JsonData.of(filter.getString("endDate")));
+                    // }
+
+                    return r;
+                  }).build());
+
+                }
+                else
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name).query(value.toString())).build());
+                }
+              }
+            });
+
+            b.filter(conditions);
+          }
+          else
+          {
+            b.must(m -> m.matchAll(ma -> ma.boost(0F)));
+          }
+
+          Envelope envelope = criteria.getBbox();
+          if (envelope != null)
+          {
+            List<Query> conditions = new LinkedList<Query>();
+
+            GeometryFactory factory = new GeometryFactory();
+            Geometry geometry = factory.toGeometry(envelope);
+            WKTWriter writer = new WKTWriter();
+
+            conditions.add(new Query.Builder().geoShape(qs -> qs.boost(10F).field("geometry").shape(bb -> bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry))))).build());
+
+            b.must(conditions);
+          }
+
+          return b;
+        }));
+
+      }
+
       SearchRequest request = s.build();
 
       SearchResponse<StacItem> search = client.search(request, StacItem.class);

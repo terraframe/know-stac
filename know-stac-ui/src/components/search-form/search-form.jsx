@@ -18,6 +18,8 @@ export default function SearchForm(props) {
     const { properties } = props;
 
     const criteria = useSelector((state) => state.viewer.criteria)
+    const extent = useSelector((state) => state.viewer.extent)
+
     const dispatch = useDispatch()
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -75,9 +77,10 @@ export default function SearchForm(props) {
                 }
             });
 
-            const parameters = btoa(JSON.stringify({ properties: vals }));
+            const parameters = Object.keys(vals).length > 0 ? { properties: vals } : { bbox: extent };
 
-            setSearchParams({ criteria: parameters });
+
+            setSearchParams({ criteria: btoa(JSON.stringify(parameters)) });
         },
     });
 
@@ -86,17 +89,19 @@ export default function SearchForm(props) {
             // Update the form values
             const parameters = JSON.parse(atob(criteria)).properties;
 
-            properties.forEach(field => {
-                if (parameters[field.name] != null) {
-                    if (field.type === 'DATE_TIME' || field.type === 'DATE') {
-                        formik.setFieldValue(`${field.name}.startDate`, parameters[field.name].startDate != null ? dayjs(parameters[field.name].startDate) : null);
-                        formik.setFieldValue(`${field.name}.endDate`, parameters[field.name].endDate != null ? dayjs(parameters[field.name].endDate) : null);
+            if (parameters != null) {
+                properties.forEach(field => {
+                    if (parameters[field.name] != null) {
+                        if (field.type === 'DATE_TIME' || field.type === 'DATE') {
+                            formik.setFieldValue(`${field.name}.startDate`, parameters[field.name].startDate != null ? dayjs(parameters[field.name].startDate) : null);
+                            formik.setFieldValue(`${field.name}.endDate`, parameters[field.name].endDate != null ? dayjs(parameters[field.name].endDate) : null);
+                        }
+                        else {
+                            formik.setFieldValue(field.name, parameters[field.name]);
+                        }
                     }
-                    else {
-                        formik.setFieldValue(field.name, parameters[field.name]);
-                    }
-                }
-            });
+                });
+            }
         }
     }, [criteria])
 

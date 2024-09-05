@@ -66,4 +66,9 @@ public class QueryCriteria
     return Base64.getEncoder().encodeToString(this.toJSON().getBytes());
   }
 
+  public boolean hasConditions()
+  {
+    return this.bbox != null || this.properties.size() > 0;
+  }
+
 }

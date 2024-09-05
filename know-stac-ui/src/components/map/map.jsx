@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { bboxPolygon, featureCollection } from '@turf/turf';
-import { useSelector } from 'react-redux';
+import { bboxPolygon, centroid, featureCollection } from '@turf/turf';
+import { useDispatch, useSelector } from 'react-redux';
 import './map.css';
+import { setExtent } from '../viewer/viewer-slice';
 
 export default function Map() {
 
@@ -11,7 +12,7 @@ export default function Map() {
     const collection = useSelector((state) => state.viewer.collection)
     const mBbox = useSelector((state) => state.viewer.bbox)
 
-    // const dispatch = useDispatch()
+    const dispatch = useDispatch()
 
     const [loaded, setLoaded] = useState(false);
 
@@ -20,6 +21,28 @@ export default function Map() {
     const lng = 139.753;
     const lat = 35.6844;
     const zoom = 8;
+
+    function isValidBounds(bounds) {
+
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
+
+        if (Math.abs(ne.lng) > 180 || Math.abs(sw.lng) > 180) {
+            return false;
+        }
+
+        if (Math.abs(ne.lat) > 90 || Math.abs(sw.lat) > 90) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function setBounds(bounds) {
+        if (isValidBounds(bounds)) {
+            dispatch(setExtent(bounds.toArray().flat()));
+        }
+    }
 
     useEffect(() => {
         if (map.current) return; // stops map from intializing more than once
@@ -90,12 +113,13 @@ export default function Map() {
 
             map.current.addLayer({
                 'id': 'items',
-                'type': 'fill',
                 'source': 'items',
-                'paint': {
-                    "fill-color": "#00ffff",
-                    "fill-opacity": 0.5,
-                    "fill-outline-color": "black"
+                "type": "circle",
+                "paint": {
+                    "circle-radius": 10,
+                    "circle-color": "#800000",
+                    "circle-stroke-width": 2,
+                    "circle-stroke-color": "#FFFFFF"
                 }
             });
 
@@ -117,8 +141,15 @@ export default function Map() {
                 },
             });
 
+            map.current.on("zoomend", () => {
+                setBounds(map.current.getBounds());
+            });
 
+            map.current.on("moveend", () => {
+                setBounds(map.current.getBounds());
+            });
 
+            setBounds(map.current.getBounds());
 
             setLoaded(true);
         });
@@ -178,7 +209,7 @@ export default function Map() {
 
                         const { bbox, title } = link;
 
-                        features.push(bboxPolygon(bbox, {
+                        features.push(centroid(bboxPolygon(bbox), {
                             properties: { label: title }
                         }));
                     })

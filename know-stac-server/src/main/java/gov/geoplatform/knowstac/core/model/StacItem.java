@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -201,12 +200,8 @@ public class StacItem
   @JsonInclude(Include.NON_NULL)
   private String              collection;
 
-  @JsonIgnore
-  private boolean             published;
-
   public StacItem()
   {
-    this.published = false;
     this.type = "Feature";
     this.stacVersion = "1.0.0";
     this.stacExtensions = new LinkedList<String>();
@@ -339,16 +334,6 @@ public class StacItem
   public void setCollection(String collection)
   {
     this.collection = collection;
-  }
-
-  public boolean isPublished()
-  {
-    return published;
-  }
-
-  public void setPublished(boolean published)
-  {
-    this.published = published;
   }
 
   public static Asset buildAsset(String type, String title, String href, String... roles)
