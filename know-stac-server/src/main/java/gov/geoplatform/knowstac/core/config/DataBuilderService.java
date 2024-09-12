@@ -117,10 +117,10 @@ public class DataBuilderService implements Runnable
 //    Property.create("title", "Title", PropertyType.STRING);
 //    Property.create("description", "Description", PropertyType.STRING);
 //    Property.create("datetime", "Date Time", PropertyType.DATE);
-//    Property.create("start_datetime", "Start Date", PropertyType.DATE_TIME);
-//    Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
-//    Property.create("created", "Create Date", PropertyType.DATE_TIME);
-//    Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
+////    Property.create("start_datetime", "Start Date", PropertyType.DATE_TIME);
+////    Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
+////    Property.create("created", "Create Date", PropertyType.DATE_TIME);
+////    Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
 //    Property.create("platform", "Platform", PropertyType.STRING);
 //    Property.create("sensor", "Sensor", PropertyType.STRING);
 //    Property.create("collection", "Collection", PropertyType.STRING);
@@ -151,7 +151,16 @@ public class DataBuilderService implements Runnable
       GeoObjectTypeSnapshot type = this.gTypeService.getRoot(version);
       HierarchyTypeSnapshot hierarchyType = this.hTypeService.get(version, graphType.getHierarchy());
 
-      String[] itemUrls = new String[] { "https://osmre-uas-dev-deploy-public.s3.amazonaws.com/-stac-/10b13809-f31b-46ec-84ae-9af239ec28f5.json", "https://osmre-uas-dev-deploy-public.s3.amazonaws.com/-stac-/bdfe18f9-04dd-4df5-ac4b-63237c5c3d10.json" };
+      String[] itemUrls = new String[] { 
+          "https://osmre-uas-dev-deploy-public.s3.amazonaws.com/-stac-/10b13809-f31b-46ec-84ae-9af239ec28f5.json"
+          , "https://osmre-uas-dev-deploy-public.s3.amazonaws.com/-stac-/bdfe18f9-04dd-4df5-ac4b-63237c5c3d10.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/0077ebc5-2226-46b6-86ea-6b0edec56569.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/d03fa932-c852-48ea-8523-739a204bd368.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/5f6c046b-54e2-4026-b4b7-d8a8d44d8c10.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/7b63d5d3-c0c6-4359-944f-5e83792ae82f.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/162667b1-8496-4f4f-bccc-ef3491f262fb.json" 
+          , "https://osmre-uas-staging-public.s3.amazonaws.com/-stac-/0eafc08c-6860-4c36-adaa-6fcbf6694c02.json" 
+      };
 
       for (int i = 0; i < itemUrls.length; i++)
       {

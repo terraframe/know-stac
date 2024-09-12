@@ -19,14 +19,20 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.geoplatform.knowstac.web.controller.Base64QueryCriteriaConverter;
+import gov.geoplatform.knowstac.web.service.SessionFilter;
 import net.geoprism.EncodingFilter;
-import net.geoprism.registry.service.SessionFilter;
 import net.geoprism.spring.JsonExceptionHandler;
 
 //Configuration of components which DO have web container dependencies
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "gov.geoplatform.knowstac.core.config", "gov.geoplatform.knowstac.web.config", "gov.geoplatform.knowstac.web.service", "gov.geoplatform.knowstac.web.controller" })
+@ComponentScan(
+    basePackages = { 
+        "gov.geoplatform.knowstac.core.config", 
+        "gov.geoplatform.knowstac.web.config", 
+        "gov.geoplatform.knowstac.web.service", 
+        "gov.geoplatform.knowstac.web.controller" 
+})
 public class WebConfig implements WebMvcConfigurer, AsyncConfigurer
 {
 

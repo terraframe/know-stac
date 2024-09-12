@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect } from 'react';
-import { Button, Card, CardActions, CardContent, CardMedia, Collapse, Grid, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Collapse, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { setMapItem, bbox } from '../viewer/viewer-slice';
 
@@ -40,7 +40,10 @@ export default function StacItemCard(props) {
                             }
                         });
 
-                        if (i.assets['thumbnail-hd'] != null) {
+                        if (i.assets.thumbnail != null) {
+                            setIcon(i.assets.thumbnail);
+                        }
+                        else if (i.assets['thumbnail-hd'] != null) {
                             setIcon(i.assets['thumbnail-hd']);
                         }
                     });
@@ -69,43 +72,51 @@ export default function StacItemCard(props) {
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                         Properties
                     </Typography>
-                    {item != null && properties != null && properties.map(field => (
-                        <Fragment key={field.name}>
-                            {item.properties[field.name] != null && (
-                                <Grid container spacing={2}>
-                                    <Grid item xs={6}>
-                                        <Typography>{field.label}</Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        {(() => {
-                                            switch (field.type) {
- 
-                                                case 'ORGANIZATION': return (
-                                                    <List>
-                                                        {item.properties[field.name].map(organization => (
-                                                            <ListItem key={organization.code}>
-                                                                {organization.label}
-                                                            </ListItem>
-                                                        ))}
-                                                    </List>
-                                                );
-                                                case 'LOCATION': return (
-                                                    <List>
-                                                        {item.properties[field.name].map(location => (
-                                                            <ListItem key={location.uuid}>
-                                                                {location.label}
-                                                            </ListItem>
-                                                        ))}
-                                                    </List>
-                                                );
-                                                default: return item.properties[field.name]
-                                            }
-                                        })()}
-                                    </Grid>
-                                </Grid>
-                            )}
-                        </Fragment>
-                    ))}
+                    <Table sx={{ minWidth: 350 }} aria-label="simple table">
+                        <TableBody>
+
+                            {item != null && properties != null && properties.map(field => (
+                                <Fragment key={field.name}>
+                                    {item.properties[field.name] != null && (
+                                        <TableRow>
+                                            <TableCell component="th" scope="row">
+                                                {field.label}
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {(() => {
+                                                    switch (field.type) {
+
+                                                        case 'ORGANIZATION': return (
+                                                            <List>
+                                                                {item.properties[field.name].map(organization => (
+                                                                    <ListItem key={organization.code}>
+                                                                        {organization.label}
+                                                                    </ListItem>
+                                                                ))}
+                                                            </List>
+                                                        );
+                                                        case 'LOCATION': return (
+                                                            <List>
+                                                                {item.properties[field.name].map(location => (
+                                                                    <ListItem key={location.uuid}>
+                                                                        {location.label}
+                                                                    </ListItem>
+                                                                ))}
+                                                            </List>
+                                                        );
+                                                        default: return item.properties[field.name]
+                                                    }
+                                                })()}
+                                            </TableCell>
+
+                                        </TableRow>
+
+                                    )}
+                                </Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                         Assets
                     </Typography>

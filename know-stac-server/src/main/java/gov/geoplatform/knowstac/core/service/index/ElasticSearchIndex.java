@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -31,7 +32,6 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -163,6 +163,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
         // Index doesn't exist, create it
         client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> {
           Builder builder = m.properties("geometry", p -> p.geoShape(v -> v));
+          builder = builder.properties("assets", p -> p.object(v -> v.enabled(false)));
 
           List<StacProperty> properties = this.service.getAll();
 
@@ -323,6 +324,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     return Optional.empty();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public List<StacItem> getItems(QueryCriteria criteria)
   {
@@ -357,22 +359,30 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
               {
                 if (property.getType().equals(PropertyType.DATE) || property.getType().equals(PropertyType.DATE_TIME))
                 {
+                  Map<String, String> range = (Map<String, String>) value;
                   conditions.add(new Query.Builder().range(r -> {
                     r.field("properties." + name);
 
-                    // if (filter.has("startDate"))
-                    // {
-                    // r.gte(JsonData.of(filter.getString("startDate")));
-                    // }
-                    //
-                    // if (filter.has("endDate"))
-                    // {
-                    // r.lte(JsonData.of(filter.getString("endDate")));
-                    // }
+                    if (!StringUtils.isBlank(range.get("startDate")))
+                    {
+                      r.gte(JsonData.of(range.get("startDate")));
+                    }
+
+                    if (!StringUtils.isBlank(range.get("endDate")))
+                    {
+                      r.lte(JsonData.of(range.get("endDate")));
+                    }
 
                     return r;
                   }).build());
-
+                }
+                else if (property.getType().equals(PropertyType.LOCATION))
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name + ".uuid").query(value.toString())).build());
+                }
+                else if (property.getType().equals(PropertyType.ORGANIZATION))
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name + ".code").query(value.toString())).build());
                 }
                 else
                 {
@@ -417,6 +427,163 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       for (Hit<StacItem> hit : hits.hits())
       {
         items.add(hit.source());
+      }
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+    return items;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<StacItem> getItems(Map<String, String> params)
+  {
+    List<StacItem> items = new LinkedList<StacItem>();
+
+    try
+    {
+      ElasticsearchClient client = createClient();
+
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+
+      // s.size(pageSize);
+      // s.from(pageSize * ( pageNumber - 1 ));
+
+      if (params.size() > 0)
+      {
+        Map<String, StacProperty> properties = this.service.getAll().stream().collect(Collectors.toMap(p -> p.getName(), p -> p));
+
+        s.query(q -> q.bool(b -> {
+          if (params.size() > 0)
+          {
+            List<Query> conditions = new LinkedList<Query>();
+
+            params.forEach((name, value) -> {
+
+              StacProperty property = properties.get(name);
+
+              if (property != null)
+              {
+                if (property.getType().equals(PropertyType.DATE) || property.getType().equals(PropertyType.DATE_TIME))
+                {
+                  // Map<String, String> range = (Map<String, String>) value;
+                  // conditions.add(new Query.Builder().range(r -> {
+                  // r.field("properties." + name);
+                  //
+                  // if (!StringUtils.isBlank(range.get("startDate")))
+                  // {
+                  // r.gte(JsonData.of(range.get("startDate")));
+                  // }
+                  //
+                  // if (!StringUtils.isBlank(range.get("endDate")))
+                  // {
+                  // r.lte(JsonData.of(range.get("endDate")));
+                  // }
+                  //
+                  // return r;
+                  // }).build());
+                }
+                else if (property.getType().equals(PropertyType.LOCATION))
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name + ".uuid").query(value.toString())).build());
+                }
+                else if (property.getType().equals(PropertyType.ORGANIZATION))
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name + ".code").query(value.toString())).build());
+                }
+                else
+                {
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + name).query(value.toString())).build());
+                }
+              }
+            });
+
+            b.filter(conditions);
+          }
+          else
+          {
+            b.must(m -> m.matchAll(ma -> ma.boost(0F)));
+          }
+
+          // Envelope envelope = criteria.getBbox();
+          // if (envelope != null)
+          // {
+          // List<Query> conditions = new LinkedList<Query>();
+          //
+          // GeometryFactory factory = new GeometryFactory();
+          // Geometry geometry = factory.toGeometry(envelope);
+          // WKTWriter writer = new WKTWriter();
+          //
+          // conditions.add(new Query.Builder().geoShape(qs ->
+          // qs.boost(10F).field("geometry").shape(bb ->
+          // bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry))))).build());
+          //
+          // b.must(conditions);
+          // }
+
+          return b;
+        }));
+
+      }
+
+      SearchRequest request = s.build();
+
+      SearchResponse<StacItem> search = client.search(request, StacItem.class);
+      HitsMetadata<StacItem> hits = search.hits();
+
+      // page.setCount(hits.total().value());
+
+      for (Hit<StacItem> hit : hits.hits())
+      {
+        items.add(hit.source());
+      }
+    }
+    catch (ElasticsearchException e)
+    {
+      logger.error("Elasticsearch error", e);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+    return items;
+  }
+
+  @Override
+  public List<String> values(String field, String text)
+  {
+    List<String> items = new LinkedList<String>();
+
+    try
+    {
+      ElasticsearchClient client = createClient();
+
+      SearchRequest.Builder s = new SearchRequest.Builder();
+      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.query(q -> q.wildcard(m -> m.field("properties." + field).value("*" + text + "*")));
+      s.source(so -> so.filter(f -> f.includes("properties." + field)));
+
+      SearchRequest request = s.build();
+
+      SearchResponse<StacItem> search = client.search(request, StacItem.class);
+      HitsMetadata<StacItem> hits = search.hits();
+
+      // page.setCount(hits.total().value());
+
+      for (Hit<StacItem> hit : hits.hits())
+      {
+        hit.source().getProperty(field).ifPresent(value -> {
+          items.add((String) value);
+        });
       }
     }
     catch (ElasticsearchException e)

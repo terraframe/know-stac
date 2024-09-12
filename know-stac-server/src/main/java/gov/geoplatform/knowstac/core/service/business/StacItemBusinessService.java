@@ -1,6 +1,7 @@
 package gov.geoplatform.knowstac.core.service.business;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -185,4 +186,26 @@ public class StacItemBusinessService
   {
     return this.index.getItems(criteria);
   }
+
+  public List<StacItem> find(Map<String, String> params)
+  {
+    return this.index.getItems(params);
+  }
+
+  public List<String> values(String field, String text)
+  {
+    return this.index.values(field, text);
+  }
+
+  public void remove(String id)
+  {
+    Optional<StacItem> existing = this.index.getItem(id);
+
+    // Remove from the total the existing hierarchy/organization values because
+    // they might have changed
+    existing.ifPresent(i -> updateTotals(i, -1));
+
+    this.index.removeStacItem(id);
+  }
+
 }

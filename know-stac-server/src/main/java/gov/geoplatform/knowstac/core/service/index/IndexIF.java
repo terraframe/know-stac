@@ -16,6 +16,7 @@
 package gov.geoplatform.knowstac.core.service.index;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -41,4 +42,8 @@ public interface IndexIF
   public List<StacItem> getItems(QueryCriteria criteria);
 
   public Optional<StacItem> getItem(String id);
+
+  public List<StacItem> getItems(Map<String, String> params);
+
+  public List<String> values(String field, String value);
 }

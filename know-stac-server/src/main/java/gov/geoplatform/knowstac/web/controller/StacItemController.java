@@ -1,6 +1,7 @@
 package gov.geoplatform.knowstac.web.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -24,12 +25,20 @@ public class StacItemController extends RunwaySpringController
   @Autowired
   private StacItemService service;
 
-  @PostMapping("item/add")
-  public ResponseEntity<StacItem> add(@Valid @RequestBody StacItem item) throws IOException
+  @PostMapping("item/put")
+  public ResponseEntity<StacItem> put(@Valid @RequestBody StacItem item) throws IOException
   {
-    StacItem response = this.service.add(getSessionId(), item);
+    StacItem response = this.service.put(getSessionId(), item);
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
+  }
+
+  @PostMapping("item/remove")
+  public ResponseEntity<Void> put(@RequestParam(name = "id", required = false) String id) throws IOException
+  {
+    this.service.remove(getSessionId(), id);
+
+    return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
   @GetMapping("item/get")
@@ -38,6 +47,14 @@ public class StacItemController extends RunwaySpringController
     StacItem response = this.service.get(getSessionId(), id);
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
+  }
+
+  @GetMapping("item/values")
+  public ResponseEntity<List<String>> values(@RequestParam(name = "field", required = false) String field, @RequestParam(name = "text", required = false) String text) throws IOException
+  {
+    List<String> response = this.service.values(getSessionId(), field, text);
+
+    return new ResponseEntity<List<String>>(response, HttpStatus.OK);
   }
 
 }

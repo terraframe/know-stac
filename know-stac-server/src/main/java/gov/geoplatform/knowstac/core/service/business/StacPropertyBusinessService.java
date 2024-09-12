@@ -66,7 +66,21 @@ public class StacPropertyBusinessService
 
     try (OIterator<? extends Property> it = query.getIterator())
     {
-      return it.getAll().stream().map(p -> p.toDTO()).collect(Collectors.toList());
+      return it.getAll().stream().map(p -> p.toDTO()).sorted((a, b) -> {
+        if ((a.getType().equals(PropertyType.DATE) || a.getType().equals(PropertyType.DATE_TIME))
+            && !(b.getType().equals(PropertyType.DATE) || b.getType().equals(PropertyType.DATE_TIME)))
+        {
+          return -1;
+        }
+        
+        if (a.getType().equals(PropertyType.ORGANIZATION) && !b.getType().equals(PropertyType.ORGANIZATION))
+        {
+          return -1;
+        }
+
+
+        return a.getLabel().compareTo(b.getLabel());
+      }).collect(Collectors.toList());
     }
   }
 

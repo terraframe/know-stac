@@ -18,9 +18,9 @@ export default function Map() {
 
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const lng = 139.753;
-    const lat = 35.6844;
-    const zoom = 8;
+    const lng = -99.747653;
+    const lat = 39.320699;
+    const zoom = 4;
 
     function isValidBounds(bounds) {
 
@@ -75,7 +75,7 @@ export default function Map() {
                 ]
             },
             center: [lng, lat],
-            zoom: 8
+            zoom
         });
 
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
@@ -220,6 +220,11 @@ export default function Map() {
                 }
 
                 map.current.fitBounds(collectionBbox);
+            }
+            else {
+                // Update the collection layer
+                map.current.getSource('collection').setData(featureCollection([]));
+                map.current.getSource('items').setData(featureCollection([]));
             }
         }
     }, [loaded, collection])

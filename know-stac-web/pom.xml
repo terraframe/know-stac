@@ -110,7 +110,7 @@
 									<artifactId>know-stac-web</artifactId>
 									<type>war</type>
 									<properties>
-										<context>know-stac</context>
+										<context>ROOT</context>
 									</properties>
 								</deployable>
 							</deployables>

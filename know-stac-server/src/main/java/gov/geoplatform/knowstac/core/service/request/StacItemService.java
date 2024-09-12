@@ -1,5 +1,7 @@
 package gov.geoplatform.knowstac.core.service.request;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ public class StacItemService
   private StacItemBusinessService service;
 
   @Request(RequestType.SESSION)
-  public StacItem add(String sessionId, StacItem item)
+  public StacItem put(String sessionId, StacItem item)
   {
     return this.service.put(item);
   }
@@ -29,5 +31,17 @@ public class StacItemService
   public StacItem get(String sessionId, String id)
   {
     return this.service.get(id);
+  }
+
+  @Request(RequestType.SESSION)
+  public List<String> values(String sessionId, String field, String text)
+  {
+    return this.service.values(field, text);
+  }
+
+  @Request(RequestType.SESSION)
+  public void remove(String sessionId, String id)
+  {
+    this.service.remove(id);
   }
 }

@@ -4,6 +4,8 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -40,6 +42,31 @@ public class StacQueryService
     TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> (Date) item.getProperty("datetime").orElse(null)).collect(Collectors.toList()));
 
     String id = criteria.toEncodedId();
+    StacCollection collection = new StacCollection();
+    collection.setId(id);
+    collection.setTitle("Query result collection");
+    collection.setLicense("Apache-2.0");
+    collection.setExtent(Extent.build(spatial, temporal));
+
+    collection.addLink(StacLink.build("/api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
+
+    for (StacItem item : items)
+    {
+      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
+    }
+
+    return collection;
+  }
+
+  public StacCollection search(String sessionId, Map<String, String> params)
+  {
+    List<StacItem> items = this.service.find(params);
+
+    Spatial spatial = Spatial.build(items.stream().map(item -> item.getBbox()).collect(Collectors.toList()));
+    TemporalExtent temporal = TemporalExtent.build(items.stream().map(item -> (Date) item.getProperty("datetime").orElse(null)).collect(Collectors.toList()));
+
+    String id = UUID.randomUUID().toString();
+
     StacCollection collection = new StacCollection();
     collection.setId(id);
     collection.setTitle("Query result collection");

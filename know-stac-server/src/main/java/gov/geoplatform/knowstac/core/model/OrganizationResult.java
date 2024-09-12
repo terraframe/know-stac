@@ -168,7 +168,7 @@ public class OrganizationResult implements JsonSerializable
         while (iterator.hasNext())
         {
           Organization organization = iterator.next();
-
+ 
           cache.addOrganization(ServerOrganization.get(organization));
         }
       }

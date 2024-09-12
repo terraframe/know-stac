@@ -13,6 +13,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { setActive, setCollection, setMessages, setCriteria } from '../viewer/viewer-slice';
 import OrganizationField from './organization-field';
+import TextProperty from './text-property';
 
 export default function SearchForm(props) {
     const { properties } = props;
@@ -77,8 +78,8 @@ export default function SearchForm(props) {
                 }
             });
 
-            const parameters = Object.keys(vals).length > 0 ? { properties: vals } : { bbox: extent };
-
+            // const parameters = Object.keys(vals).length > 0 ? { properties: vals } : { bbox: extent };
+            const parameters = { properties: vals , bbox: extent };
 
             setSearchParams({ criteria: btoa(JSON.stringify(parameters)) });
         },
@@ -216,17 +217,18 @@ export default function SearchForm(props) {
                                     // Location fields are managed inside of the organization field component
                                     return null;
                                 default: return (
-                                    <TextField
-                                        margin="dense"
-                                        fullWidth
-                                        name={field.name}
-                                        label={field.label}
-                                        value={formik.values[field.name]}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
-                                        helperText={formik.touched[field.name] && formik.errors[field.name]}
-                                    />
+                                    <TextProperty field={field} formik={formik} />
+                                    // <TextField
+                                    //     margin="dense"
+                                    //     fullWidth
+                                    //     name={field.name}
+                                    //     label={field.label}
+                                    //     value={formik.values[field.name]}
+                                    //     onChange={formik.handleChange}
+                                    //     onBlur={formik.handleBlur}
+                                    //     error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
+                                    //     helperText={formik.touched[field.name] && formik.errors[field.name]}
+                                    // />
                                 );
                             }
                         })()}

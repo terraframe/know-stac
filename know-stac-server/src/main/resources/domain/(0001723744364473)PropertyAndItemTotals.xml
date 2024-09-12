@@ -51,8 +51,7 @@
             <operation name="READ_ALL" />
           </mdBusinessPermission>
           <mdBusinessPermission type="gov.geoplatform.knowstac.ItemTotal">
-            <operation name="READ" />
-            <operation name="READ_ALL" />
+            <operation name="ALL" />
           </mdBusinessPermission>
           <mdBusinessPermission type="gov.geoplatform.knowstac.TotalEdge">
             <operation name="READ" />
