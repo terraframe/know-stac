@@ -161,7 +161,7 @@ public class OrganizationResult implements JsonSerializable
 
     try
     {
-      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory());
+      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory()); 
 
       try (OIterator<? extends Organization> iterator = oQ.getIterator())
       {

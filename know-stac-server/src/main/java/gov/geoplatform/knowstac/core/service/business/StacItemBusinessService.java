@@ -55,15 +55,13 @@ public class StacItemBusinessService
 
   public StacItem put(StacItem item)
   {
+    this.index.getItem(item.getId()).ifPresent(i -> {
+      throw new ProgrammingErrorException("A STAC item already exists with the id [" + item.getId() + "]");
+    });
+
     this.validateProperties(item);
 
-    Optional<StacItem> existing = this.index.getItem(item.getId());
-
     this.index.put(item);
-
-    // Remove from the total the existing hierarchy/organization values because
-    // they might have changed
-    existing.ifPresent(i -> updateTotals(i, -1));
 
     // Update the totals for the new locations and organization values
     updateTotals(item, 1);

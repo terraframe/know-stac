@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
-import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Grid, IconButton, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
 import { DatePicker } from '@mui/x-date-pickers';
@@ -25,16 +25,22 @@ export default function SearchForm(props) {
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const initialValues = useMemo(() => Object.fromEntries(properties.map((field) => {
-        const initialValue = field.type !== 'DATE_TIME' && field.type !== 'DATE' ? '' : {
-            startDate: null,
-            endDate: null
-        };
+    const initialValues = useMemo(() => {
+        const map = Object.fromEntries(properties.map((field) => {
+            const initialValue = field.type !== 'DATE_TIME' && field.type !== 'DATE' ? '' : {
+                startDate: null,
+                endDate: null
+            };
 
-        return [field.name, initialValue];
-    })), [properties]);
+            return [field.name, initialValue];
+        }));
 
-    const validationSchema = yup.object(Object.fromEntries(properties.map((field) => {
+        map.extent = false;
+
+        return map;
+    }, [properties]);
+
+    let validationSchema = yup.object(Object.fromEntries(properties.map((field) => {
         let valiation = null;
 
         if (field.type === 'DATE_TIME' || field.type === 'DATE') {
@@ -50,6 +56,9 @@ export default function SearchForm(props) {
         return [field.name, valiation];
     })));
 
+    validationSchema = validationSchema.concat(yup.object({
+        extent: yup.boolean().notRequired()
+    }));
 
     // Search parameters have changed, ensure the criteria state is updated
     useEffect(() => {
@@ -67,7 +76,10 @@ export default function SearchForm(props) {
 
                 const property = properties.find(p => p.name === key);
 
-                if (vals[key] == null || vals[key].length === 0) {
+                if (key === 'extent') {
+                    delete vals[key];
+                }
+                else if (vals[key] == null || vals[key].length === 0) {
                     delete vals[key];
                 }
                 else if (property != null && (property.type === 'DATE' || property.type === 'DATE_TIME')) {
@@ -76,10 +88,13 @@ export default function SearchForm(props) {
                         delete vals[key];
                     }
                 }
-            });
+            });            
 
-            // const parameters = Object.keys(vals).length > 0 ? { properties: vals } : { bbox: extent };
-            const parameters = { properties: vals , bbox: extent };
+            const parameters = { properties: vals };
+
+            if (values.extent) {
+                parameters.bbox = extent;
+            }
 
             setSearchParams({ criteria: btoa(JSON.stringify(parameters)) });
         },
@@ -88,7 +103,9 @@ export default function SearchForm(props) {
     useEffect(() => {
         if (criteria != null) {
             // Update the form values
-            const parameters = JSON.parse(atob(criteria)).properties;
+            const map = JSON.parse(atob(criteria))
+
+            const parameters = map.properties;
 
             if (parameters != null) {
                 properties.forEach(field => {
@@ -103,6 +120,8 @@ export default function SearchForm(props) {
                     }
                 });
             }
+
+            formik.setFieldValue("extent", map.bbox != null);
         }
     }, [criteria])
 
@@ -157,6 +176,12 @@ export default function SearchForm(props) {
             </Grid>
 
             <Box component="form" onSubmit={formik.handleSubmit} noValidate>
+                <FormControlLabel
+                    control={<Checkbox checked={formik.values.extent} />}
+                    label="Restrict results to extent"
+                    name="extent"
+                    onChange={formik.handleChange}
+                />
                 {properties.map(field => (
                     <Fragment key={field.name}>
                         {(() => {
