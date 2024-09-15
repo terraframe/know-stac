@@ -1,6 +1,13 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+  
     <create>
+      <mdException name="gov.geoplatform.knowstac.GenericException" message="{userMessage}" label="Generic Exception">
+        <attributes>
+          <text name="userMessage" label="User Message" />
+        </attributes>
+      </mdException>
+    
       <mdBusiness name="gov.geoplatform.knowstac.Property" label="Property" generateController="false" publish="false">
         <attributes>
           <text name="propertyName" label="Name" required="true" index="unique"></text>

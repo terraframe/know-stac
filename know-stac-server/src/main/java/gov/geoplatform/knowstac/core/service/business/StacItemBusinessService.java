@@ -13,6 +13,7 @@ import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
+import gov.geoplatform.knowstac.GenericException;
 import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
@@ -56,7 +57,7 @@ public class StacItemBusinessService
   public StacItem put(StacItem item)
   {
     this.index.getItem(item.getId()).ifPresent(i -> {
-      throw new ProgrammingErrorException("A STAC item already exists with the id [" + item.getId() + "]");
+      throw new GenericException("A STAC item already exists with the id [" + item.getId() + "]");
     });
 
     this.validateProperties(item);
@@ -87,8 +88,7 @@ public class StacItemBusinessService
 
           if (child == null)
           {
-            // TODO Better exception
-            throw new ProgrammingErrorException("A location doesn't exist with the UUID [" + location.getUuid() + "]");
+            throw new GenericException("A location doesn't exist with the UUID [" + location.getUuid() + "]");
           }
         }
       });
@@ -105,8 +105,7 @@ public class StacItemBusinessService
 
           if (child == null)
           {
-            // TODO Better exception
-            throw new ProgrammingErrorException("A location doesn't exist with the code [" + organization.getCode() + "]");
+            throw new GenericException("A location doesn't exist with the code [" + organization.getCode() + "]");
           }
         }
       });
@@ -175,8 +174,7 @@ public class StacItemBusinessService
   public StacItem get(String id)
   {
     return this.index.getItem(id).orElseThrow(() -> {
-      // TODO: Exception with message
-      throw new ProgrammingErrorException("Unabled to find STAC item with the id [" + id + "]");
+      throw new GenericException("Unabled to find STAC item with the id [" + id + "]");
     });
   }
 
