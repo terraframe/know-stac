@@ -24,6 +24,7 @@ import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.model.StacLink;
 import gov.geoplatform.knowstac.core.model.TemporalExtent;
 import gov.geoplatform.knowstac.core.service.business.StacItemBusinessService;
+import net.geoprism.configuration.GeoprismProperties;
 
 @Service
 public class StacQueryService
@@ -48,11 +49,11 @@ public class StacQueryService
     collection.setLicense("Apache-2.0");
     collection.setExtent(Extent.build(spatial, temporal));
 
-    collection.addLink(StacLink.build("/api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
+    collection.addLink(StacLink.build(GeoprismProperties.getRemoteServerUrl() + "api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
 
     for (StacItem item : items)
     {
-      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
+      collection.addLink(StacLink.build(GeoprismProperties.getRemoteServerUrl() + "api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
     }
 
     return collection;
@@ -73,11 +74,11 @@ public class StacQueryService
     collection.setLicense("Apache-2.0");
     collection.setExtent(Extent.build(spatial, temporal));
 
-    collection.addLink(StacLink.build("/api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
+    collection.addLink(StacLink.build(GeoprismProperties.getRemoteServerUrl() + "/api/query/collection?criteria=" + URLEncoder.encode(id, Charset.forName("UTF-8")), "self", "application/json"));
 
     for (StacItem item : items)
     {
-      collection.addLink(StacLink.build("/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
+      collection.addLink(StacLink.build(GeoprismProperties.getRemoteServerUrl() + "/api/item/get?id=" + URLEncoder.encode(item.getId(), Charset.forName("UTF-8")), "item", "application/geo+json", (String) item.getProperty("title").orElse("")));
     }
 
     return collection;

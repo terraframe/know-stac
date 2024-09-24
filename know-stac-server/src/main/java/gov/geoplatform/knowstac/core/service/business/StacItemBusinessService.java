@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
 import gov.geoplatform.knowstac.GenericException;
@@ -118,7 +117,7 @@ public class StacItemBusinessService
 
       Optional<List<StacLocation>> optional = item.getProperty(property.getName());
 
-      optional.ifPresent(locations -> {
+      optional.filter(l -> l.size() > 0).ifPresent(locations -> {
         String synchronizationId = property.getLocation().getSynchronizationId();
 
         StacLocation stacLocation = locations.get(0);
@@ -152,7 +151,7 @@ public class StacItemBusinessService
 
       Optional<List<StacOrganization>> optional = item.getProperty(property.getName());
 
-      optional.ifPresent(organizations -> {
+      optional.filter(l -> l.size() > 0).ifPresent(organizations -> {
         StacOrganization stacOrganization = organizations.get(0);
 
         MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(ItemTotal.ORGANIZATION_HAS_TOTAL);

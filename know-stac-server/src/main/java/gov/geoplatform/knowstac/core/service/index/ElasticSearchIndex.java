@@ -240,9 +240,9 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
       this.shutdown();
     }
-    catch (IOException e)
+    catch (Exception e)
     {
-      throw new ProgrammingErrorException(e);
+      // Ignore
     }
   }
 
