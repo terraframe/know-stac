@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +13,15 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.knowstac.Property;
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.model.StacLocation;
 import gov.geoplatform.knowstac.core.model.StacOrganization;
@@ -31,6 +35,11 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.DateUtil;
+import net.geoprism.registry.conversion.LocalizedValueConverter;
+import net.geoprism.registry.lpg.adapter.RegistryBridge;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
+import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessServiceIF;
@@ -68,71 +77,65 @@ public class DataBuilderService implements Runnable
   @Request
   public void run()
   {
-    // String url = "https://idm-gpr-alpha.geoprism.net";
-    //
-    // logger.error("Synchronizing organizations from [" + url + "]");
-    //
-    // try (RegistryConnectorIF connector =
-    // RegistryConnectorFactory.getConnector(url))
-    // {
-    // RegistryBridge bridge = new RegistryBridge(connector);
-    //
-    // JsonArray results = bridge.getOrganizations().getJsonArray();
-    //
-    // organizationService.importJsonTree(results);
-    // }
-    //
-    // logger.error("Creating Labeled Property Graph Synchronization object");
-    //
-    // String name = "USFS Operational";
-    // LocalizedValue label = new LocalizedValue(name);
-    // label.setValue(LocalizedValue.DEFAULT_LOCALE, name);
-    //
-    // LabeledPropertyGraphSynchronization synchronization = new
-    // LabeledPropertyGraphSynchronization();
-    // synchronization.setUrl(url);
-    // synchronization.setRemoteType("5389f33b-a563-4201-bc03-96ced3000670");
-    // LocalizedValueConverter.populate(synchronization.getDisplayLabel(),
-    // label);
-    // synchronization.setRemoteEntry("6f72b0d3-d9cc-4085-b276-6b9e3a000673");
-    // synchronization.setForDate(DateUtil.parseDate("2024-01-01"));
-    // synchronization.setRemoteVersion("574f734b-7e2e-4e30-90ad-fdfc06000674");
-    // synchronization.setVersionNumber(0);
-    // synchronization.apply();
-    //
-    // logger.error("Synchronizing [" + name + "] label property graph from [" +
-    // url + "]");
-    //
-    // this.lpgService.executeNoAuth(synchronization);
-    //
-    // logger.error("Building STAC properties");
-    //
-    // Property.create("agency", "Agency", PropertyType.ORGANIZATION);
-    // Property.create("operational", label.getValue(), PropertyType.LOCATION,
-    // synchronization);
-    // Property.create("title", "Title", PropertyType.STRING);
-    // Property.create("description", "Description", PropertyType.STRING);
-    // Property.create("datetime", "Date Time", PropertyType.DATE);
-    //// Property.create("start_datetime", "Start Date",
-    // PropertyType.DATE_TIME);
-    //// Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
-    //// Property.create("created", "Create Date", PropertyType.DATE_TIME);
-    //// Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
-    // Property.create("platform", "Platform", PropertyType.STRING);
-    // Property.create("sensor", "Sensor", PropertyType.STRING);
-    // Property.create("collection", "Collection", PropertyType.STRING);
-    // Property.create("project", "Project", PropertyType.STRING);
-    // Property.create("site", "Site", PropertyType.STRING);
-    // Property.create("faaNumber", "UAV FAA Number", PropertyType.ENUMERATION);
-    // Property.create("serialNumber", "UAV Serial Number",
-    // PropertyType.ENUMERATION);
-    //
-    // logger.error("Building the index");
-    //
+    String url = "https://idm-gpr-alpha.geoprism.net";
+
+    logger.error("Synchronizing organizations from [" + url + "]");
+
+    try (RegistryConnectorIF connector = RegistryConnectorFactory.getConnector(url))
+    {
+      RegistryBridge bridge = new RegistryBridge(connector);
+
+      JsonArray results = bridge.getOrganizations().getJsonArray();
+
+      organizationService.importJsonTree(results);
+    }
+
+    logger.error("Creating Labeled Property Graph Synchronization object");
+
+    String name = "USFS Operational";
+    LocalizedValue label = new LocalizedValue(name);
+    label.setValue(LocalizedValue.DEFAULT_LOCALE, name);
+
+    LabeledPropertyGraphSynchronization synchronization = new LabeledPropertyGraphSynchronization();
+    synchronization.setUrl(url);
+    synchronization.setRemoteType("5389f33b-a563-4201-bc03-96ced3000670");
+    LocalizedValueConverter.populate(synchronization.getDisplayLabel(), label);
+    synchronization.setRemoteEntry("6f72b0d3-d9cc-4085-b276-6b9e3a000673");
+    synchronization.setForDate(DateUtil.parseDate("2024-01-01"));
+    synchronization.setRemoteVersion("574f734b-7e2e-4e30-90ad-fdfc06000674");
+    synchronization.setVersionNumber(0);
+    synchronization.apply();
+
+    logger.error("Synchronizing [" + name + "] label property graph from [" + url + "]");
+
+    this.lpgService.executeNoAuth(synchronization);
+
+    logger.error("Building STAC properties");
+
+    Property.create("agency", "Agency", PropertyType.ORGANIZATION);
+    Property.create("operational", label.getValue(), PropertyType.LOCATION, synchronization);
+    Property.create("title", "Title", PropertyType.STRING);
+    Property.create("description", "Description", PropertyType.STRING);
+    Property.create("datetime", "Date Time", PropertyType.DATE);
+    // Property.create("start_datetime", "Start Date", PropertyType.DATE_TIME);
+    // Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
+    // Property.create("created", "Create Date", PropertyType.DATE_TIME);
+    // Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
+    Property.create("platform", "Platform", PropertyType.STRING);
+    Property.create("sensor", "Sensor", PropertyType.STRING);
+    Property.create("collection", "Collection", PropertyType.STRING);
+    Property.create("project", "Project", PropertyType.STRING);
+    Property.create("site", "Site", PropertyType.STRING);
+    Property.create("faaNumber", "UAV FAA Number", PropertyType.ENUMERATION);
+    Property.create("serialNumber", "UAV Serial Number", PropertyType.ENUMERATION);
+
+    logger.error("Building the index");
+
     this.index.clear();
     this.index.createIndex();
 
-    populateIndex();
+    // This will populate the index with fake data
+    // populateIndex();
   }
 
   private void populateIndex()
