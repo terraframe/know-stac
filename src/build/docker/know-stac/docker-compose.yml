@@ -1,0 +1,73 @@
+version: '3'
+services:
+  elasticsearch:
+    container_name: knowstac-es
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.3.2'
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: elastic
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/knowstac/elasticsearch/data:/usr/share/elasticsearch/data
+    restart: always
+    ports:
+     - "9200:9200"
+     - "9300:9300"     
+  orientdb:
+    container_name: knowstac-orientdb
+    image: 'orientdb:3.2'
+    environment:
+      ORIENTDB_ROOT_PASSWORD: "root"
+      ORIENTDB_OPTS_MEMORY: "-Xms512M -Xmx2G -Dnetwork.binary.maxLength=16384"
+    volumes:
+      - "/data/knowstac/orientdb/databases:/orientdb/databases"
+      - "/data/knowstac/orientdb/backup:/orientdb/backup"
+      - "/data/knowstac/logs/orientdb:/orientdb/log"
+    restart: always
+    ulimits:
+      nofile:
+        soft: 10000
+        hard: 10000
+    ports:
+     - "2424:2424"
+     - "2480:2480"
+  postgres:
+    container_name: knowstac-postgres
+    image: 'postgis/postgis:14-3.2'
+    command: postgres -c max_locks_per_transaction=100 -c max_wal_size=2048
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: knowstac
+      POSTGRES_PASSWORD: knowstac
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /data/knowstac/postgres:/var/lib/postgresql/data
+    restart: always
+    ports:
+     - "5432:5432"
+  web:
+    container_name: knowstac
+    image: terraframe/knowstac:latest
+    environment:
+      JAVA_OPTS: "-Xms1024m -Xmx4000m -Ddatabase.hostURL=knowstac-postgres -Dorientdb.db.url=remote:knowstac-orientdb"
+      POSTGRES_PORT: 5432
+      POSTGRES_ROOT_USERNAME: postgres
+      POSTGRES_ROOT_PASSWORD: knowstac
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - /data/knowstac/knowstac:/data/geoprism
+      - /data/knowstac/logs/tomcat:/usr/local/tomcat/logs
+    depends_on:
+      - postgres
+      - orientdb
+      - elasticsearch
+    restart: always
+    entrypoint: wait-for-it.sh -t 0 knowstac-postgres:5432 --
+    command: catalina.sh run # https://github.com/docker/compose/issues/3140
