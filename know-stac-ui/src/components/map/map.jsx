@@ -64,7 +64,7 @@ export default function Map() {
                         tileSize: 256
                     }
                 },
-                sprite: "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
+                sprite: `${process.env.REACT_APP_SPRITE_URL}`,
                 glyphs: `${process.env.PUBLIC_URL}/glyphs/{fontstack}/{range}.pbf`,
                 layers: [
                     {
