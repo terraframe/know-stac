@@ -2,6 +2,7 @@ package com.runwaysdk.build.domain;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 
 import gov.geoplatform.knowstac.core.config.CoreConfig;
@@ -11,6 +12,10 @@ public class DataBuilder
 {
   public static void main(String[] args)
   {
+    OGlobalConfiguration.NETWORK_BINARY_MAX_CONTENT_LENGTH.setValue(56384);
+
+    boolean standalone = args.length > 0 && Boolean.valueOf(args[0]);
+
     try
     {
       try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CoreConfig.class))
@@ -21,7 +26,7 @@ public class DataBuilder
     }
     finally
     {
-      if (args.length > 0 && Boolean.valueOf(args[0]))
+      if (standalone)
       {
         CacheShutdown.shutdown();
       }

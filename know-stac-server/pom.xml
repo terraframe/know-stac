@@ -282,6 +282,7 @@
 									<arguments>
 										<argument>-Xdebug</argument>
 										<argument>-Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=y</argument>
+										<argument>-Dnetwork.binary.maxLength=56384</argument>
 									</arguments>
 									<mainClass>net.geoprism.build.GeoprismDatabaseBuilder</mainClass>
 									<arguments>

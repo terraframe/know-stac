@@ -9,6 +9,7 @@ import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
@@ -23,7 +24,7 @@ import gov.geoplatform.knowstac.web.service.SessionFilter;
 import net.geoprism.EncodingFilter;
 import net.geoprism.spring.JsonExceptionHandler;
 
-//Configuration of components which DO have web container dependencies
+// Configuration of components which DO have web container dependencies
 @Configuration
 @EnableWebMvc
 @ComponentScan(
@@ -31,8 +32,14 @@ import net.geoprism.spring.JsonExceptionHandler;
         "gov.geoplatform.knowstac.core.config", 
         "gov.geoplatform.knowstac.web.config", 
         "gov.geoplatform.knowstac.web.service", 
-        "gov.geoplatform.knowstac.web.controller" 
-})
+        "gov.geoplatform.knowstac.web.controller",
+        "net.geoprism.registry.spring", 
+        "net.geoprism.registry.service", 
+},  excludeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = {
+        net.geoprism.registry.service.SessionFilter.class
+})  )
 public class WebConfig implements WebMvcConfigurer, AsyncConfigurer
 {
 

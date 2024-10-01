@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
@@ -77,6 +78,8 @@ public class DataBuilderService implements Runnable
   @Request
   public void run()
   {
+    OGlobalConfiguration.NETWORK_BINARY_MAX_CONTENT_LENGTH.setValue(56384);
+    
     String url = "https://idm-gpr-alpha.geoprism.net";
 
     logger.error("Synchronizing organizations from [" + url + "]");
