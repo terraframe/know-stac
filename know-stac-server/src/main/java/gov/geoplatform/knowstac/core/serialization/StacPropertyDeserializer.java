@@ -62,17 +62,23 @@ public class StacPropertyDeserializer extends JsonDeserializer<Map<String, Objec
         {
           List<Map<String, Object>> list = (List<Map<String, Object>>) value;
 
-          List<StacLocation> values = list.stream().map(map -> StacLocation.build((String) map.get("uuid"), (String) map.get("label"))).collect(Collectors.toList());
+          if (list != null)
+          {
+            List<StacLocation> values = list.stream().map(map -> StacLocation.build((String) map.get("uuid"), (String) map.get("label"))).collect(Collectors.toList());
 
-          result.put(key, values);
+            result.put(key, values);
+          }
         }
         else if (property.getType().equals(PropertyType.ORGANIZATION))
         {
           List<Map<String, Object>> list = (List<Map<String, Object>>) value;
 
-          List<StacOrganization> values = list.stream().map(map -> StacOrganization.build((String) map.get("code"), (String) map.get("label"))).collect(Collectors.toList());
+          if (list != null)
+          {
+            List<StacOrganization> values = list.stream().map(map -> StacOrganization.build((String) map.get("code"), (String) map.get("label"))).collect(Collectors.toList());
 
-          result.put(key, values);
+            result.put(key, values);
+          }
         }
         else
         {
