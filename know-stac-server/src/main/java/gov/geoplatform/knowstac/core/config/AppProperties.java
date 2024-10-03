@@ -15,13 +15,8 @@
  */
 package gov.geoplatform.knowstac.core.config;
 
-import java.io.File;
-import java.io.InputStream;
-
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
-
-import net.geoprism.configuration.GeoprismProperties;
 
 public class AppProperties
 {
@@ -59,12 +54,12 @@ public class AppProperties
 
   public static String getTitilerUrl()
   {
-    return Singleton.getProps().getString("titiler.url");
+    return Singleton.getProps().getString("titiler.url", "https://titiler.xyz");
   }
 
-  public static Boolean getExposePublicTileEndpoints()
+  public static boolean isAWS()
   {
-    return Singleton.getProps().getBoolean("titiler.public.expose", true);
+    return Singleton.getProps().getBoolean("titiler.aws", false);
   }
 
   public static String getElasticsearchHost()

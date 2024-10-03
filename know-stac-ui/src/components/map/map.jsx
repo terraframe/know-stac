@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
+import { cogProtocol } from '@geomatico/maplibre-cog-protocol';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { bboxPolygon, centroid, featureCollection } from '@turf/turf';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,6 +47,8 @@ export default function Map() {
 
     useEffect(() => {
         if (map.current) return; // stops map from intializing more than once
+
+        maplibregl.addProtocol('cog', cogProtocol);
 
         map.current = new maplibregl.Map({
             container: mapContainer.current,
@@ -171,7 +174,7 @@ export default function Map() {
             params.append('url', mapItem.item.links[0].href);
             params.append('assets', mapItem.asset);
 
-            const url = `https://titiler.xyz/stac/tilejson.json?${params.toString()}`;
+            const url = `${process.env.REACT_APP_API_URL}/api/tiles/tilejson.json?${params.toString()}`;
 
             map.current.addLayer({
                 'id': 'map-item',
@@ -183,6 +186,22 @@ export default function Map() {
                 },
                 'paint': {}
             });
+
+            // const { href } = mapItem.item.assets[mapItem.asset];
+
+            // console.log(`cog://${href}`);
+
+            // map.current.addSource('map-item', {
+            //     type: 'raster',
+            //     url: `cog://${href}`,
+            //     tileSize: 256
+            // });
+
+            // map.current.addLayer({
+            //     id: 'map-item',
+            //     source: 'map-item',
+            //     type: 'raster'
+            // });
         }
     }, [mapItem])
 

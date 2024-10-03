@@ -33,7 +33,6 @@ import net.geoprism.spring.JsonExceptionHandler;
         "gov.geoplatform.knowstac.web.config", 
         "gov.geoplatform.knowstac.web.service", 
         "gov.geoplatform.knowstac.web.controller",
-        "net.geoprism.registry.spring", 
         "net.geoprism.registry.service", 
 },  excludeFilters = @ComponentScan.Filter(
     type = FilterType.ASSIGNABLE_TYPE,
