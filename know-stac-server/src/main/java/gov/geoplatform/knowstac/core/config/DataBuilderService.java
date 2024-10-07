@@ -23,6 +23,7 @@ import gov.geoplatform.knowstac.Property;
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
 import gov.geoplatform.knowstac.core.model.PropertyType;
+import gov.geoplatform.knowstac.core.model.QueryCriteria;
 import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.model.StacLocation;
 import gov.geoplatform.knowstac.core.model.StacOrganization;
@@ -78,8 +79,10 @@ public class DataBuilderService implements Runnable
   @Request
   public void run()
   {
+    this.index.getItems(new QueryCriteria());
+
     OGlobalConfiguration.NETWORK_BINARY_MAX_CONTENT_LENGTH.setValue(56384);
-    
+
     String url = "https://idm-gpr-alpha.geoprism.net";
 
     logger.error("Synchronizing organizations from [" + url + "]");

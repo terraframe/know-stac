@@ -28,6 +28,12 @@ public class StacItemService
   }
 
   @Request(RequestType.SESSION)
+  public StacItem putUrl(String sessionId, String url)
+  {
+    return this.service.putUrl(url);
+  }
+
+  @Request(RequestType.SESSION)
   public StacItem get(String sessionId, String id)
   {
     return this.service.get(id);
@@ -44,4 +50,5 @@ public class StacItemService
   {
     this.service.remove(id);
   }
+
 }

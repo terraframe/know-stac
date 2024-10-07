@@ -1,5 +1,8 @@
 package gov.geoplatform.knowstac.core.service.business;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,9 +10,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 
 import gov.geoplatform.knowstac.GenericException;
@@ -52,6 +58,21 @@ public class StacItemBusinessService
 
   @Autowired
   private OrganizationResultBusinessService      resultService;
+
+  public StacItem putUrl(String url)
+  {
+    try (InputStream stream = new URL(url).openStream())
+    {
+      ObjectMapper mapper = new ObjectMapper();
+      StacItem item = mapper.readValue(stream, StacItem.class);
+
+      return this.put(item);
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
 
   public StacItem put(StacItem item)
   {

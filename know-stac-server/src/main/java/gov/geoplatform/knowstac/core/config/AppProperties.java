@@ -52,14 +52,14 @@ public class AppProperties
     }
   }
 
-  public static String getTitilerUrl()
+  public static String getTitilerHost()
   {
-    return Singleton.getProps().getString("titiler.url", "https://titiler.xyz");
+    return Singleton.getProps().getString("titiler.host", "https://titiler.xyz");
   }
 
-  public static boolean isAWS()
+  public static int getTitilerPort()
   {
-    return Singleton.getProps().getBoolean("titiler.aws", false);
+    return Singleton.getProps().getInteger("titiler.port", 443);
   }
 
   public static String getElasticsearchHost()

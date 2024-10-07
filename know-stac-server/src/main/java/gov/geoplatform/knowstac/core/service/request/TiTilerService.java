@@ -26,6 +26,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import gov.geoplatform.knowstac.core.config.AppProperties;
@@ -35,12 +37,13 @@ import net.geoprism.configuration.GeoprismProperties;
 public class TiTilerService
 {
   // @GetMapping("/tiles/{tileMatrixSetId}/{z}/{x}/{y}[@{scale}x][.{format}]")
+  private static final Logger logger = LoggerFactory.getLogger(TiTilerService.class);
 
   public CloseableHttpResponse tiles(Map<String, String> pathVarsMap, Map<String, String> params)
   {
     try
     {
-      String url = AppProperties.getTitilerUrl() + "/stac/tiles";
+      String url = AppProperties.getTitilerHost() + "/stac/tiles";
       url += "/" + pathVarsMap.getOrDefault("tileMatrixSetId", "WebMercatorQuad");
       url += "/" + pathVarsMap.get("z");
       url += "/" + pathVarsMap.get("x");
@@ -50,6 +53,7 @@ public class TiTilerService
 
       HttpGet httpGet = new HttpGet(url);
       URIBuilder builder = new URIBuilder(httpGet.getURI());
+      builder.setPort(AppProperties.getTitilerPort());
 
       params.entrySet().forEach(entry -> {
         builder.addParameter(entry.getKey(), entry.getValue());
@@ -62,7 +66,9 @@ public class TiTilerService
     }
     catch (IOException | URISyntaxException e)
     {
-      throw new UnsupportedOperationException();
+      logger.error("Error proxying tile", e);
+
+      throw new UnsupportedOperationException(e);
     }
   }
 
@@ -71,12 +77,14 @@ public class TiTilerService
   {
     try
     {
-      String url = AppProperties.getTitilerUrl() + "/stac";
+      String url = AppProperties.getTitilerHost() + "/stac";
       url += "/" + pathVarsMap.getOrDefault("tileMatrixSetId", "WebMercatorQuad");
       url += "/tilejson.json";
 
       HttpGet httpGet = new HttpGet(url);
+
       URIBuilder builder = new URIBuilder(httpGet.getURI());
+      builder.setPort(AppProperties.getTitilerPort());
 
       params.entrySet().forEach(entry -> {
         builder.addParameter(entry.getKey(), entry.getValue());
@@ -89,12 +97,14 @@ public class TiTilerService
         HttpEntity entity = response.getEntity();
         String value = EntityUtils.toString(entity, "UTF-8");
 
-        return value.replaceAll(AppProperties.getTitilerUrl() + "/stac/tiles", GeoprismProperties.getRemoteServerUrl() + "api/tiles");
+        return value.replaceAll(AppProperties.getTitilerHost() + ":" + AppProperties.getTitilerPort() + "/stac/tiles", GeoprismProperties.getRemoteServerUrl() + "api/tiles");
       }
     }
     catch (IOException | URISyntaxException e)
     {
-      throw new UnsupportedOperationException();
+      logger.error("Error proxying tile json", e);
+
+      throw new UnsupportedOperationException(e);
     }
   }
 }

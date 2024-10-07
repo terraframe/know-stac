@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,22 @@ import gov.geoplatform.knowstac.core.service.request.StacItemService;
 @Validated
 public class StacItemController extends RunwaySpringController
 {
+  public static class URLBody
+  {
+    @NotEmpty
+    private String url;
+
+    public String getUrl()
+    {
+      return url;
+    }
+
+    public void setUrl(String url)
+    {
+      this.url = url;
+    }
+  }
+
   @Autowired
   private StacItemService service;
 
@@ -33,8 +50,16 @@ public class StacItemController extends RunwaySpringController
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
+  @PostMapping("item/put-url")
+  public ResponseEntity<StacItem> putUrl(@Valid @RequestBody URLBody body) throws IOException
+  {
+    StacItem response = this.service.putUrl(getSessionId(), body.getUrl());
+
+    return new ResponseEntity<StacItem>(response, HttpStatus.OK);
+  }
+
   @PostMapping("item/remove")
-  public ResponseEntity<Void> put(@RequestParam(name = "id", required = false) String id) throws IOException
+  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = false) String id) throws IOException
   {
     this.service.remove(getSessionId(), id);
 

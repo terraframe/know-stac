@@ -86,6 +86,12 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
   private synchronized RestClient getRestClient()
   {
+    String username = AppProperties.getElasticsearchUsername();
+    String host = AppProperties.getElasticsearchHost();
+    String password = AppProperties.getElasticsearchPassword();
+    int port = AppProperties.getElasticsearchPort();
+    String schema = AppProperties.getElasticsearchSchema();
+
     if (this.restClient == null)
     {
       final int MAX_TRIES = 5;
@@ -97,12 +103,6 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
         try
         {
           logger.debug("Attempting to check existence of elasticsearch");
-
-          String username = AppProperties.getElasticsearchUsername();
-          String host = AppProperties.getElasticsearchHost();
-          String password = AppProperties.getElasticsearchPassword();
-          int port = AppProperties.getElasticsearchPort();
-          String schema = AppProperties.getElasticsearchSchema();
 
           final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
           credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
@@ -199,7 +199,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     }
     catch (IOException e)
     {
-      throw new ProgrammingErrorException("Unable to create STAC index");
+      throw new ProgrammingErrorException("Unable to create STAC index", e);
     }
   }
 

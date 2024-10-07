@@ -6,7 +6,7 @@ FROM tomcat:8.5-jdk11-openjdk
 
 ENV KNOW_STAC_VERSION=LATEST
 ENV LOG_LEVEL=error
-ENV POSTGRES_PORT=5432
+ENV POSTGRES_PORT=5433
 
 RUN mkdir -p $CATALINA_HOME/wars
 
@@ -27,4 +27,4 @@ COPY target/appcfg $CATALINA_HOME/appcfg
 RUN wget -nv -O $CATALINA_HOME/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
 RUN chmod +x $CATALINA_HOME/bin/wait-for-it.sh
 
-#CMD ["$CATALINA_HOME/bin/wait-for-it.sh", "-t", 0, "database:$POSTGRES_PORT", "--"]
+#CMD ["$CATALINA_HOME/bin/catalina.sh", "run"]
