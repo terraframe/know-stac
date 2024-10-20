@@ -5,8 +5,11 @@ import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { useEffectOnce } from 'react-use';
+import { useSelector } from 'react-redux';
 
 export default function LocationTree(props) {
+
+    const configuration = useSelector((state) => state.configuration.value)
 
     const { location, field, onSelect, onClose } = props;
 
@@ -48,7 +51,7 @@ export default function LocationTree(props) {
         childrenParams.append('pageSize', 100);
         childrenParams.append('synchronizationId', field.location.synchronizationId);
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/location/get-children?${childrenParams.toString()}`, {
+        fetch(`${configuration.url}/api/location/get-children?${childrenParams.toString()}`, {
             method: 'GET',
         }).then((response) => {
             if (response.ok) {
@@ -63,7 +66,7 @@ export default function LocationTree(props) {
                             params.append('pageSize', 100);
                             params.append('synchronizationId', field.location.synchronizationId);
 
-                            fetch(`${process.env.REACT_APP_API_URL}/api/location/get-ancestor-tree?${params.toString()}`, {
+                            fetch(`${configuration.url}/api/location/get-ancestor-tree?${params.toString()}`, {
                                 method: 'GET',
                             }).then((resp) => {
                                 if (resp.ok) {
@@ -101,7 +104,7 @@ export default function LocationTree(props) {
                 });
             }
         });
-    }, []);
+    }, [configuration]);
 
     const handleToggle = (e, nodeIds) => {
         setExpanded(nodeIds);
@@ -133,7 +136,7 @@ export default function LocationTree(props) {
         params.append('uuid', key);
         params.append('synchronizationId', field.location.synchronizationId);
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/location/get-children?${params.toString()}`, {
+        fetch(`${configuration.url}/api/location/get-children?${params.toString()}`, {
             method: 'GET',
         }).then((response) => {
             if (response.ok) {

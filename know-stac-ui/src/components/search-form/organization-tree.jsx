@@ -6,8 +6,10 @@ import { styled } from '@mui/material/styles';
 import { TreeView } from "mui-lazy-tree-view";
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { useEffectOnce } from 'react-use';
+import { useSelector } from 'react-redux';
 
 export default function OrganizationTree(props) {
+    const configuration = useSelector((state) => state.configuration.value)
 
     const { organization, onSelect, onClose } = props;
 
@@ -47,7 +49,7 @@ export default function OrganizationTree(props) {
         childrenParams.append('pageNumber', 1);
         childrenParams.append('pageSize', 100);
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/organization/get-children?${childrenParams.toString()}`, {
+        fetch(`${configuration.url}/api/organization/get-children?${childrenParams.toString()}`, {
             method: 'GET',
         }).then((response) => {
             if (response.ok) {
@@ -59,7 +61,7 @@ export default function OrganizationTree(props) {
                         params.append('code', organization.code);
                         params.append('pageSize', 100);
 
-                        fetch(`${process.env.REACT_APP_API_URL}/api/organization/get-ancestor-tree?${params.toString()}`, {
+                        fetch(`${configuration.url}/api/organization/get-ancestor-tree?${params.toString()}`, {
                             method: 'GET',
                         }).then((resp) => {
                             if (resp.ok) {
@@ -96,7 +98,7 @@ export default function OrganizationTree(props) {
                 });
             }
         });
-    }, []);
+    }, [configuration]);
 
     const handleToggle = (e, nodeIds) => {
         setExpanded(nodeIds);
@@ -117,7 +119,7 @@ export default function OrganizationTree(props) {
         params.append('pageSize', 100);
         params.append('code', key);
 
-        fetch(`${process.env.REACT_APP_API_URL}/api/organization/get-children?${params.toString()}`, {
+        fetch(`${configuration.url}/api/organization/get-children?${params.toString()}`, {
             method: 'GET',
         }).then((response) => {
             if (response.ok) {

@@ -11,9 +11,9 @@ const style = {
 export default function TextProperty(props) {
 
     const { formik, field } = props;
-
+    
+    const configuration = useSelector((state) => state.configuration.value)
     const criteria = useSelector((state) => state.viewer.criteria)
-
 
     const [options, setOptions] = React.useState([]);
     const [inputValue, setInputValue] = React.useState('');
@@ -45,7 +45,7 @@ export default function TextProperty(props) {
             params.append('field', field.name);
             params.append('text', inputValue);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/item/values?${params.toString()}`, {
+            fetch(`${configuration.url}/api/item/values?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -55,7 +55,7 @@ export default function TextProperty(props) {
                 }
             });
         }
-    }, [inputValue]);
+    }, [configuration, inputValue]);
 
     useEffect(() => {
         // Value changed
@@ -66,7 +66,7 @@ export default function TextProperty(props) {
             params.append('field', field.name);
             params.append('text', fieldValue);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/item/values?${params.toString()}`, {
+            fetch(`${configuration.url}/api/item/values?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -77,7 +77,7 @@ export default function TextProperty(props) {
             });
         }
 
-    }, [formik.values[field.name]]);
+    }, [configuration, formik.values[field.name]]);
 
     return (
         <Box sx={style}>

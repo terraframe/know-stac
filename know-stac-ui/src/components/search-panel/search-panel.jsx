@@ -11,6 +11,7 @@ function CustomTabPanel(props) {
     // eslint-disable-next-line react/prop-types
     const { children, value, index, ...other } = props;
 
+
     return (
         <div
             role="tabpanel"
@@ -24,7 +25,6 @@ function CustomTabPanel(props) {
     );
 }
 
-
 function a11yProps(index) {
     return {
         id: `simple-tab-${index}`,
@@ -34,6 +34,7 @@ function a11yProps(index) {
 
 export default function SearchPanel() {
 
+    const configuration = useSelector((state) => state.configuration.value)
     const active = useSelector((state) => state.viewer.active)
     const messages = useSelector((state) => state.viewer.messages)
     const collection = useSelector((state) => state.viewer.collection)
@@ -42,16 +43,16 @@ export default function SearchPanel() {
     const [properties, setProperties] = useState(null);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/api/stac-property/get-all`, {
-            method: 'GET',
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then(props => {
-                    setProperties(props);
-                });
-            }
-        });
-    }, []);
+            fetch(`${configuration.url}/api/stac-property/get-all`, {
+                method: 'GET',
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then(props => {
+                        setProperties(props);
+                    });
+                }
+            });
+    }, [configuration]);
 
     return (
         <Paper style={{ maxHeight: '100vh', overflow: 'auto' }}>

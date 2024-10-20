@@ -18,6 +18,7 @@ import TextProperty from './text-property';
 export default function SearchForm(props) {
     const { properties } = props;
 
+    const configuration = useSelector((state) => state.configuration.value)
     const criteria = useSelector((state) => state.viewer.criteria)
     const extent = useSelector((state) => state.viewer.extent)
 
@@ -137,7 +138,7 @@ export default function SearchForm(props) {
 
             dispatch(setActive(true));
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/query/collection?${params.toString()}`, {
+            fetch(`${configuration.url}/api/query/collection?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -162,7 +163,7 @@ export default function SearchForm(props) {
             });
         }
 
-    }, [criteria]);
+    }, [configuration, criteria]);
 
 
     return (

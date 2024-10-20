@@ -25,9 +25,9 @@
 		<artifactId>know-stac</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>know-stac-web</artifactId>
+	<artifactId>know-stac-api-web</artifactId>
 	<packaging>war</packaging>
-	<name>KnowSTAC Web Server</name>
+	<name>KnowSTAC API Web Container</name>
 	<properties>
 		<db.name>know-stac</db.name>
 		<db.user>know-stac</db.user>
@@ -107,7 +107,7 @@
 							<deployables>
 								<deployable>
 									<groupId>net.geoprism</groupId>
-									<artifactId>know-stac-web</artifactId>
+									<artifactId>know-stac-api-web</artifactId>
 									<type>war</type>
 									<properties>
 										<context>ROOT</context>
@@ -152,29 +152,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<!-- Copy over the compiled angular code   -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.0</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}/target/know-stac</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/../know-stac-ui/build/</directory>
-									<filtering>false</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- Weave Aspects -->
 			<plugin>
 				<groupId>dev.aspectj</groupId>

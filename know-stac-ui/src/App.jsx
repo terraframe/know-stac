@@ -7,18 +7,38 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { useEffectOnce } from "react-use";
 
+
+import { useDispatch, useSelector } from "react-redux";
 import './App.css';
 
 import ErrorPage from "./components/error-page";
 import Viewer from "./components/viewer/viewer";
-
+import { setConfiguration } from "./components/configuration/configuration-slice";
 
 function Root() {
+  const dispatch = useDispatch()
+  const configuration = useSelector((state) => state.configuration.value)
+
+  useEffectOnce(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/api/configuration`, {
+      method: 'GET',
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then(config => {
+          dispatch(setConfiguration({ ...config, loaded: true }));
+        });
+      } else {
+        response.json().then(() => {
+        });
+      }
+    })
+  }, []);
 
   return (
     <div className="container">
-      <Outlet />
+      {configuration.loaded && (<Outlet />)}
     </div>
   );
 };

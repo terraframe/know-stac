@@ -52,16 +52,6 @@ public class AppProperties
     }
   }
 
-  public static String getTitilerHost()
-  {
-    return Singleton.getProps().getString("titiler.host", "https://titiler.xyz");
-  }
-
-  public static int getTitilerPort()
-  {
-    return Singleton.getProps().getInteger("titiler.port", 443);
-  }
-
   public static String getElasticsearchHost()
   {
     return Singleton.getProps().getString("elasticsearch.host", "localhost");

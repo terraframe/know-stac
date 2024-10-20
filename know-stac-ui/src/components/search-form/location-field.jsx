@@ -24,7 +24,7 @@ export default function LocationField(props) {
     const { formik, field } = props;
 
     const criteria = useSelector((state) => state.viewer.criteria)
-
+    const configuration = useSelector((state) => state.configuration.value)
 
     const [open, setOpen] = React.useState(false);
     const [options, setOptions] = React.useState([]);
@@ -60,7 +60,7 @@ export default function LocationField(props) {
             params.append('synchronizationId', field.location.synchronizationId);
             params.append('text', inputValue);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/location/search?${params.toString()}`, {
+            fetch(`${configuration.url}/api/location/search?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -70,7 +70,7 @@ export default function LocationField(props) {
                 }
             });
         }
-    }, [inputValue]);
+    }, [configuration, inputValue]);
 
     useEffect(() => {
         // Value changed
@@ -81,7 +81,7 @@ export default function LocationField(props) {
             params.append('synchronizationId', field.location.synchronizationId);
             params.append('uuid', value);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/location/get?${params.toString()}`, {
+            fetch(`${configuration.url}/api/location/get?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -92,7 +92,7 @@ export default function LocationField(props) {
             });
         }
 
-    }, [formik.values[field.name]]);
+    }, [configuration, formik.values[field.name]]);
 
     return (
         <>

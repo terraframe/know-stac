@@ -17,7 +17,8 @@
   <modules>
     <module>know-stac-server</module>
     <module>know-stac-ui</module>    
-    <module>know-stac-web</module>
+    <module>know-stac-api-web</module>
+    <module>know-stac-ui-web</module>        
   </modules>
 
   <properties>

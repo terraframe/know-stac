@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Autocomplete, Box, Button, debounce, Modal, TextField, Typography } from '@mui/material';
 import { useUpdateEffect } from 'react-use';
+import { useSelector } from 'react-redux';
 import OrganizationTree from './organization-tree';
 import LocationField from './location-field';
 
@@ -25,6 +26,7 @@ const style = {
 
 export default function OrganizationField(props) {
 
+    const configuration = useSelector((state) => state.configuration.value)
     const { formik, field } = props;
 
     const [open, setOpen] = React.useState(false);
@@ -50,7 +52,7 @@ export default function OrganizationField(props) {
             const params = new URLSearchParams()
             params.append('text', inputValue);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/organization/search?${params.toString()}`, {
+            fetch(`${configuration.url}/api/organization/search?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -60,7 +62,7 @@ export default function OrganizationField(props) {
                 }
             });
         }
-    }, [inputValue]);
+    }, [configuration, inputValue]);
 
     useEffect(() => {
         // Value changed
@@ -70,7 +72,7 @@ export default function OrganizationField(props) {
             const params = new URLSearchParams()
             params.append('code', value);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/organization/get?${params.toString()}`, {
+            fetch(`${configuration.url}/api/organization/get?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -81,7 +83,7 @@ export default function OrganizationField(props) {
             });
         }
 
-    }, [formik.values[field.name]]);
+    }, [configuration, formik.values[field.name]]);
 
     useEffect(() => {
         // Value changed
@@ -89,7 +91,7 @@ export default function OrganizationField(props) {
             const params = new URLSearchParams()
             params.append('code', organization.code);
 
-            fetch(`${process.env.REACT_APP_API_URL}/api/stac-property/get-for-organization?${params.toString()}`, {
+            fetch(`${configuration.url}/api/stac-property/get-for-organization?${params.toString()}`, {
                 method: 'GET',
             }).then((response) => {
                 if (response.ok) {
@@ -103,7 +105,7 @@ export default function OrganizationField(props) {
             setFields([]);
         }
 
-    }, [organization]);
+    }, [configuration, organization]);
 
 
     return (

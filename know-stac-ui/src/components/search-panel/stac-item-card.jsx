@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect } from 'react';
 import { Button, Card, CardActions, CardContent, CardMedia, Collapse, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setMapItem, bbox } from '../viewer/viewer-slice';
 
 export default function StacItemCard(props) {
     const { properties, link } = props;
+
+    const configuration = useSelector((state) => state.configuration.value)
     const [open, setOpen] = React.useState(false);
     const [item, setItem] = React.useState(null);
     const [icon, setIcon] = React.useState(null);
@@ -124,7 +126,10 @@ export default function StacItemCard(props) {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Name</TableCell>
-                                <TableCell>Actions</TableCell>
+                                {configuration.tiling && (
+                                    <TableCell>Actions</TableCell>
+                                )}
+
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -138,10 +143,11 @@ export default function StacItemCard(props) {
                                             {asset}
                                         </a>
                                     </TableCell>
-                                    <TableCell component="th" scope="row">
-                                        <Button onClick={() => handleMapIt(asset)}>View on Map</Button>
-                                    </TableCell>
-
+                                    {configuration.tiling && (
+                                        <TableCell component="th" scope="row">
+                                            <Button onClick={() => handleMapIt(asset)}>View on Map</Button>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>

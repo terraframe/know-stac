@@ -156,7 +156,7 @@ public class OrganizationResult implements JsonSerializable
 
   @Request
   public static synchronized void populateCache(ServerOrganizationCache cache)
-  {
+  { 
     cache.rebuild();
 
     try

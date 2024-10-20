@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import gov.geoplatform.knowstac.core.service.request.TiTilerService;
+import gov.geoplatform.knowstac.core.service.TiTilerService;
 
 @RestController
 @Validated
@@ -44,14 +44,14 @@ public class TiTillerController
   @Autowired
   private TiTilerService service;
 
-  @GetMapping("/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x")
+  @GetMapping("/api/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x")
   @ResponseBody
   public ResponseEntity<StreamingResponseBody> tiles(@PathVariable Map<String, String> pathVarsMap, @RequestParam Map<String, String> params) throws IOException
   {
     return proxy(this.service.tiles(pathVarsMap, params));
   }
 
-  @GetMapping("/tiles/tilejson.json")
+  @GetMapping("/api/tiles/tilejson.json")
   @ResponseBody
   public ResponseEntity<String> tilejson(@PathVariable Map<String, String> pathVarsMap, @RequestParam Map<String, String> params) throws IOException
   {

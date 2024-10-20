@@ -1,14 +1,6 @@
 version: '3'
 services:
-  titiler:
-    container_name: knowstac-titiler
-    image: 'ghcr.io/developmentseed/titiler:latest'
-    environment:
-      PORT: "8000"
-      WORKERS_PER_CORE: "1"
-    restart: always
-    ports:
-     - "8000:8000"
+  #Services for the api server
   elasticsearch:
     container_name: knowstac-es
     image: 'docker.elastic.co/elasticsearch/elasticsearch:8.3.2'
@@ -59,11 +51,11 @@ services:
     restart: always
     ports:
      - "5433:5432"
-  web:
+  api:
     container_name: knowstac
     image: terraframe/knowstac:latest
     environment:
-      JAVA_OPTS: "-Xms1024m -Xmx4000m -Dgeoprism.remote.url=http://localhost:8081/ -Dnetwork.binary.maxLength=56384 -Ddatabase.hostURL=knowstac-postgres -Dorientdb.db.url=remote:knowstac-orientdb -Dtitiler.host=http://knowstac-titiler  -Dtitiler.port=8000 -Delasticsearch.host=knowstac-es -Delasticsearch.port=9200"
+      JAVA_OPTS: "-Xms1024m -Xmx4000m -Dgeoprism.remote.url=http://localhost:8081/ -Dnetwork.binary.maxLength=56384 -Ddatabase.hostURL=knowstac-postgres -Dorientdb.db.url=remote:knowstac-orientdb -Delasticsearch.host=knowstac-es -Delasticsearch.port=9200"
       POSTGRES_PORT: 5433
       POSTGRES_ROOT_USERNAME: postgres
       POSTGRES_ROOT_PASSWORD: knowstac
@@ -80,3 +72,29 @@ services:
     restart: always
     #entrypoint: wait-for-it.sh -t 0 knowstac-postgres:5433 --
     command: catalina.sh run # https://github.com/docker/compose/issues/3140
+
+  #Services for the ui server
+  titiler:
+    container_name: knowstac-titiler
+    image: 'ghcr.io/developmentseed/titiler:latest'
+    environment:
+      PORT: "8000"
+      WORKERS_PER_CORE: "1"
+    restart: always
+    ports:
+     - "8000:8000"
+  ui:
+    container_name: knowstac-ui
+    image: terraframe/knowstac-ui:latest
+    environment:
+      JAVA_OPTS: "-Xms1024m -Xmx4000m -Dserver.url=http://localhost:8080/ -Dapi.url=http://localhost:8081 -Dtitiler.host=http://knowstac-titiler -Dtitiler.port=8000 -Dtitiler.enabled=false"
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - /data/knowstac/logs/knowstac-ui:/usr/local/tomcat/logs
+    depends_on:
+      - api
+    restart: always
+    command: catalina.sh run # https://github.com/docker/compose/issues/3140
+   

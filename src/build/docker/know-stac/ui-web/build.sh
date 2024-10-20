@@ -21,15 +21,14 @@ tag=${tag:-'latest'}
 
 ([ -d target ] && rm -rf target) || true
 mkdir target
-cp ../../../../know-stac-web/target/know-stac.war target/know-stac.war
-cp -R ../../../../envcfg/prod target/appcfg
+cp ../../../../../know-stac-ui-web/target/know-stac-ui.war target/know-stac-ui.war
 
-docker build -t terraframe/knowstac:$tag .
+docker build -t terraframe/knowstac-ui:$tag .
 
 if [ "${CGR_RELEASE_VERSION:-'latest'}" != "latest" ]; then
-  docker tag terraframe/knowstac:$tag terraframe/knowstac:latest
+  docker tag terraframe/knowstac-ui:$tag terraframe/knowstac-ui:latest
 fi
 
 if [ "$1 != 'false'" ]; then
-  docker save terraframe/knowstac:$tag | gzip > target/knowstac.dimg.gz
+  docker save terraframe/knowstac-ui:$tag | gzip > target/knowstac-ui.dimg.gz
 fi
