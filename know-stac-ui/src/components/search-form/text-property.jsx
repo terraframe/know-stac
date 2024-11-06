@@ -11,7 +11,7 @@ const style = {
 export default function TextProperty(props) {
 
     const { formik, field } = props;
-    
+
     const configuration = useSelector((state) => state.configuration.value)
     const criteria = useSelector((state) => state.viewer.criteria)
 
@@ -61,21 +61,7 @@ export default function TextProperty(props) {
         // Value changed
         const fieldValue = formik.values[field.name];
 
-        if (text != null && text.length > 0) {
-            const params = new URLSearchParams()
-            params.append('field', field.name);
-            params.append('text', fieldValue);
-
-            fetch(`${configuration.url}/api/item/values?${params.toString()}`, {
-                method: 'GET',
-            }).then((response) => {
-                if (response.ok) {
-                    response.json().then((val) => {
-                        setText(val);
-                    });
-                }
-            });
-        }
+        setText(fieldValue);
 
     }, [configuration, formik.values[field.name]]);
 
@@ -90,13 +76,9 @@ export default function TextProperty(props) {
                 label={field.label}
                 options={options}
                 value={text}
-                getOptionLabel={(option) => {
-                    if (typeof option === 'string') return option;
-
-                    return option[0];
-                }}
+                getOptionLabel={(option) => option}
                 noOptionsText="No values exist"
-                isOptionEqualToValue={(option, value) => option.oid === value.oid}
+                isOptionEqualToValue={(option, value) => option === value}
                 onChange={(event, newValue) => {
                     setText(newValue);
 

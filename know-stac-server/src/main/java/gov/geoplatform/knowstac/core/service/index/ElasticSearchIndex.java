@@ -20,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +34,6 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -559,9 +560,9 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
   }
 
   @Override
-  public List<String> values(String field, String text)
+  public Set<String> values(String field, String text)
   {
-    List<String> items = new LinkedList<String>();
+    Set<String> items = new TreeSet<String>();
 
     try
     {
@@ -569,7 +570,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
       SearchRequest.Builder s = new SearchRequest.Builder();
       s.index(ElasticSearchIndex.STAC_INDEX_NAME);
-      s.query(q -> q.wildcard(m -> m.field("properties." + field).value("*" + text + "*")));
+      s.query(q -> q.wildcard(m -> m.field("properties." + field).value("*" + text.toLowerCase() + "*")));
       s.source(so -> so.filter(f -> f.includes("properties." + field)));
 
       SearchRequest request = s.build();

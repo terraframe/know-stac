@@ -1,7 +1,7 @@
 package gov.geoplatform.knowstac.web.controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -75,11 +75,11 @@ public class StacItemController extends RunwaySpringController
   }
 
   @GetMapping("item/values")
-  public ResponseEntity<List<String>> values(@RequestParam(name = "field", required = false) String field, @RequestParam(name = "text", required = false) String text) throws IOException
+  public ResponseEntity<Set<String>> values(@RequestParam(name = "field", required = false) String field, @RequestParam(name = "text", required = false) String text) throws IOException
   {
-    List<String> response = this.service.values(getSessionId(), field, text);
+    Set<String> response = this.service.values(getSessionId(), field, text);
 
-    return new ResponseEntity<List<String>>(response, HttpStatus.OK);
+    return new ResponseEntity<Set<String>>(response, HttpStatus.OK);
   }
 
 }

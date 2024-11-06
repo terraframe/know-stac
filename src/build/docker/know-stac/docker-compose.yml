@@ -17,8 +17,8 @@ services:
       - /data/knowstac/elasticsearch/data:/usr/share/elasticsearch/data
     restart: always
     ports:
-     - "9200:9200"
-     - "9300:9300"     
+     - "9201:9200"
+     - "9301:9300"     
   orientdb:
     container_name: knowstac-orientdb
     image: 'orientdb:3.2'
@@ -35,8 +35,8 @@ services:
         soft: 10000
         hard: 10000
     ports:
-     - "9424:2424"
-     - "9480:2480"
+     - "9425:2424"
+     - "9485:2480"
   postgres:
     container_name: knowstac-postgres
     image: 'postgis/postgis:14-3.2'
@@ -61,7 +61,6 @@ services:
       POSTGRES_ROOT_PASSWORD: knowstac
     ports:
       - "8081:8080"
-      - "8444:8443"
     volumes:
       - /data/knowstac/knowstac:/data/geoprism
       - /data/knowstac/logs/tomcat:/usr/local/tomcat/logs
@@ -87,10 +86,9 @@ services:
     container_name: knowstac-ui
     image: terraframe/knowstac-ui:latest
     environment:
-      JAVA_OPTS: "-Xms1024m -Xmx4000m -Dserver.url=http://localhost:8080/ -Dapi.url=http://localhost:8081 -Dtitiler.host=http://knowstac-titiler -Dtitiler.port=8000 -Dtitiler.enabled=false"
+      JAVA_OPTS: "-Dserver.url=http://localhost:8080/ -Dapi.url=http://localhost:8081 -Dtitiler.host=http://knowstac-titiler -Dtitiler.port=8000 -Dtitiler.enabled=true"
     ports:
       - "8080:8080"
-      - "8443:8443"
     volumes:
       - /data/knowstac/logs/knowstac-ui:/usr/local/tomcat/logs
     depends_on:

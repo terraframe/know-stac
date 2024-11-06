@@ -1,6 +1,6 @@
 package gov.geoplatform.knowstac.core.service.request;
 
-import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class StacItemService
   }
 
   @Request(RequestType.SESSION)
-  public List<String> values(String sessionId, String field, String text)
+  public Set<String> values(String sessionId, String field, String text)
   {
     return this.service.values(field, text);
   }

@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,7 +209,7 @@ public class StacItemBusinessService
     return this.index.getItems(params);
   }
 
-  public List<String> values(String field, String text)
+  public Set<String> values(String field, String text)
   {
     return this.index.values(field, text);
   }
