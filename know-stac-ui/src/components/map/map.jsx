@@ -9,7 +9,7 @@ import { setExtent } from '../viewer/viewer-slice';
 
 export default function Map() {
 
-    const mapItem = useSelector((state) => state.viewer.item)
+    const items = useSelector((state) => state.viewer.items)
     const collection = useSelector((state) => state.viewer.collection)
     const mBbox = useSelector((state) => state.viewer.bbox)
 
@@ -162,48 +162,41 @@ export default function Map() {
     // Update the map when the assets change
     useEffect(() => {
 
-        if (mapItem != null) {
-            if (map.current.getLayer('map-item')) {
-                map.current.removeLayer('map-item');
-                map.current.removeSource('map-item');
-            };
+        map.current.getLayersOrder().forEach(layerName => {
+            if(layerName.startsWith('map-item')) {
+                map.current.removeLayer(layerName);
+                map.current.removeSource(layerName);
 
-            map.current.fitBounds(mapItem.item.bbox);
+            }
+        })
 
-            const params = new URLSearchParams()
-            params.append('url', mapItem.item.links[0].href);
-            params.append('assets', mapItem.asset);
+        if (items != null) {
 
-            const url = `${process.env.REACT_APP_API_URL}/api/tiles/tilejson.json?${params.toString()}`;
+            items.forEach(item => {
+                map.current.fitBounds(item.item.bbox);
 
-            map.current.addLayer({
-                'id': 'map-item',
-                'type': 'raster',
-                'source': {
-                    'id': 'map-item',
+                const params = new URLSearchParams()
+                params.append('url', item.item.links[0].href);
+                params.append('assets', item.asset);
+
+                const url = `${process.env.REACT_APP_API_URL}/api/tiles/tilejson.json?${params.toString()}`;
+
+                const id =`map-item-${item.id}`;
+
+                map.current.addLayer({
+                    'id': id,
                     'type': 'raster',
-                    'url': url
-                },
-                'paint': {}
-            });
+                    'source': {
+                        'id': id,
+                        'type': 'raster',
+                        'url': url
+                    },
+                    'paint': {}
+                });
 
-            // const { href } = mapItem.item.assets[mapItem.asset];
-
-            // console.log(`cog://${href}`);
-
-            // map.current.addSource('map-item', {
-            //     type: 'raster',
-            //     url: `cog://${href}`,
-            //     tileSize: 256
-            // });
-
-            // map.current.addLayer({
-            //     id: 'map-item',
-            //     source: 'map-item',
-            //     type: 'raster'
-            // });
+            })
         }
-    }, [mapItem])
+    }, [items])
 
     // Update the map when the collection changes
     useEffect(() => {

@@ -6,6 +6,7 @@ import { setMapItem, bbox } from '../viewer/viewer-slice';
 
 export default function StacItemCard(props) {
     const { properties, link } = props;
+    const items = useSelector((state) => state.viewer.items)
 
     const configuration = useSelector((state) => state.configuration.value)
     const [open, setOpen] = React.useState(false);
@@ -14,10 +15,30 @@ export default function StacItemCard(props) {
 
     const dispatch = useDispatch()
 
-    function handleMapIt(asset) {
-        dispatch(setMapItem({ item, asset }));
+    function stringToHash(string) {
+        let hash = 0;
+
+        if (string.length === 0) return hash;
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const char of string) {
+            // eslint-disable-next-line no-bitwise
+            hash ^= char.charCodeAt(0); // Bitwise XOR operation
+        }
+
+        return hash;
     }
 
+    function handleMapIt(asset) {
+        const { id } = item.assets[asset];
+
+        const i = JSON.parse(JSON.stringify(item));
+        i.assets[asset].enabled = !i.assets[asset].enabled;
+
+        setItem(i);
+
+        dispatch(setMapItem({ item, asset, id }));
+    }
 
     useEffect(() => {
         if (open && item == null) {
@@ -32,6 +53,8 @@ export default function StacItemCard(props) {
 
                         Object.keys(i.assets).forEach(assetName => {
                             const asset = i.assets[assetName];
+                            asset.id = stringToHash(`${i.id}-${assetName}`)
+                            asset.enabled = (items.findIndex(a => a.id === asset.id) !== -1);
 
                             if (asset.href.startsWith("s3:")) {
 
@@ -145,7 +168,9 @@ export default function StacItemCard(props) {
                                     </TableCell>
                                     {configuration.tiling && (
                                         <TableCell component="th" scope="row">
-                                            <Button onClick={() => handleMapIt(asset)}>View on Map</Button>
+                                            <Button onClick={() => handleMapIt(asset)}>
+                                                {(!item.assets[asset].enabled) ? 'View on Map' : 'Remove from Map'}
+                                            </Button>
                                         </TableCell>
                                     )}
                                 </TableRow>

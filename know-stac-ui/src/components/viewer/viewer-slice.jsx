@@ -17,7 +17,7 @@ export const viewerSlice = createSlice({
         criteria: null,
 
         // STAC item assets being mapped
-        item: null,
+        items: [],
 
         bbox: null,
 
@@ -26,7 +26,17 @@ export const viewerSlice = createSlice({
     },
     reducers: {
         setMapItem: (state, action) => {
-            state.item = action.payload;
+            const index = state.items.findIndex(i => i.id === action.payload.id);
+
+            if (index === -1) {
+                state.items = [...state.items, action.payload];
+            }
+            else {
+                const items = [...state.items]
+                items.splice(index, 1);
+
+                state.items = items;
+            }
         },
         setActive: (state, action) => {
             state.active = action.payload;
