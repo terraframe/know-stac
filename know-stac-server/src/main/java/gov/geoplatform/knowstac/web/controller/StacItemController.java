@@ -59,7 +59,7 @@ public class StacItemController extends RunwaySpringController
   }
 
   @PostMapping("item/remove")
-  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = false) String id) throws IOException
+  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = true) String id) throws IOException
   {
     this.service.remove(getSessionId(), id);
 
@@ -67,7 +67,7 @@ public class StacItemController extends RunwaySpringController
   }
 
   @GetMapping("item/get")
-  public ResponseEntity<StacItem> get(@RequestParam(name = "id", required = false) String id) throws IOException
+  public ResponseEntity<StacItem> get(@RequestParam(name = "id", required = true) String id) throws IOException
   {
     StacItem response = this.service.get(getSessionId(), id);
 

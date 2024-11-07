@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect } from 'react';
 import { Button, Card, CardActions, CardContent, CardMedia, Collapse, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
@@ -40,6 +41,24 @@ export default function StacItemCard(props) {
         dispatch(setMapItem({ item, asset, id }));
     }
 
+    function s3ToHttps(obj) {
+
+        if (obj.href.startsWith("s3:")) {
+
+            const uri = obj.href.replace("s3://", "")
+
+            const parts = uri.split('/')
+
+            obj.href = 'https://';
+            obj.href += `${parts[0]}.s3.amazonaws.com`;
+
+            for (let j = 1; j < parts.length; j += 1) {
+                obj.href += `/${parts[j]}`;
+            }
+        }
+
+    }
+
     useEffect(() => {
         if (open && item == null) {
             const url = link.href.startsWith("/") ? (process.env.REACT_APP_API_URL + link.href) : link.href;
@@ -49,21 +68,19 @@ export default function StacItemCard(props) {
             }).then((response) => {
                 if (response.ok) {
                     response.json().then(i => {
-                        setItem(i);
-
                         Object.keys(i.assets).forEach(assetName => {
                             const asset = i.assets[assetName];
                             asset.id = stringToHash(`${i.id}-${assetName}`)
                             asset.enabled = (items.findIndex(a => a.id === asset.id) !== -1);
 
-                            if (asset.href.startsWith("s3:")) {
-
-                                const tParams = new URLSearchParams()
-                                tParams.append('url', asset.href);
-
-                                asset.href = `${process.env.REACT_APP_API_URL}/api/aws/download?${tParams.toString()}`;
-                            }
+                            s3ToHttps(asset);
                         });
+
+                        i.links.forEach(l => {
+                            s3ToHttps(l);
+                        });
+
+                        setItem(i);
 
                         if (i.assets.thumbnail != null) {
                             setIcon(i.assets.thumbnail);
@@ -71,6 +88,7 @@ export default function StacItemCard(props) {
                         else if (i.assets['thumbnail-hd'] != null) {
                             setIcon(i.assets['thumbnail-hd']);
                         }
+
                     });
                 }
             });
