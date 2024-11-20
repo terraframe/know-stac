@@ -71,7 +71,12 @@ export default function StacItemCard(props) {
                         Object.keys(i.assets).forEach(assetName => {
                             const asset = i.assets[assetName];
                             asset.id = stringToHash(`${i.id}-${assetName}`)
+                            asset.mappable = false;
                             asset.enabled = (items.findIndex(a => a.id === asset.id) !== -1);
+
+                            if (asset.href.startsWith("http")) {
+                                asset.mappable = (asset.type === 'image/tiff; application=geotiff; profile=cloud-optimized');
+                            }
 
                             s3ToHttps(asset);
                         });
@@ -174,7 +179,7 @@ export default function StacItemCard(props) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {item != null && Object.keys(item.assets).filter(asset => item.assets[asset].type === 'image/tiff; application=geotiff; profile=cloud-optimized').map((asset) => (
+                            {item != null && Object.keys(item.assets).map((asset) => (
                                 <TableRow
                                     key={asset}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -184,13 +189,13 @@ export default function StacItemCard(props) {
                                             {asset}
                                         </a>
                                     </TableCell>
-                                    {configuration.tiling && (
-                                        <TableCell component="th" scope="row">
+                                    <TableCell component="th" scope="row">
+                                        {(configuration.tiling && item.assets[asset].mappable) && (
                                             <Button onClick={() => handleMapIt(asset)}>
                                                 {(!item.assets[asset].enabled) ? 'View on Map' : 'Remove from Map'}
                                             </Button>
-                                        </TableCell>
-                                    )}
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

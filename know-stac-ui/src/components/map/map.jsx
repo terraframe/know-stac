@@ -163,7 +163,7 @@ export default function Map() {
     useEffect(() => {
 
         map.current.getLayersOrder().forEach(layerName => {
-            if(layerName.startsWith('map-item')) {
+            if (layerName.startsWith('map-item')) {
                 map.current.removeLayer(layerName);
                 map.current.removeSource(layerName);
 
@@ -173,7 +173,9 @@ export default function Map() {
         if (items != null) {
 
             items.forEach(item => {
-                map.current.fitBounds(item.item.bbox);
+                if (item.item.bbox != null) {
+                    map.current.fitBounds(item.item.bbox);
+                }
 
                 const params = new URLSearchParams()
                 params.append('url', item.item.links[0].href);
@@ -181,7 +183,7 @@ export default function Map() {
 
                 const url = `${process.env.REACT_APP_API_URL}/api/tiles/tilejson.json?${params.toString()}`;
 
-                const id =`map-item-${item.id}`;
+                const id = `map-item-${item.id}`;
 
                 map.current.addLayer({
                     'id': id,
@@ -221,9 +223,11 @@ export default function Map() {
 
                         const { bbox, title } = link;
 
-                        features.push(centroid(bboxPolygon(bbox), {
-                            properties: { label: title }
-                        }));
+                        if (bbox != null) {
+                            features.push(centroid(bboxPolygon(bbox), {
+                                properties: { label: title }
+                            }));
+                        }
                     })
 
                     const data = featureCollection(features);

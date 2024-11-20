@@ -46,7 +46,7 @@ public class Spatial
 
   public static Spatial build(List<Envelope> envelopes)
   {
-    Optional<Envelope> optional = envelopes.stream().reduce((a, b) -> {
+    Optional<Envelope> optional = envelopes.stream().filter(a -> a != null).reduce((a, b) -> {
       Envelope env = new Envelope(a);
       env.expandToInclude(b);
 
