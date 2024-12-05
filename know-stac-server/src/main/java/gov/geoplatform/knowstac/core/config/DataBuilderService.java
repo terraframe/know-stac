@@ -144,6 +144,7 @@ public class DataBuilderService implements Runnable
     // populateIndex();
   }
 
+  // Fake data builder
   private void populateIndex()
   {
     logger.error("Populating index");
