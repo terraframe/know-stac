@@ -25,7 +25,7 @@ export default function LocationTree(props) {
 
     const handleNode = ({ object, children }) => {
 
-        const node = { ...object, key: object.uuid, children: object.size > 0 ? [] : undefined };
+        const node = { ...object, key: object.uid, children: object.size > 0 ? [] : undefined };
 
         if (children != null) {
             node.children = children.resultSet.map(n => handleNode(n))
@@ -58,11 +58,11 @@ export default function LocationTree(props) {
                 response.json().then((page) => {
                     const rootNodes = page.resultSet.map(object => handleNode({ object }));
 
-                    if (location != null && location.uuid != null) {
-                        if (location.uuid !== selected) {
+                    if (location != null && location.uid != null) {
+                        if (location.uid !== selected) {
 
                             const params = new URLSearchParams()
-                            params.append('uuid', location.uuid);
+                            params.append('uid', location.uid);
                             params.append('pageSize', 100);
                             params.append('synchronizationId', field.location.synchronizationId);
 
@@ -73,7 +73,7 @@ export default function LocationTree(props) {
                                     resp.json().then((node) => {
                                         const rootNode = handleNode(node);
 
-                                        const index = rootNodes.findIndex(n => n.uuid === rootNode.uuid);
+                                        const index = rootNodes.findIndex(n => n.uid === rootNode.uid);
 
                                         if (index !== -1) {
                                             rootNodes[index] = rootNode;
@@ -88,7 +88,7 @@ export default function LocationTree(props) {
                                         calculateExpanded(rootNode, keys);
 
                                         setExpanded(keys);
-                                        setSelected(location.uuid);
+                                        setSelected(location.uid);
                                     });
                                 }
                                 else {
@@ -133,7 +133,7 @@ export default function LocationTree(props) {
         const params = new URLSearchParams()
         params.append('pageNumber', 1);
         params.append('pageSize', 100);
-        params.append('uuid', key);
+        params.append('uid', key);
         params.append('synchronizationId', field.location.synchronizationId);
 
         fetch(`${configuration.url}/api/location/get-children?${params.toString()}`, {

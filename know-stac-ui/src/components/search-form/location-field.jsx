@@ -30,7 +30,7 @@ export default function LocationField(props) {
     const [options, setOptions] = React.useState([]);
     const [inputValue, setInputValue] = React.useState('');
     const [location, setLocation] = React.useState({
-        uuid: null,
+        uid: null,
         label: ''
     });
 
@@ -76,10 +76,10 @@ export default function LocationField(props) {
         // Value changed
         const value = formik.values[field.name];
 
-        if (value != null && value.length > 0 && (location == null || location.uuid !== value)) {
+        if (value != null && value.length > 0 && (location == null || location.uid !== value)) {
             const params = new URLSearchParams()
             params.append('synchronizationId', field.location.synchronizationId);
-            params.append('uuid', value);
+            params.append('uid', value);
 
             fetch(`${configuration.url}/api/location/get?${params.toString()}`, {
                 method: 'GET',
@@ -115,7 +115,7 @@ export default function LocationField(props) {
                     setLocation(newValue);
 
                     if (newValue != null) {
-                        formik.setFieldValue(field.name, newValue.uuid);
+                        formik.setFieldValue(field.name, newValue.uid);
                     }
                     else {
                         formik.setFieldValue(field.name, null);
@@ -140,7 +140,7 @@ export default function LocationField(props) {
                     />
                 }
                 renderOption={(innerProps, option) =>
-                    <li {...innerProps} key={option.uuid}>
+                    <li {...innerProps} key={option.uid}>
                         {option.label}
                     </li>
                 }
@@ -158,8 +158,8 @@ export default function LocationField(props) {
                     <LocationTree
                         location={location}
                         field={field}
-                        onSelect={(uuid) => {
-                            formik.setFieldValue(field.name, uuid);
+                        onSelect={(uid) => {
+                            formik.setFieldValue(field.name, uid);
                         }}
                         onClose={() => setOpen(false)}
                     />

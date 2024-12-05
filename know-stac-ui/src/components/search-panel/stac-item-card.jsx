@@ -146,7 +146,7 @@ export default function StacItemCard(props) {
                                                         case 'LOCATION': return (
                                                             <List>
                                                                 {item.properties[field.name].map(location => (
-                                                                    <ListItem key={location.uuid}>
+                                                                    <ListItem key={location.uid}>
                                                                         {location.label}
                                                                     </ListItem>
                                                                 ))}
