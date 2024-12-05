@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.runwaysdk.dataaccess.cache.globalcache.ehcache.CacheShutdown;
 
 import gov.geoplatform.knowstac.core.config.CoreConfig;
-import gov.geoplatform.knowstac.core.config.DataBuilderService;
 import gov.geoplatform.knowstac.core.config.ElasticSearchTestService;
 
 public class ElasticSearchTest

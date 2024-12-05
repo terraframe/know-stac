@@ -104,11 +104,11 @@ public class DataBuilderService implements Runnable
 
     LabeledPropertyGraphSynchronization synchronization = new LabeledPropertyGraphSynchronization();
     synchronization.setUrl(url);
-    synchronization.setRemoteType("5389f33b-a563-4201-bc03-96ced3000670");
+    synchronization.setRemoteType("eadc883e-92ee-4302-8b0b-5a95cd000670");
     LocalizedValueConverter.populate(synchronization.getDisplayLabel(), label);
-    synchronization.setRemoteEntry("6f72b0d3-d9cc-4085-b276-6b9e3a000673");
+    synchronization.setRemoteEntry("062172db-cbcf-4162-ac53-cd3b97000673");
     synchronization.setForDate(DateUtil.parseDate("2024-01-01"));
-    synchronization.setRemoteVersion("574f734b-7e2e-4e30-90ad-fdfc06000674");
+    synchronization.setRemoteVersion("00625650-f845-455d-ae28-c18c2c000674");
     synchronization.setVersionNumber(0);
     synchronization.apply();
 
@@ -173,7 +173,7 @@ public class DataBuilderService implements Runnable
         LocationResult location = this.locationService.get(synchronization.getOid(), uuid);
 
         List<StacLocation> operational = this.locationService.getAncestors(version, type, hierarchyType, location, null).stream().map(r -> {
-          return StacLocation.build(r.getUuid(), r.getLabel());
+          return StacLocation.build(r.getUid(), r.getLabel());
         }).collect(Collectors.toList());
 
         item.setProperty("operational", operational);

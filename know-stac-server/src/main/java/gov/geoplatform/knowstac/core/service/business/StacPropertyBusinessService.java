@@ -20,13 +20,11 @@ import gov.geoplatform.knowstac.Property;
 import gov.geoplatform.knowstac.PropertyQuery;
 import gov.geoplatform.knowstac.core.model.PropertyType;
 import gov.geoplatform.knowstac.core.model.StacProperty;
-import gov.geoplatform.knowstac.core.model.StacProperty.Location;
-import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeQuery;
 import net.geoprism.registry.graph.GraphOrganization;
-import net.geoprism.registry.service.request.CacheProviderIF;
+import net.geoprism.registry.service.business.CacheProviderIF;
 
 @Service
 public class StacPropertyBusinessService

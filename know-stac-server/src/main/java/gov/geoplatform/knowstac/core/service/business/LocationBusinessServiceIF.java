@@ -17,12 +17,12 @@ public interface LocationBusinessServiceIF
 
   List<LocationResult> search(String synchronizationId, String text);
 
-  LocationResult get(String synchronizationId, String uuid);
+  LocationResult get(String synchronizationId, String uid);
 
-  GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUuid, Integer pageSize);
+  GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize);
 
   Page<LocationResult> getChildren(String synchronizationId, LocationResult parent, Integer pageSize, Integer pageNumber);
 
-  List<LocationResult> getAncestors(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType, LocationResult child, String uuid);
+  List<LocationResult> getAncestors(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType, LocationResult child, String uid);
 
 }

@@ -28,25 +28,25 @@ public class LocationService implements LocationServiceIF
 
   @Override
   @Request(RequestType.SESSION)
-  public LocationResult get(String sessionId, String synchronizationId, String uuid)
+  public LocationResult get(String sessionId, String synchronizationId, String uid)
   {
-    return this.service.get(synchronizationId, uuid);
+    return this.service.get(synchronizationId, uid);
   }
 
   @Override
   @Request(RequestType.SESSION)
-  public JsonObject getChildren(String sessionId, String synchronizationId, String uuid, Integer pageSize, Integer pageNumber)
+  public JsonObject getChildren(String sessionId, String synchronizationId, String uid, Integer pageSize, Integer pageNumber)
   {
-    LocationResult parent = this.service.get(synchronizationId, uuid);
+    LocationResult parent = this.service.get(synchronizationId, uid);
 
     return this.service.getChildren(synchronizationId, parent, pageSize, pageNumber).toJSON();
   }
 
   @Override
   @Request(RequestType.SESSION)
-  public JsonObject getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uuid, Integer pageSize)
+  public JsonObject getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uid, Integer pageSize)
   {
-    LocationResult child = this.service.get(synchronizationId, uuid);
+    LocationResult child = this.service.get(synchronizationId, uid);
 
     return this.service.getAncestorTree(synchronizationId, child, rootUuid, pageSize).toJSON();
   }

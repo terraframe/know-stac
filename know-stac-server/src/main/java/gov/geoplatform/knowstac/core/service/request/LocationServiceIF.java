@@ -14,10 +14,10 @@ public interface LocationServiceIF
 
   List<LocationResult> search(String sessionId, String synchronizationId, String text);
 
-  LocationResult get(String sessionId, String synchronizationId, String uuid);
+  LocationResult get(String sessionId, String synchronizationId, String uid);
 
-  JsonObject getChildren(String sessionId, String synchronizationId, String uuid, Integer pageSize, Integer pageNumber);
+  JsonObject getChildren(String sessionId, String synchronizationId, String uid, Integer pageSize, Integer pageNumber);
 
-  JsonObject getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uuid, Integer pageSize);
+  JsonObject getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uid, Integer pageSize);
 
 }

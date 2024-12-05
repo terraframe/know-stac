@@ -29,21 +29,22 @@ import com.runwaysdk.system.metadata.MdVertex;
 
 import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.TotalEdge;
-import net.geoprism.registry.service.request.JsonGraphVersionPublisherServiceIF;
+import net.geoprism.registry.cache.ClassificationCache;
+import net.geoprism.registry.service.business.JsonGraphVersionPublisherServiceIF;
 
 @Service(value = "ksJsonGraphVersionPublisherService")
 @Primary
-public class JsonGraphVersionPublisherService extends net.geoprism.registry.service.request.JsonGraphVersionPublisherService implements JsonGraphVersionPublisherServiceIF
+public class JsonGraphVersionPublisherService extends net.geoprism.registry.service.business.JsonGraphVersionPublisherService implements JsonGraphVersionPublisherServiceIF
 {
   @Override
   @Transaction
-  protected VertexObject publish(State state, MdVertex mdVertex, GeoObject geoObject)
+  protected VertexObject publish(State state, MdVertex mdVertex, GeoObject geoObject, ClassificationCache classiCache)
   {
-    VertexObject vertex = super.publish(state, mdVertex, geoObject);
+    VertexObject vertex = super.publish(state, mdVertex, geoObject, classiCache);
 
     // Create the total items node for the corresponding
     Map<String, Object> cache = state.getCache();
-
+    
     if (!cache.containsKey("total-edge"))
     {
       TotalEdge totalEdge = TotalEdge.get(state.version);

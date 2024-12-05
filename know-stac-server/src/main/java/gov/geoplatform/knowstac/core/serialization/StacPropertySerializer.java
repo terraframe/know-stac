@@ -32,7 +32,7 @@ import gov.geoplatform.knowstac.core.model.StacLocation;
 import gov.geoplatform.knowstac.core.model.StacOrganization;
 import gov.geoplatform.knowstac.core.model.StacProperty;
 import gov.geoplatform.knowstac.core.service.business.StacPropertyBusinessService;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class StacPropertySerializer extends JsonSerializer<Map<String, Object>>
 {

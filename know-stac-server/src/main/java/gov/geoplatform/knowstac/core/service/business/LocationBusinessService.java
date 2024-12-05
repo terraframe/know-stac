@@ -59,7 +59,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     GeoObjectTypeSnapshot rootType = this.gTypeService.getRoot(version);
 
     StringBuilder statement = new StringBuilder();
-    statement.append("SELECT @rid AS rid, oid AS oid, code AS code, uuid AS uuid, displayLabel.defaultLocale AS label");
+    statement.append("SELECT @rid AS rid, oid AS oid, code AS code, uid AS uid, displayLabel.defaultLocale AS label");
     statement.append(" FROM " + rootType.getGraphMdVertex().getDbClassName());
     statement.append(" WHERE displayLabel.defaultLocale.toUpperCase() LIKE :text");
     statement.append(" OR code LIKE :text");
@@ -74,7 +74,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
   }
 
   @Override
-  public LocationResult get(String synchronizationId, String uuid)
+  public LocationResult get(String synchronizationId, String uid)
   {
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
     LabeledPropertyGraphType graphType = synchronization.getGraphType();
@@ -83,19 +83,19 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     GeoObjectTypeSnapshot type = this.gTypeService.getRoot(version);
     HierarchyTypeSnapshot hierarchyType = this.hTypeService.get(version, graphType.getHierarchy());
 
-    return get(version, type, hierarchyType, uuid);
+    return get(version, type, hierarchyType, uid);
   }
 
-  private LocationResult get(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot type, HierarchyTypeSnapshot hierarchyType, String uuid)
+  private LocationResult get(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot type, HierarchyTypeSnapshot hierarchyType, String uid)
   {
     StringBuilder statement = new StringBuilder();
 
     this.appendSelect(version, hierarchyType, statement);
     statement.append(" FROM " + type.getGraphMdVertex().getDbClassName());
-    statement.append(" WHERE uuid = :uuid");
+    statement.append(" WHERE uid = :uid");
 
     GraphQuery<Map<String, Object>> query = new GraphQuery<Map<String, Object>>(statement.toString());
-    query.setParameter("uuid", uuid);
+    query.setParameter("uid", uid);
 
     return LocationResult.build(query.getSingleResult());
   }
@@ -110,35 +110,35 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     statement.append("SELECT @rid AS rid,");
     statement.append(" oid AS oid,");
     statement.append(" code AS code,");
-    statement.append(" uuid AS uuid,");
+    statement.append(" uid AS uid,");
     statement.append(" displayLabel.defaultLocale AS label,");
     statement.append(" out('" + mdLocationEdge.getDBClassName() + "').size() AS size,");
     statement.append(" first(out('" + mdTotalEdge.getDBClassName() + "')).numberOfItems AS items");
   }
 
   @Override
-  public List<LocationResult> getAncestors(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType, LocationResult child, String uuid)
+  public List<LocationResult> getAncestors(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType, LocationResult child, String uid)
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchyType.getGraphMdEdgeOid());
     MdVertexDAOIF mdVertex = MdVertexDAO.get(rootType.getGraphMdVertexOid());
-    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute("uuid");
+    MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute("uid");
 
     GraphQuery<Map<String, Object>> query = null;
 
-    if (uuid != null && uuid.length() > 0)
+    if (uid != null && uid.length() > 0)
     {
       StringBuilder statement = new StringBuilder();
       this.appendSelect(version, hierarchyType, statement);
       statement.append(" FROM (");
       statement.append(" SELECT expand($res)");
-      statement.append("  LET $a = (TRAVERSE in(\"" + mdEdge.getDBClassName() + "\") FROM :rid WHILE (" + mdAttribute.getColumnName() + " != :uuid))");
-      statement.append(" , $b = (SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + mdAttribute.getColumnName() + " = :uuid)");
+      statement.append("  LET $a = (TRAVERSE in(\"" + mdEdge.getDBClassName() + "\") FROM :rid WHILE (" + mdAttribute.getColumnName() + " != :uid))");
+      statement.append(" , $b = (SELECT FROM " + mdVertex.getDBClassName() + " WHERE " + mdAttribute.getColumnName() + " = :uid)");
       statement.append(" , $res = (UNIONALL($a,$b))");
       statement.append(")");
 
       query = new GraphQuery<Map<String, Object>>(statement.toString());
       query.setParameter("rid", child.getRid());
-      query.setParameter("uuid", uuid);
+      query.setParameter("uid", uid);
     }
     else
     {
@@ -171,7 +171,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
   }
 
   @Override
-  public GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUuid, Integer pageSize)
+  public GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize)
   {
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
     LabeledPropertyGraphType graphType = synchronization.getGraphType();
@@ -180,7 +180,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     GeoObjectTypeSnapshot rootType = this.gTypeService.getRoot(version);
     HierarchyTypeSnapshot hierarchyType = this.hTypeService.get(version, graphType.getHierarchy());
 
-    List<LocationResult> ancestors = this.getAncestors(version, rootType, hierarchyType, child, rootUuid);
+    List<LocationResult> ancestors = this.getAncestors(version, rootType, hierarchyType, child, rootUid);
     Integer count = this.getCount(hierarchyType, child);
 
     GraphNode<LocationResult> prev = null;

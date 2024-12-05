@@ -12,12 +12,14 @@ public class AppProperties
 
   public String getTitilerHost()
   {
-    return env.getProperty("titiler.host", "https://titiler.xyz");
+//    return env.getProperty("titiler.host", "https://titiler.xyz");
+    return env.getProperty("titiler.host", "http://localhost");
   }
 
   public Integer getTitilerPort()
   {
-    return env.getProperty("titiler.port", Integer.class, 443);
+//    return env.getProperty("titiler.port", Integer.class, 443);
+    return env.getProperty("titiler.port", Integer.class, 8000);
   }
 
   public Boolean isTitilerEnabled()
@@ -32,7 +34,7 @@ public class AppProperties
 
   public String getApiUrl()
   {
-    return env.getProperty("api.url", "https://localhost:8444");
+    return env.getProperty("api.url", "http://localhost:8081");
   }
 
 }

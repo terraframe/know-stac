@@ -17,7 +17,7 @@ public class LocationResult implements JsonSerializable
 
   private String  oid;
 
-  private String  uuid;
+  private String  uid;
 
   private String  code;
 
@@ -46,15 +46,15 @@ public class LocationResult implements JsonSerializable
   {
     this.oid = oid;
   }
-
-  public String getUuid()
+  
+  public String getUid()
   {
-    return uuid;
+    return uid;
   }
-
-  public void setUuid(String uuid)
+  
+  public void setUid(String uid)
   {
-    this.uuid = uuid;
+    this.uid = uid;
   }
 
   public String getCode()
@@ -104,7 +104,7 @@ public class LocationResult implements JsonSerializable
       LocationResult result = new LocationResult();
       result.setRid(map.get("rid"));
       result.setOid((String) map.get("oid"));
-      result.setUuid((String) map.get("uuid"));
+      result.setUid((String) map.get("uid"));
       result.setCode((String) map.get("code"));
       result.setLabel((String) map.get("label"));
 
@@ -150,7 +150,7 @@ public class LocationResult implements JsonSerializable
   {
     if (obj instanceof LocationResult)
     {
-      return this.uuid.equals( ( (LocationResult) obj ).uuid);
+      return this.uid.equals( ( (LocationResult) obj ).uid);
     }
 
     return super.equals(obj);

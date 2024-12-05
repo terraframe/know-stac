@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
     "net.geoprism.registry.service.permission", 
     "gov.geoplatform.knowstac.core.config", 
     "gov.geoplatform.knowstac.core.service",
-    "net.geoprism.spring"
+    "net.geoprism.spring.core"
   }
 )
 public class CoreConfig

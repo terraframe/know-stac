@@ -1,0 +1,53 @@
+version: '3'
+services:
+  #Services for the api server
+  elasticsearch:
+    container_name: knowstac-es
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.3.2'
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: elastic
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/knowstac/elasticsearch/data:/usr/share/elasticsearch/data
+    restart: always
+    ports:
+     - "9201:9200"
+     - "9301:9300"     
+  orientdb:
+    container_name: knowstac-orientdb
+    image: 'orientdb:3.2'
+    environment:
+      ORIENTDB_ROOT_PASSWORD: "root"
+      ORIENTDB_OPTS_MEMORY: "-Xms512M -Xmx2G -Dnetwork.binary.maxLength=56384"
+    volumes:
+      - "/data/knowstac/orientdb/databases:/orientdb/databases"
+      - "/data/knowstac/orientdb/backup:/orientdb/backup"
+      - "/data/knowstac/logs/orientdb:/orientdb/log"
+    restart: always
+    ulimits:
+      nofile:
+        soft: 10000
+        hard: 10000
+    ports:
+     - "9425:2424"
+     - "9485:2480"
+  postgres:
+    container_name: knowstac-postgres
+    image: 'postgis/postgis:14-3.2'
+    command: postgres -c max_locks_per_transaction=100 -c max_wal_size=2048
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: knowstac
+      POSTGRES_PASSWORD: knowstac
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /data/knowstac/postgres:/var/lib/postgresql/data
+    restart: always
+    ports:
+     - "5433:5432"   

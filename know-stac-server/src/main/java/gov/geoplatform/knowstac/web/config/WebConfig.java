@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import gov.geoplatform.knowstac.web.controller.Base64QueryCriteriaConverter;
 import gov.geoplatform.knowstac.web.service.SessionFilter;
 import net.geoprism.EncodingFilter;
-import net.geoprism.spring.JsonExceptionHandler;
+import net.geoprism.spring.web.JsonExceptionHandler;
 
 // Configuration of components which DO have web container dependencies
 @Configuration
@@ -33,7 +33,8 @@ import net.geoprism.spring.JsonExceptionHandler;
         "gov.geoplatform.knowstac.web.config", 
         "gov.geoplatform.knowstac.web.service", 
         "gov.geoplatform.knowstac.web.controller",
-        "net.geoprism.registry.service", 
+        "net.geoprism.registry.service",
+        "net.geoprism.spring.web"
 },  excludeFilters = @ComponentScan.Filter(
     type = FilterType.ASSIGNABLE_TYPE,
     classes = {

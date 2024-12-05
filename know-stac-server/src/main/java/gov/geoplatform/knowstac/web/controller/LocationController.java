@@ -45,9 +45,9 @@ public class LocationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<LocationResult> get(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String uuid) throws ParseException
+  public ResponseEntity<LocationResult> get(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String uid) throws ParseException
   {
-    LocationResult location = this.service.get(this.getSessionId(), synchronizationId, uuid);
+    LocationResult location = this.service.get(this.getSessionId(), synchronizationId, uid);
 
     return new ResponseEntity<LocationResult>(location, HttpStatus.OK);
   }
@@ -62,17 +62,17 @@ public class LocationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-children")
-  public ResponseEntity<String> getChildren(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String uuid, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> getChildren(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String uid, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
   {
-    JsonObject page = this.service.getChildren(this.getSessionId(), synchronizationId, uuid, pageSize, pageNumber);
+    JsonObject page = this.service.getChildren(this.getSessionId(), synchronizationId, uid, pageSize, pageNumber);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
   @GetMapping(API_PATH + "/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String rootUuid, @NotEmpty @RequestParam String uuid, @RequestParam(required = false) Integer pageSize)
+  public ResponseEntity<String> getAncestorTree(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String rootUid, @NotEmpty @RequestParam String uid, @RequestParam(required = false) Integer pageSize)
   {
-    JsonObject page = this.service.getAncestorTree(this.getSessionId(), synchronizationId, rootUuid, uuid, pageSize);
+    JsonObject page = this.service.getAncestorTree(this.getSessionId(), synchronizationId, rootUid, uid, pageSize);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
