@@ -2,7 +2,7 @@ package gov.geoplatform.knowstac.web.service;
 
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

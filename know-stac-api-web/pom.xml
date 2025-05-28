@@ -39,18 +39,18 @@
 			<artifactId>know-stac-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope> <!-- This dependency is NOT transitive because scope=provided -->
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
+    <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.1.0</version>
+        <scope>provided</scope>
+      </dependency>
+    <dependency>
+        <groupId>jakarta.servlet.jsp</groupId>
+        <artifactId>jakarta.servlet.jsp-api</artifactId>
+        <version>4.0.0</version>
+        <scope>provided</scope>
+    </dependency>
 	</dependencies>
 	<profiles>		
 		<profile>
@@ -63,18 +63,18 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven2-plugin</artifactId>
-						<version>1.7.11</version>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven3-plugin</artifactId>
+            <version>1.10.15</version>
 						<configuration>
 							<container>
-								<containerId>tomcat8x</containerId>
-								<artifactInstaller>
-									<groupId>org.apache.tomcat</groupId>
-									<artifactId>tomcat</artifactId>
-									<version>8.5.77</version>
-								</artifactInstaller>
-								<timeout>4800000</timeout>
+                <containerId>tomcat11x</containerId>
+                <artifactInstaller>
+                  <groupId>org.apache.tomcat</groupId>
+                  <artifactId>tomcat</artifactId>
+                  <version>11.0.7</version>
+                </artifactInstaller>
+                <timeout>4800000</timeout>
 							</container>
 							<configuration>
 								<properties>
@@ -154,9 +154,9 @@
 		<plugins>
 			<!-- Weave Aspects -->
 			<plugin>
-				<groupId>dev.aspectj</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>${aspectj.plugin.version}</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>${aspectj.plugin.version}</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.aspectj</groupId>

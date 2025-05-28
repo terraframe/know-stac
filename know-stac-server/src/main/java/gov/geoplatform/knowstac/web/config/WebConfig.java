@@ -2,8 +2,6 @@ package gov.geoplatform.knowstac.web.config;
 
 import java.util.concurrent.Executor;
 
-import javax.servlet.Filter;
-
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +12,16 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.geoplatform.knowstac.web.controller.Base64QueryCriteriaConverter;
 import gov.geoplatform.knowstac.web.service.SessionFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.MultipartConfigElement;
 import net.geoprism.EncodingFilter;
 import net.geoprism.spring.web.JsonExceptionHandler;
 
@@ -106,11 +107,16 @@ public class WebConfig implements WebMvcConfigurer, AsyncConfigurer
   }
 
   @Bean(name = "multipartResolver")
-  public CommonsMultipartResolver multipartResolver()
+  public MultipartResolver multipartResolver()
   {
-    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    multipartResolver.setMaxUploadSize(-1);
+    StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
     return multipartResolver;
+  }
+
+  @Bean
+  public MultipartConfigElement multipartConfigElement() {
+      // Unlimited file size (-1 for maxFileSize and maxRequestSize)
+      return new MultipartConfigElement(null, -1, -1, 0);
   }
 
 }
