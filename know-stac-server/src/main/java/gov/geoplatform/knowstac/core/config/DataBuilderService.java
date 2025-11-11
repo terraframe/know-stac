@@ -141,7 +141,7 @@ public class DataBuilderService implements Runnable
     this.index.createIndex();
 
     // This will populate the index with fake data
-    // populateIndex();
+//     populateIndex();
   }
 
   // Fake data builder
