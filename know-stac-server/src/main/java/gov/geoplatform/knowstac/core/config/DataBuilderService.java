@@ -42,6 +42,7 @@ import net.geoprism.registry.conversion.LocalizedValueConverter;
 import net.geoprism.registry.lpg.adapter.RegistryBridge;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
+import net.geoprism.registry.lpg.adapter.response.RegistryResponse;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphSynchronizationBusinessServiceIF;
@@ -91,7 +92,8 @@ public class DataBuilderService implements Runnable
     {
       RegistryBridge bridge = new RegistryBridge(connector);
 
-      JsonArray results = bridge.getOrganizations().getJsonArray();
+      RegistryResponse organizations = bridge.getOrganizations();
+      JsonArray results = organizations.getJsonArray();
 
       organizationService.importJsonTree(results);
     }
@@ -141,7 +143,7 @@ public class DataBuilderService implements Runnable
     this.index.createIndex();
 
     // This will populate the index with fake data
-    // populateIndex();
+//     populateIndex();
   }
 
   // Fake data builder

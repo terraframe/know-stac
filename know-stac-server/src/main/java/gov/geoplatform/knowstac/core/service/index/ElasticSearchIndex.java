@@ -361,21 +361,21 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
                 if (property.getType().equals(PropertyType.DATE) || property.getType().equals(PropertyType.DATE_TIME))
                 {
                   Map<String, String> range = (Map<String, String>) value;
-                  conditions.add(new Query.Builder().range(r -> {
+                  conditions.add(new Query.Builder().range(d -> d.date(r -> {
                     r.field("properties." + name);
 
                     if (!StringUtils.isBlank(range.get("startDate")))
                     {
-                      r.gte(JsonData.of(range.get("startDate")));
+                      r.gte(range.get("startDate"));
                     }
 
                     if (!StringUtils.isBlank(range.get("endDate")))
                     {
-                      r.lte(JsonData.of(range.get("endDate")));
+                      r.lte(range.get("endDate"));
                     }
 
                     return r;
-                  }).build());
+                  })).build());
                 }
                 else if (property.getType().equals(PropertyType.LOCATION))
                 {

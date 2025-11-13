@@ -63,19 +63,19 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven2-plugin</artifactId>
-						<version>1.7.11</version>
-						<configuration>
-							<container>
-								<containerId>tomcat8x</containerId>
-								<artifactInstaller>
-									<groupId>org.apache.tomcat</groupId>
-									<artifactId>tomcat</artifactId>
-									<version>8.5.77</version>
-								</artifactInstaller>
-								<timeout>4800000</timeout>
-							</container>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <version>1.7.11</version>
+            <configuration>
+              <container>
+                <containerId>tomcat9x</containerId>
+                <artifactInstaller>
+                  <groupId>org.apache.tomcat</groupId>
+                  <artifactId>tomcat</artifactId>
+                  <version>9.0.104</version>
+                </artifactInstaller>
+                <timeout>4800000</timeout>
+              </container>
 							<configuration>
 								<properties>
 									<cargo.servlet.port>8444</cargo.servlet.port>
@@ -90,7 +90,7 @@
 									<cargo.jvmargs>
 										-Xmx5120M
 										-Xdebug
-										-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8001
+										-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8099
 										-Dtomcat.home=/${project.basedir}/target/cargo/configurations/tomcat8x
 										-Djavax.net.ssl.keyStore=/${project.basedir}/src/test/resources/keystore.ks
 										-Djavax.net.ssl.keyStorePassword=2v8hVW2rPFncN6m
