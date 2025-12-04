@@ -1,0 +1,131 @@
+version: '3'
+services:
+  #Services for the api server
+  elasticsearch:
+    container_name: knowstac-es
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.19.6'
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: elastic
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/knowstac/elasticsearch/data:/usr/share/elasticsearch/data
+    restart: always
+    ports:
+     - "9201:9200"
+     - "9301:9300"     
+  orientdb:
+    container_name: knowstac-orientdb
+    image: 'orientdb:3.2'
+    environment:
+      ORIENTDB_ROOT_PASSWORD: "root"
+      ORIENTDB_OPTS_MEMORY: "-Xms512M -Xmx2G -Dnetwork.binary.maxLength=56384"
+    volumes:
+      - "/data/knowstac/orientdb/databases:/orientdb/databases"
+      - "/data/knowstac/orientdb/backup:/orientdb/backup"
+      - "/data/knowstac/logs/orientdb:/orientdb/log"
+    restart: always
+    ulimits:
+      nofile:
+        soft: 10000
+        hard: 10000
+    ports:
+     - "9425:2424"
+     - "9485:2480"
+  postgres:
+    container_name: knowstac-postgres
+    image: 'postgis/postgis:14-3.2'
+    command: postgres -c max_locks_per_transaction=100 -c max_wal_size=2048
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: knowstac
+      POSTGRES_PASSWORD: knowstac
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /data/knowstac/postgres:/var/lib/postgresql/data
+    restart: always
+    ports:
+     - "5433:5432"
+  api-dev:
+    container_name: knowstac-dev
+    image: terraframe/knowstac:latest
+    environment:
+      JAVA_OPTS: "-Xms1024m -Xmx4000m -Delasticsearch.index=knowstacdev -Dorientdb.db.name=knowstacdev -Ddatabase.user=knowstacdev -Ddatabase.password=knowstacdev -Ddatabase.name=knowstacdev -Dgeoprism.remote.url=http://localhost:8083/ -Dnetwork.binary.maxLength=56384 -Ddatabase.hostURL=knowstac-postgres -Dorientdb.db.url=remote:knowstac-orientdb -Delasticsearch.host=knowstac-es -Delasticsearch.port=9200"
+      POSTGRES_PORT: 5433
+      POSTGRES_ROOT_USERNAME: postgres
+      POSTGRES_ROOT_PASSWORD: knowstac
+    ports:
+      - "8083:8080"
+    volumes:
+      - /data/knowstac/dev/knowstac:/data/geoprism
+      - /data/knowstac/dev/logs/tomcat:/usr/local/tomcat/logs
+    depends_on:
+      - postgres
+      - orientdb
+      - elasticsearch
+    restart: always
+    #entrypoint: wait-for-it.sh -t 0 knowstac-postgres:5433 --
+    command: catalina.sh run # https://github.com/docker/compose/issues/3140
+  api-prod:
+      container_name: knowstac-prod
+      image: terraframe/knowstac:latest
+      environment:
+        JAVA_OPTS: "-Xms1024m -Xmx4000m -Delasticsearch.index=knowstacprod -Dorientdb.db.name=knowstacprod -Ddatabase.user=knowstacprod -Ddatabase.password=knowstacprod -Ddatabase.name=knowstacprod -Dgeoprism.remote.url=http://localhost:8082/ -Dnetwork.binary.maxLength=56384 -Ddatabase.hostURL=knowstac-postgres -Dorientdb.db.url=remote:knowstac-orientdb -Delasticsearch.host=knowstac-es -Delasticsearch.port=9200"
+        POSTGRES_PORT: 5433
+        POSTGRES_ROOT_USERNAME: postgres
+        POSTGRES_ROOT_PASSWORD: knowstac
+      ports:
+        - "8082:8080"
+      volumes:
+        - /data/knowstac/prod/knowstac:/data/geoprism
+        - /data/knowstac/prod/logs/tomcat:/usr/local/tomcat/logs
+      depends_on:
+        - postgres
+        - orientdb
+        - elasticsearch
+      restart: always
+      #entrypoint: wait-for-it.sh -t 0 knowstac-postgres:5433 --
+      command: catalina.sh run # https://github.com/docker/compose/issues/3140
+
+  #Services for the ui server
+  titiler:
+    container_name: knowstac-titiler
+    image: 'ghcr.io/developmentseed/titiler:latest'
+    environment:
+      PORT: "8000"
+      WORKERS_PER_CORE: "1"
+    restart: always
+    ports:
+     - "8000:8000"
+  ui-dev:
+    container_name: knowstac-dev-ui
+    image: terraframe/knowstac-ui:latest
+    environment:
+      JAVA_OPTS: "-Dserver.url=http://localhost:8081/ -Dapi.url=http://localhost:8083 -Dtitiler.host=http://knowstac-titiler -Dtitiler.port=8000 -Dtitiler.enabled=true"
+    ports:
+      - "8081:8080"
+    volumes:
+      - /data/knowstac/dev/logs/knowstac-ui:/usr/local/tomcat/logs
+    depends_on:
+      - api-dev
+    restart: always
+    command: catalina.sh run # https://github.com/docker/compose/issues/3140
+  ui-prod:
+      container_name: knowstac-prod-ui
+      image: terraframe/knowstac-ui:latest
+      environment:
+        JAVA_OPTS: "-Dserver.url=http://localhost:8080/ -Dapi.url=http://localhost:8082 -Dtitiler.host=http://knowstac-titiler -Dtitiler.port=8000 -Dtitiler.enabled=true"
+      ports:
+        - "8080:8080"
+      volumes:
+        - /data/knowstac/prod/logs/knowstac-ui:/usr/local/tomcat/logs
+      depends_on:
+        - api-prod
+      restart: always
+      command: catalina.sh run # https://github.com/docker/compose/issues/3140
+   

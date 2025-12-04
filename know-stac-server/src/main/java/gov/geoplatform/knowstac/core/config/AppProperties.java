@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.knowstac.core.config;
 
+import java.util.List;
+
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 
@@ -75,5 +77,10 @@ public class AppProperties
   public static String getElasticsearchPassword()
   {
     return Singleton.getProps().getString("elasticsearch.password", "elastic");
+  }
+
+  public static String getElasticsearchIndex()
+  {
+    return Singleton.getProps().getString("elasticsearch.index", "knowstac");
   }
 }
