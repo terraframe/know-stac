@@ -90,7 +90,7 @@
 									<cargo.jvmargs>
 										-Xmx5120M
 										-Xdebug
-										-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8001
+										-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8099
 										-Dtomcat.home=/${project.basedir}/target/cargo/configurations/tomcat8x
 										-Djavax.net.ssl.keyStore=/${project.basedir}/src/test/resources/keystore.ks
 										-Djavax.net.ssl.keyStorePassword=2v8hVW2rPFncN6m

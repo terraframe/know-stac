@@ -2,7 +2,7 @@
 #
 #
 
-FROM tomcat:8.5-jdk11-openjdk
+FROM tomcat:9-jdk11
 
 ENV KNOW_STAC_VERSION=LATEST
 ENV LOG_LEVEL=error
