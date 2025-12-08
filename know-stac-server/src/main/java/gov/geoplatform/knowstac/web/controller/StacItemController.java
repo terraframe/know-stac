@@ -3,9 +3,6 @@ package gov.geoplatform.knowstac.web.controller;
 import java.io.IOException;
 import java.util.Set;
 
-import javax.validation.Valid;
-
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.service.request.StacItemService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
@@ -25,7 +24,7 @@ public class StacItemController extends RunwaySpringController
 {
   public static class URLBody
   {
-    @NotEmpty
+    @NotBlank
     private String url;
 
     public String getUrl()

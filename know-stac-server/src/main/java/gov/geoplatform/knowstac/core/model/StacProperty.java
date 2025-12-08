@@ -2,9 +2,8 @@ package gov.geoplatform.knowstac.core.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class StacProperty
 {
@@ -60,10 +59,10 @@ public class StacProperty
 
   }
 
-  @NotEmpty
+  @NotBlank
   private String       name;
 
-  @NotEmpty
+  @NotBlank
   private String       label;
 
   @NotNull

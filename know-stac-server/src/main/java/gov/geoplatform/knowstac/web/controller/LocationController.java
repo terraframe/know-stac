@@ -18,7 +18,6 @@ package gov.geoplatform.knowstac.web.controller;
 import java.text.ParseException;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,7 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.service.request.LocationServiceIF;
+import jakarta.validation.constraints.NotBlank;
 import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
@@ -45,7 +45,7 @@ public class LocationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<LocationResult> get(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String uid) throws ParseException
+  public ResponseEntity<LocationResult> get(@NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, @NotBlank @RequestParam(name = "uid") String uid) throws ParseException
   {
     LocationResult location = this.service.get(this.getSessionId(), synchronizationId, uid);
 
@@ -54,7 +54,7 @@ public class LocationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/search")
-  public ResponseEntity<List<LocationResult>> search(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String text) throws ParseException
+  public ResponseEntity<List<LocationResult>> search(@NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, @NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<LocationResult> locations = this.service.search(this.getSessionId(), synchronizationId, text);
 
@@ -62,7 +62,11 @@ public class LocationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-children")
-  public ResponseEntity<String> getChildren(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String uid, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> getChildren( //
+      @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @NotBlank @RequestParam(name = "uid", required = false) String uid, //
+      @RequestParam(name = "pageSize", required = false) Integer pageSize, //
+      @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), synchronizationId, uid, pageSize, pageNumber);
 
@@ -70,7 +74,11 @@ public class LocationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@NotEmpty @RequestParam String synchronizationId, @RequestParam(required = false) String rootUid, @NotEmpty @RequestParam String uid, @RequestParam(required = false) Integer pageSize)
+  public ResponseEntity<String> getAncestorTree( //
+      @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @RequestParam(required = false, name = "rootUid") String rootUid, //
+      @NotBlank @RequestParam(name = "uid") String uid, //
+      @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), synchronizationId, rootUid, uid, pageSize);
 

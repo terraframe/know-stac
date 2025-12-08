@@ -25,7 +25,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 public class AwsController extends RunwaySpringController
 {
   @GetMapping("aws/download")
-  public ResponseEntity<StreamingResponseBody> download(@RequestParam String url) throws IOException
+  public ResponseEntity<StreamingResponseBody> download(@RequestParam(name = "url") String url) throws IOException
   {
     S3Client s3Client = S3Client.builder().region(Region.US_EAST_1).credentialsProvider(AnonymousCredentialsProvider.create()).build();
     S3Utilities s3Utilities = s3Client.utilities();
