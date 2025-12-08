@@ -37,7 +37,7 @@ export COMPOSE_HTTP_TIMEOUT=120
 :
 
 if [ "$build_artifact" == "true" ]; then
-  cd $WORKSPACE/uasdm
+  cd $WORKSPACE/knowstac
   mvn clean install -B
 fi
 
