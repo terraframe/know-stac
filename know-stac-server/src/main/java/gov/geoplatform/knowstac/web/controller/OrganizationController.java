@@ -18,7 +18,6 @@ package gov.geoplatform.knowstac.web.controller;
 import java.text.ParseException;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,20 +31,21 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
 import gov.geoplatform.knowstac.core.service.request.OrganizationResultService;
+import jakarta.validation.constraints.NotBlank;
 import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
 public class OrganizationController extends RunwaySpringController
 {
-  public static final String  API_PATH = "organization";
+  public static final String        API_PATH = "organization";
 
   @Autowired
   private OrganizationResultService service;
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<OrganizationResult> get(@NotEmpty @RequestParam String code) throws ParseException
+  public ResponseEntity<OrganizationResult> get(@NotBlank @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationResult org = this.service.get(this.getSessionId(), code);
 
@@ -54,7 +54,7 @@ public class OrganizationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/search")
-  public ResponseEntity<List<OrganizationResult>> search(@NotEmpty @RequestParam String text) throws ParseException
+  public ResponseEntity<List<OrganizationResult>> search(@NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationResult> orgs = this.service.search(this.getSessionId(), text);
 
@@ -62,7 +62,10 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-children")
-  public ResponseEntity<String> getChildren(@RequestParam(required = false) String code, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> getChildren( //
+      @RequestParam(required = false, name = "code") String code, //
+      @RequestParam(required = false, name = "pageSize") Integer pageSize, //
+      @RequestParam(required = false, name = "pageNumber") Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
 
@@ -70,7 +73,10 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@RequestParam(required = false) String rootCode, @NotEmpty @RequestParam String code, @RequestParam(required = false) Integer pageSize)
+  public ResponseEntity<String> getAncestorTree( //
+      @RequestParam(required = false, name = "rootCode") String rootCode, //
+      @NotBlank @RequestParam(name = "code") String code, //
+      @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 

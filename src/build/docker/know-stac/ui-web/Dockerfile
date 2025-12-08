@@ -2,7 +2,7 @@
 #
 #
 
-FROM tomcat:10.1-jdk17
+FROM tomcat:11-jdk17
 
 ENV KNOW_STAC_UI_VERSION=LATEST
 ENV LOG_LEVEL=error
