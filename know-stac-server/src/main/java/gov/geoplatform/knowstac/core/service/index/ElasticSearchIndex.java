@@ -70,9 +70,7 @@ import gov.geoplatform.knowstac.core.service.business.StacPropertyBusinessServic
 @Service
 public class ElasticSearchIndex implements IndexIF, DisposableBean
 {
-  private static Logger               logger          = LoggerFactory.getLogger(ElasticSearchIndex.class);
-
-  public static String                STAC_INDEX_NAME = "knowstac";
+  private static Logger               logger = LoggerFactory.getLogger(ElasticSearchIndex.class);
 
   @Autowired
   private StacPropertyBusinessService service;
@@ -157,12 +155,12 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     {
       try
       {
-        client.indices().get(g -> g.index(ElasticSearchIndex.STAC_INDEX_NAME));
+        client.indices().get(g -> g.index(AppProperties.getElasticsearchIndex()));
       }
       catch (ElasticsearchException e)
       {
         // Index doesn't exist, create it
-        client.indices().create(i -> i.index(ElasticSearchIndex.STAC_INDEX_NAME).mappings(m -> {
+        client.indices().create(i -> i.index(AppProperties.getElasticsearchIndex()).mappings(m -> {
           Builder builder = m.properties("geometry", p -> p.geoShape(v -> v));
           builder = builder.properties("assets", p -> p.object(v -> v.enabled(false)));
 
@@ -237,7 +235,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     try
     {
       ElasticsearchClient client = createClient();
-      client.indices().delete(i -> i.index(STAC_INDEX_NAME));
+      client.indices().delete(i -> i.index(AppProperties.getElasticsearchIndex()));
 
       this.shutdown();
     }
@@ -256,7 +254,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       {
         ElasticsearchClient client = createClient();
 
-        client.index(i -> i.index(STAC_INDEX_NAME).id(item.getId()).document(item));
+        client.index(i -> i.index(AppProperties.getElasticsearchIndex()).id(item.getId()).document(item));
       }
       catch (IOException e)
       {
@@ -279,7 +277,9 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     try
     {
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(STAC_INDEX_NAME).query(q -> q.match(m -> m.field("id").query(id))).build());
+      client.deleteByQuery(new DeleteByQueryRequest.Builder() //
+          .index(AppProperties.getElasticsearchIndex()) //
+          .query(q -> q.match(m -> m.field("id").query(id))).build());
     }
     catch (ElasticsearchException e)
     {
@@ -299,7 +299,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       ElasticsearchClient client = createClient();
 
       SearchRequest.Builder s = new SearchRequest.Builder();
-      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.index(AppProperties.getElasticsearchIndex());
       s.query(q -> q.match(m -> m.field("id").query(id)));
 
       SearchRequest request = s.build();
@@ -336,7 +336,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       ElasticsearchClient client = createClient();
 
       SearchRequest.Builder s = new SearchRequest.Builder();
-      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.index(AppProperties.getElasticsearchIndex());
 
       // s.size(pageSize);
       // s.from(pageSize * ( pageNumber - 1 ));
@@ -453,7 +453,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       ElasticsearchClient client = createClient();
 
       SearchRequest.Builder s = new SearchRequest.Builder();
-      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.index(AppProperties.getElasticsearchIndex());
 
       // s.size(pageSize);
       // s.from(pageSize * ( pageNumber - 1 ));
@@ -569,7 +569,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       ElasticsearchClient client = createClient();
 
       SearchRequest.Builder s = new SearchRequest.Builder();
-      s.index(ElasticSearchIndex.STAC_INDEX_NAME);
+      s.index(AppProperties.getElasticsearchIndex());
       s.query(q -> q.wildcard(m -> m.field("properties." + field).value("*" + text.toLowerCase() + "*")));
       s.source(so -> so.filter(f -> f.includes("properties." + field)));
 
