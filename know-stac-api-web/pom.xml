@@ -152,6 +152,11 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-war-plugin</artifactId>
+		        <version>3.5.1</version>
+		    </plugin>
 			<!-- Weave Aspects -->
 			<plugin>
 				<groupId>dev.aspectj</groupId>
