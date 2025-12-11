@@ -62,5 +62,5 @@ if [ "$deploy" == "true" ]; then
   [ -h ../permissions ] && unlink ../permissions
   ln -s $WORKSPACE/geoprism-platform/permissions ../permissions
 
-  ansible-playbook -v -i ./inventory/knowstac/$environment.ini ./knowstac.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch_clean=$elasticsearch_clean webserver_docker_image_tag=$tag docker_image_path=../../knowstac/src/build/docker/know-stac/api-web/target/knowstac.dimg.gz docker_image_path2=../../knowstac/src/build/docker/know-stac/ui-web/target/knowstac-ui.dimg.gz"
+  ansible-playbook -v -i ./inventory/knowstac/$environment.ini ./knowstac.yml --extra-vars "clean_db=$clean_db clean_solr=$clean_solr clean_orientdb=$clean_orientdb elasticsearch_clean=$elasticsearch_clean webserver_docker_image_tag=$tag docker_image_path2=../../knowstac/src/build/docker/know-stac/api-web/target/knowstac.dimg.gz docker_image_path=../../knowstac/src/build/docker/know-stac/ui-web/target/knowstac-ui.dimg.gz"
 fi
