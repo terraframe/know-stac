@@ -20,27 +20,27 @@ public class SessionService extends net.geoprism.registry.service.request.Sessio
   {
     Set<String> endpoints = super.getPublicEndpoints();
 
-    endpoints.add("api/item/put");
-    endpoints.add("api/item/remove");
-    endpoints.add("api/item/get");
-    endpoints.add("api/item/values");
+    endpoints.add("item/put");
+    endpoints.add("item/remove");
+    endpoints.add("item/get");
+    endpoints.add("item/values");
 
-    endpoints.add("api/query/collection");
+    endpoints.add("query/collection");
 
-    endpoints.add("api/stac-property/get-all");
-    endpoints.add("api/stac-property/get-for-organization");
+    endpoints.add("stac-property/get-all");
+    endpoints.add("stac-property/get-for-organization");
 
-    endpoints.add("api/organization/get");
-    endpoints.add("api/organization/search");
-    endpoints.add("api/organization/get-children");
-    endpoints.add("api/organization/get-ancestor-tree");
+    endpoints.add("organization/get");
+    endpoints.add("organization/search");
+    endpoints.add("organization/get-children");
+    endpoints.add("organization/get-ancestor-tree");
 
-    endpoints.add("api/location/get");
-    endpoints.add("api/location/search");
-    endpoints.add("api/location/get-children");
-    endpoints.add("api/location/get-ancestor-tree");
+    endpoints.add("location/get");
+    endpoints.add("location/search");
+    endpoints.add("location/get-children");
+    endpoints.add("location/get-ancestor-tree");
 
-    endpoints.add("api/aws/download");
+    endpoints.add("aws/download");
 
     return endpoints;
   }
