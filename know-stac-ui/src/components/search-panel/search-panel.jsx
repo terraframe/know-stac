@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, List, ListItem, Paper, Tab, Tabs, Typography } from '@mui/material';
 import LoadingOverlay from 'react-loading-overlay-nextgen';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Alerts from '../alerts';
 import SearchForm from '../search-form/search-form';
 import StacItemCard from './stac-item-card';
+import { setTab } from '../viewer/viewer-slice';
 
 function CustomTabPanel(props) {
     // eslint-disable-next-line react/prop-types
@@ -34,12 +35,13 @@ function a11yProps(index) {
 
 export default function SearchPanel() {
 
+    const dispatch = useDispatch()
     const configuration = useSelector((state) => state.configuration.value)
     const active = useSelector((state) => state.viewer.active)
     const messages = useSelector((state) => state.viewer.messages)
     const collection = useSelector((state) => state.viewer.collection)
+    const tab = useSelector((state) => state.viewer.tab)
 
-    const [tab, setTab] = React.useState(0);
     const [properties, setProperties] = useState(null);
 
     useEffect(() => {
@@ -54,6 +56,10 @@ export default function SearchPanel() {
             });
     }, [configuration]);
 
+    const setTabState = (t) => {
+        dispatch(setTab(t));
+    }
+
     return (
         <Paper style={{ maxHeight: '100vh', overflow: 'auto' }}>
             <LoadingOverlay
@@ -63,7 +69,7 @@ export default function SearchPanel() {
             >
                 <Alerts messages={messages} />
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={tab} onChange={(e, t) => { setTab(t) }} aria-label="basic tabs example">
+                    <Tabs value={tab} onChange={(e, t) => { setTabState(t) }} aria-label="basic tabs example">
                         <Tab label="Search" {...a11yProps(0)} />
                         <Tab label="Results" {...a11yProps(1)} />
                     </Tabs>

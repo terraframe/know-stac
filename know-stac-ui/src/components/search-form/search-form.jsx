@@ -11,7 +11,7 @@ import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import { setActive, setCollection, setMessages, setCriteria } from '../viewer/viewer-slice';
+import { setActive, setCollection, setMessages, setCriteria, setTab } from '../viewer/viewer-slice';
 import OrganizationField from './organization-field';
 import TextProperty from './text-property';
 
@@ -143,6 +143,7 @@ export default function SearchForm(props) {
             }).then((response) => {
                 if (response.ok) {
                     response.json().then(collection => {
+                        
                         // Add the extent of the items to their link objects
                         for (let i = 0; i < collection.extent.spatial.bbox.length; i += 1) {
                             const bbox = collection.extent.spatial.bbox[i];
@@ -152,6 +153,7 @@ export default function SearchForm(props) {
                         }
 
                         dispatch(setCollection(collection));
+                        dispatch(setTab(1));
                     });
                 } else {
                     response.json().then(err => {
