@@ -181,7 +181,7 @@ export default function Map() {
                 params.append('url', item.item.links[0].href);
                 params.append('assets', item.asset);
 
-                const url = `${process.env.REACT_APP_API_URL}/api/tiles/tilejson.json?${params.toString()}`;
+                const url = `api/tiles/tilejson.json?${params.toString()}`;
 
                 const id = `map-item-${item.id}`;
 
