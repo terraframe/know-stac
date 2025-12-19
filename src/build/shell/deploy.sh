@@ -36,9 +36,14 @@ export COMPOSE_HTTP_TIMEOUT=120
 : ----------------------------------
 :
 
-if [ "$build_artifact" == "true" ]; then
-  cd $WORKSPACE/knowstac
-  mvn clean install -B
+if [ "$build_artifact" = "true" ]; then
+  cd "$WORKSPACE/knowstac"
+
+  if [ "$environment" = "dev" ]; then
+    mvn clean install -B -Pdev
+  else
+    mvn clean install -B
+  fi
 fi
 
 :
