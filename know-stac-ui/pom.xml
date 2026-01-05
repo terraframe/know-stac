@@ -28,6 +28,17 @@
 	<artifactId>know-stac-ui</artifactId>
 	<packaging>pom</packaging>
 	<name>KnowSTAC UI</name>
+	<properties>
+	    <ui.baseHref>/</ui.baseHref>
+	</properties>
+	<profiles>
+	    <profile>
+	        <id>dev</id>
+	        <properties>
+	            <ui.baseHref>/dev/</ui.baseHref>
+	        </properties>
+	    </profile>
+	</profiles>
 	<build>
 		<plugins>
          <plugin>
@@ -61,14 +72,19 @@
                 </execution>
 
                 <execution>
-                    <id>npm run build</id>
-                    <goals>
-                        <goal>npm</goal>
-                    </goals>
-                    <configuration>
-                        <arguments>run build</arguments>
-                    </configuration>
-                </execution>
+				    <id>npm run build</id>
+				    <goals>
+				        <goal>npm</goal>
+				    </goals>
+				    <configuration>
+				        <environmentVariables>
+				            <BASE_HREF>${ui.baseHref}</BASE_HREF>
+				            <PUBLIC_URL>${ui.baseHref}</PUBLIC_URL>
+				            <VITE_BASE>${ui.baseHref}</VITE_BASE>
+				        </environmentVariables>
+				        <arguments>run build</arguments>
+				    </configuration>
+				</execution>
             </executions>
          </plugin>				
 		</plugins>

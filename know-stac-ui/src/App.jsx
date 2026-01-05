@@ -22,7 +22,7 @@ function Root() {
   const configuration = useSelector((state) => state.configuration.value)
 
   useEffectOnce(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/configuration`, {
+    fetch('api/configuration', {
       method: 'GET',
     }).then((response) => {
       if (response.ok) {
