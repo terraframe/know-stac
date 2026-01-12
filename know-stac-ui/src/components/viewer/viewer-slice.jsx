@@ -22,7 +22,10 @@ export const viewerSlice = createSlice({
         bbox: null,
 
         // Current extent of the map
-        extent: null
+        extent: null,
+
+        // Current tab on the search panel
+        tab: 0
     },
     reducers: {
         setMapItem: (state, action) => {
@@ -56,6 +59,9 @@ export const viewerSlice = createSlice({
         setExtent: (state, action) => {
             state.extent = action.payload;
         },
+        setTab: (state, action) => {
+            state.tab = action.payload;
+        },
         bbox: (state, action) => {
             state.bbox = action.payload;
         },
@@ -64,6 +70,6 @@ export const viewerSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox } = viewerSlice.actions
+export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox, setTab } = viewerSlice.actions
 
 export default viewerSlice.reducer
