@@ -5,7 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { bboxPolygon, centroid, featureCollection } from '@turf/turf';
 import { useDispatch, useSelector } from 'react-redux';
 import './map.css';
-import { setExtent } from '../viewer/viewer-slice';
+import { setExtent, setSelectedItemId } from '../viewer/viewer-slice';
 
 export default function Map() {
 
@@ -67,7 +67,6 @@ export default function Map() {
                         tileSize: 256
                     }
                 },
-                sprite: `${process.env.REACT_APP_SPRITE_URL}`,
                 glyphs: `${process.env.PUBLIC_URL}/glyphs/{fontstack}/{range}.pbf`,
                 layers: [
                     {
@@ -152,6 +151,13 @@ export default function Map() {
                 setBounds(map.current.getBounds());
             });
 
+            map.current.on('click', 'items', (e) => {
+
+                if (e.features.length > 0) {
+                    dispatch(setSelectedItemId(e.features[0].properties.href));
+                }
+            });
+
             setBounds(map.current.getBounds());
 
             setLoaded(true);
@@ -221,11 +227,11 @@ export default function Map() {
 
                     collection.links.filter(link => link.rel === 'item').forEach(link => {
 
-                        const { bbox, title } = link;
+                        const { bbox, title, href } = link;
 
                         if (bbox != null) {
                             features.push(centroid(bboxPolygon(bbox), {
-                                properties: { label: title }
+                                properties: { label: title, href },
                             }));
                         }
                     })

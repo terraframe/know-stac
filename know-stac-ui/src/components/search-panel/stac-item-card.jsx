@@ -10,6 +10,8 @@ export default function StacItemCard(props) {
     const items = useSelector((state) => state.viewer.items)
 
     const configuration = useSelector((state) => state.configuration.value)
+    const selectedItemId = useSelector((state) => state.viewer.selectedItemId);
+
     const [open, setOpen] = React.useState(false);
     const [item, setItem] = React.useState(null);
     const [icon, setIcon] = React.useState(null);
@@ -101,8 +103,24 @@ export default function StacItemCard(props) {
         }
     }, [open])
 
+    useEffect(() => {
+        if (selectedItemId != null && link.href === selectedItemId) {
+            setOpen(true);
+
+            try {
+                const element = document.getElementById(selectedItemId);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            } catch (error) {
+                // Do nothing
+            }
+        }
+    }, [item, selectedItemId])
+
+
     return (
-        <Card sx={{ minWidth: 370 }}>
+        <Card id={link.href} sx={{ minWidth: 370 }}>
             <CardContent>
                 <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
                     {link.title}
@@ -117,7 +135,7 @@ export default function StacItemCard(props) {
                         />
                     )}
 
-                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                    <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
                         Properties
                     </Typography>
                     <Table sx={{ minWidth: 350 }} aria-label="simple table">
@@ -165,7 +183,7 @@ export default function StacItemCard(props) {
                         </TableBody>
                     </Table>
 
-                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                    <Typography sx={{ fontSize: 16, mt: 4 }} color="text.secondary" gutterBottom>
                         Assets
                     </Typography>
                     <Table sx={{ minWidth: 350 }} aria-label="simple table">

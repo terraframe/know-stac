@@ -45,15 +45,15 @@ export default function SearchPanel() {
     const [properties, setProperties] = useState(null);
 
     useEffect(() => {
-            fetch(`${configuration.url}/api/stac-property/get-all`, {
-                method: 'GET',
-            }).then((response) => {
-                if (response.ok) {
-                    response.json().then(props => {
-                        setProperties(props);
-                    });
-                }
-            });
+        fetch(`${configuration.url}/api/stac-property/get-all`, {
+            method: 'GET',
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then(props => {
+                    setProperties(props);
+                });
+            }
+        });
     }, [configuration]);
 
     const setTabState = (t) => {
@@ -83,11 +83,12 @@ export default function SearchPanel() {
                     {collection != null && collection.links.length > 1 && (
                         <Box>
                             <Typography variant="h3" component="h3">Collection</Typography>
-                            <Grid container spacing={2}>
-                                <Grid item xs={2}>
-                                    <Typography>Spatial Extent</Typography>
+
+                            <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <Typography variant="h5" component="h5">Spatial Extent</Typography>
                                 </Grid>
-                                <Grid item xs={10}>
+                                <Grid item xs={12}>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6}>
                                             {collection.extent.spatial.bbox[0][0]}
@@ -104,19 +105,19 @@ export default function SearchPanel() {
                                     </Grid>
 
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <Typography>Temporal Extent</Typography>
+                                <Grid item xs={12}>
+                                    <Typography variant="h5" component="h5">Temporal Extent</Typography>
                                 </Grid>
-                                <Grid item xs={10}>
+                                <Grid item xs={12}>
                                     <Grid container spacing={2}>
                                         <Grid item xs={2}>
-                                            <Typography>Start Date</Typography>
+                                            <Typography>Start</Typography>
                                         </Grid>
                                         <Grid item xs={10}>
                                             {collection.extent.temporal.interval[0]}
                                         </Grid>
                                         <Grid item xs={2}>
-                                            <Typography>End Date</Typography>
+                                            <Typography>End</Typography>
                                         </Grid>
                                         <Grid item xs={10}>
                                             {collection.extent.temporal.interval[1]}
@@ -125,7 +126,7 @@ export default function SearchPanel() {
                                 </Grid>
                             </Grid>
 
-                            <Typography variant="h4" component="h4">Items</Typography>
+                            <Typography variant="h5" component="h5" mt={3}>Items</Typography>
                             <List>
                                 {collection.links.filter(link => link.rel === 'item').map((row) => (
                                     <ListItem key={row.href}>
