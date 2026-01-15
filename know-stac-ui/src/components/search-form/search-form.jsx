@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
-import { Box, Checkbox, FormControlLabel, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
 import { DatePicker } from '@mui/x-date-pickers';
@@ -89,7 +89,7 @@ export default function SearchForm(props) {
                         delete vals[key];
                     }
                 }
-            });            
+            });
 
             const parameters = { properties: vals };
 
@@ -143,7 +143,7 @@ export default function SearchForm(props) {
             }).then((response) => {
                 if (response.ok) {
                     response.json().then(collection => {
-                        
+
                         // Add the extent of the items to their link objects
                         for (let i = 0; i < collection.extent.spatial.bbox.length; i += 1) {
                             const bbox = collection.extent.spatial.bbox[i];
@@ -263,9 +263,7 @@ export default function SearchForm(props) {
                     </Fragment>
                 ))}
 
-                <IconButton type="submit" aria-label="search">
-                    <Search style={{ fill: "blue" }} />
-                </IconButton>
+                <Button type="submit" aria-label="search" startIcon={<Search style={{ fill: "blue" }} />}>Search</Button>
             </Box>
         </>
 
