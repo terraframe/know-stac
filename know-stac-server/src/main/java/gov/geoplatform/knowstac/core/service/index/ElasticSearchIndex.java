@@ -251,20 +251,20 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     if (item != null)
     {
       System.out.println("Adding item to elastic search: ");
-      
+
       try
       {
         ElasticsearchClient client = createClient();
 
         client.index(i -> i.index(AppProperties.getElasticsearchIndex()).id(item.getId()).document(item));
-        
+
         System.out.println("Elastic search updated");
       }
       catch (IOException e)
       {
         throw new ProgrammingErrorException(e);
       }
-      
+
     }
 
     // Due to the fact that the thumbnail endpoints are in the private s3 bucket
@@ -413,7 +413,12 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
             Geometry geometry = factory.toGeometry(envelope);
             WKTWriter writer = new WKTWriter();
 
-            conditions.add(new Query.Builder().geoShape(qs -> qs.boost(10F).field("geometry").shape(bb -> bb.relation(GeoShapeRelation.Intersects).shape(JsonData.of(writer.write(geometry))))).build());
+            conditions.add(new Query.Builder() //
+                .geoShape(qs -> qs.boost(10F) //
+                    .field("geometry") //
+                    .shape(bb -> bb.relation(GeoShapeRelation.Intersects) //
+                        .shape(JsonData.of(writer.write(geometry)))))
+                .build());
 
             b.must(conditions);
           }
@@ -434,6 +439,18 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
       {
         items.add(hit.source());
       }
+
+      if (!criteria.hasConditions())
+      {
+        items.sort((a, b) -> {
+          if (a.getCollection() != null && b.getCollection() != null)
+          {
+            return a.getCollection().compareTo(b.getCollection());
+          }
+
+          return 1;
+        });
+      }
     }
     catch (ElasticsearchException e)
     {
@@ -447,7 +464,6 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
     return items;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<StacItem> getItems(Map<String, String> params)
   {
