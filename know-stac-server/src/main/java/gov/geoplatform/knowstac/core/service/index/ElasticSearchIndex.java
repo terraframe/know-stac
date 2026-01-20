@@ -442,7 +442,14 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
       if (!criteria.hasConditions())
       {
-        items.sort((a, b) -> a.getCollection().compareTo(b.getCollection()));
+        items.sort((a, b) -> {
+          if (a.getCollection() != null && b.getCollection() != null)
+          {
+            return a.getCollection().compareTo(b.getCollection());
+          }
+
+          return 1;
+        });
       }
     }
     catch (ElasticsearchException e)
