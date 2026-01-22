@@ -342,6 +342,7 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
 
       SearchRequest.Builder s = new SearchRequest.Builder();
       s.index(AppProperties.getElasticsearchIndex());
+      s.size(1000);
 
       // s.size(pageSize);
       // s.from(pageSize * ( pageNumber - 1 ));
