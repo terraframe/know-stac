@@ -12,7 +12,7 @@ export default function Alerts({
 			< Box >
 				{
 					messages.map(message => (
-						<Alert key={message.key} severity="error">
+						<Alert key={message.key} severity={message.type === 'warning' ? 'warning' : "error"}>
 							{message.message}
 						</Alert>
 					))

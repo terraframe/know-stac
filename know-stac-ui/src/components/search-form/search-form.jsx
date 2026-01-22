@@ -154,6 +154,17 @@ export default function SearchForm(props) {
 
                         dispatch(setCollection(collection));
                         dispatch(setTab(1));
+
+                        if (collection.extent.spatial.bbox.length > 5) {
+                            dispatch(setMessages({
+                                messages: [{
+                                    key: 'size-warning',
+                                    message: 'The maximum number of items was returned for the collection. There may be additional items which were not displayed.  Please further restrict the query to reduce the number of results',
+                                    type: 'warning'
+                                }]
+                            }));
+                        }
+
                     });
                 } else {
                     response.json().then(err => {
