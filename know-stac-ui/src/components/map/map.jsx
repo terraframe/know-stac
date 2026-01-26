@@ -104,6 +104,25 @@ export default function Map() {
                 }
             });
 
+            map.current.addSource('item-extent', {
+                'type': 'geojson',
+                'data': {
+                    type: "FeatureCollection",
+                    features: []
+                }
+            });
+
+            map.current.addLayer({
+                'id': 'item-extent',
+                'type': 'fill',
+                'source': 'item-extent',
+                'paint': {
+                    "fill-color": "green",
+                    "fill-opacity": 0.3,
+                    "fill-outline-color": "black"
+                }
+            });
+
             // Items source and layer
             map.current.addSource('items', {
                 'type': 'geojson',
@@ -254,7 +273,13 @@ export default function Map() {
     // If the state bbox has changed then update the map
     useEffect(() => {
         if (loaded && mBbox != null) {
+            // Update the collection layer
+            map.current.getSource('item-extent').setData(
+                featureCollection([bboxPolygon(mBbox)])
+            );
+
             map.current.fitBounds(mBbox);
+
         }
     }, [loaded, mBbox])
 

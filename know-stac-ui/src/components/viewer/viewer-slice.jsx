@@ -27,7 +27,11 @@ export const viewerSlice = createSlice({
         // Current tab on the search panel
         tab: 0,
 
+        // Current selected item from the map
         selectedItemId: null,
+
+        // Search counter
+        count: 0
     },
     reducers: {
         setMapItem: (state, action) => {
@@ -70,12 +74,15 @@ export const viewerSlice = createSlice({
         setSelectedItemId: (state, action) => {
             state.selectedItemId = action.payload;
         },
+        incrementCount: (state) => {
+            state.count += 1;
+        },
 
         default: {}
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox, setTab, setSelectedItemId } = viewerSlice.actions
+export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox, setTab, setSelectedItemId, incrementCount } = viewerSlice.actions
 
 export default viewerSlice.reducer

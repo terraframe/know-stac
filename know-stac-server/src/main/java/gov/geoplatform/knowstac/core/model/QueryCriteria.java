@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.locationtech.jts.geom.Envelope;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gov.geoplatform.knowstac.core.serialization.EnvelopeDeserializer;
 import gov.geoplatform.knowstac.core.serialization.EnvelopeSerializer;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QueryCriteria
 {
   private Map<String, Object> properties;

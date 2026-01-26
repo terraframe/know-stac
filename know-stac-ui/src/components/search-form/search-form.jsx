@@ -11,7 +11,7 @@ import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import { setActive, setCollection, setMessages, setCriteria, setTab } from '../viewer/viewer-slice';
+import { setActive, setCollection, setMessages, setCriteria, setTab, incrementCount } from '../viewer/viewer-slice';
 import OrganizationField from './organization-field';
 import TextProperty from './text-property';
 
@@ -21,6 +21,7 @@ export default function SearchForm(props) {
     const configuration = useSelector((state) => state.configuration.value)
     const criteria = useSelector((state) => state.viewer.criteria)
     const extent = useSelector((state) => state.viewer.extent)
+    const counter = useSelector((state) => state.viewer.count);
 
     const dispatch = useDispatch()
 
@@ -91,13 +92,15 @@ export default function SearchForm(props) {
                 }
             });
 
-            const parameters = { properties: vals };
+            const parameters = { properties: vals, count: counter };
 
             if (values.extent) {
                 parameters.bbox = extent;
             }
-
+            
             setSearchParams({ criteria: btoa(JSON.stringify(parameters)) });
+
+            dispatch(incrementCount())
         },
     });
 
