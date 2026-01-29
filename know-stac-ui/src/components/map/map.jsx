@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
+import { v4 as uuidv4 } from 'uuid'
 import { cogProtocol } from '@geomatico/maplibre-cog-protocol';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { bboxPolygon, centroid, featureCollection } from '@turf/turf';
@@ -16,6 +17,8 @@ export default function Map() {
     const dispatch = useDispatch()
 
     const [loaded, setLoaded] = useState(false);
+    const [hoverId, setHoverId] = useState(null);
+    const prevHoverId = useRef();
 
     const mapContainer = useRef(null);
     const map = useRef(null);
@@ -126,6 +129,7 @@ export default function Map() {
             // Items source and layer
             map.current.addSource('items', {
                 'type': 'geojson',
+                'promoteId': 'id',
                 'data': {
                     type: "FeatureCollection",
                     features: []
@@ -138,7 +142,12 @@ export default function Map() {
                 "type": "circle",
                 "paint": {
                     "circle-radius": 10,
-                    "circle-color": "#800000",
+                    "circle-color": [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        "#3275B8",
+                        "#800000"
+                    ],
                     "circle-stroke-width": 2,
                     "circle-stroke-color": "#FFFFFF"
                 }
@@ -170,6 +179,18 @@ export default function Map() {
                 setBounds(map.current.getBounds());
             });
 
+            // When the user moves their mouse over the state-fill layer, we'll update the
+            // feature state for the feature under the mouse.
+            map.current.on('mousemove', 'items', (e) => {
+                if (e.features.length > 0) {
+                    setHoverId(e.features[0].id);
+                }
+            });
+
+            map.current.on('mouseleave', 'items', () => {
+                setHoverId(null);
+            });
+
             map.current.on('click', 'items', (e) => {
 
                 if (e.features.length > 0) {
@@ -183,6 +204,34 @@ export default function Map() {
         });
 
     }, [lng, lat, zoom]);
+
+    // Hover effect logic
+    useEffect(() => {
+        if (map.current != null) {
+
+            if (prevHoverId.current != null) {
+                map.current.setFeatureState(
+                    { source: 'items', id: prevHoverId.current },
+                    { hover: false }
+                );
+            }
+
+            if (hoverId != null) {
+                map.current.setFeatureState(
+                    { source: 'items', id: hoverId },
+                    { hover: true }
+                );
+
+                map.current.getCanvas().style.cursor = 'pointer';
+            }
+            else {
+                map.current.getCanvas().style.cursor = 'default';
+            }
+
+            // Update the ref for the next render
+            prevHoverId.current = hoverId;
+        }
+    }, [hoverId]);
 
     // Update the map when the assets change
     useEffect(() => {
@@ -205,6 +254,12 @@ export default function Map() {
                 const params = new URLSearchParams()
                 params.append('url', item.item.links[0].href);
                 params.append('assets', item.asset);
+
+                const asset = item.item.assets[item.asset];
+
+                if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+                    params.append('multispectral', 'true');
+                }
 
                 const url = `api/tiles/tilejson.json?${params.toString()}`;
 
@@ -249,9 +304,16 @@ export default function Map() {
                         const { bbox, title, href } = link;
 
                         if (bbox != null) {
-                            features.push(centroid(bboxPolygon(bbox), {
-                                properties: { label: title, href },
-                            }));
+                            const id = uuidv4()
+
+                            const feature = centroid(bboxPolygon(bbox), {
+                                properties: {
+                                    label: title, href, id
+                                }
+                            })
+                            feature.id = id;
+
+                            features.push(feature);
                         }
                     })
 
