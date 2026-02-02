@@ -1,9 +1,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import React, { Fragment, useEffect } from 'react';
-import { Button, Card, CardActions, CardContent, CardMedia, Collapse, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Collapse, Grid, Link, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import ShareIcon from '@mui/icons-material/Share';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMapItem, bbox } from '../viewer/viewer-slice';
+
 
 export default function StacItemCard(props) {
     const { properties, link } = props;
@@ -122,9 +124,24 @@ export default function StacItemCard(props) {
     return (
         <Card id={link.href} sx={{ minWidth: 370 }}>
             <CardContent>
-                <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
-                    {link.title}
-                </Typography>
+                <Grid
+                    justify="space-between"
+                    container
+                    spacing={3}
+                >
+                    <Grid item>
+                        <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+                            {link.title}
+                        </Typography>
+                    </Grid>
+
+                    <Grid item>
+                        <Link href={link.href} color="primary" underline="hover" target='_blank'>
+                            <ShareIcon />
+                        </Link>
+                    </Grid>
+                </Grid>
+
 
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     {icon != null && (

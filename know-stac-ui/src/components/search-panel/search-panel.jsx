@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, List, ListItem, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Grid, Link, List, ListItem, Paper, Tab, Tabs, Typography } from '@mui/material';
 import LoadingOverlay from 'react-loading-overlay-nextgen';
 import { useDispatch, useSelector } from 'react-redux';
+import ShareIcon from '@mui/icons-material/Share';
 
 import Alerts from '../alerts';
 import SearchForm from '../search-form/search-form';
@@ -82,7 +83,26 @@ export default function SearchPanel() {
                 <CustomTabPanel value={tab} index={1}>
                     {collection != null && collection.links.length > 1 && (
                         <Box>
-                            <Typography variant="h3" component="h3">Collection</Typography>
+                            {collection.links.filter(link => link.rel === 'self').map((row) => (
+                                <Grid
+                                    key={row.href}
+                                    justify="space-between"
+                                    container
+                                    spacing={3}
+                                >
+                                    <Grid item>
+                                        <Typography variant="h3" component="h3" style={{ flex: 1 }}>Collection</Typography>
+                                    </Grid>
+
+                                    <Grid item>
+                                        <Link href={row.href} color="primary" target='_blank'>
+                                            <ShareIcon />
+                                        </Link>
+                                    </Grid>
+                                </Grid>
+
+                            ))}
+
 
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
