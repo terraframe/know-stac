@@ -17,6 +17,8 @@ package gov.geoplatform.knowstac.core.service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -146,30 +148,26 @@ public class TiTilerService
 
       if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
       {
-        redIdx.incrementAndGet();
-        greenIdx.incrementAndGet();
-        blueIdx.incrementAndGet();
+        final TiTillerStacBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
+        final TiTillerStacBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
+        final TiTillerStacBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
 
         this.getStacStatistics(params).ifPresent(stats -> {
 
-          builder.addParameter("asset_bidx", assetName + "|" + String.valueOf(redIdx.intValue()) + "," + String.valueOf(greenIdx.intValue()) + "," + String.valueOf(blueIdx.intValue()));
+          builder.addParameter("asset_bidx", assetName + "|" + String.valueOf(redIdx.intValue() + 1) + "," + String.valueOf(greenIdx.intValue() + 1) + "," + String.valueOf(blueIdx.intValue() + 1));
 
-          TiTillerStacBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
-          TiTillerStacBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
-          TiTillerStacBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
+          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
+              stats.getAssetBand(assetName + "_" + redMetadata.getName()), //
+              stats.getAssetBand(assetName + "_" + greenMetadata.getName()), //
+              stats.getAssetBand(assetName + "_" + blueMetadata.getName()));
 
-          TiTilerStacBandStatistic redStat = stats.getAssetBand(assetName + "_" + redMetadata.getName());
-          TiTilerStacBandStatistic greenStat = stats.getAssetBand(assetName + "_" + greenMetadata.getName());
-          TiTilerStacBandStatistic blueStat = stats.getAssetBand(assetName + "_" + blueMetadata.getName());
+          Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+          Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
 
-          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
-          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
-
-          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
-          // could be negative. But it's happening on my sample data and it
-          // doesn't render properly if it is.
-
-          builder.addParameter("rescale", String.valueOf(min) + "," + String.valueOf(max));
+          if (min.isPresent() && max.isPresent())
+          {
+            builder.addParameter("rescale", String.valueOf(min.get()) + "," + String.valueOf(max.get()));
+          }
         });
       }
     });
