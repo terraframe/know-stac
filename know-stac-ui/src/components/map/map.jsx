@@ -260,6 +260,9 @@ export default function Map() {
                 if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
                     params.append('multispectral', 'true');
                 }
+                else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+                    params.append('hillshade', 'true');
+                }
 
                 const url = `api/tiles/tilejson.json?${params.toString()}`;
 

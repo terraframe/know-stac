@@ -49,6 +49,8 @@ public class TiTilerService
 {
   private static final String MULTISPECTRAL = "multispectral";
 
+  private static final String HILLSHADE     = "hillshade";
+
   private static final String URL           = "url";
 
   private static final String ASSETS        = "assets";
@@ -108,6 +110,7 @@ public class TiTilerService
 
       params.entrySet().stream() //
           .filter(entry -> !entry.getKey().equals(MULTISPECTRAL)) //
+          .filter(entry -> !entry.getKey().equals(HILLSHADE)) //
           .forEach(entry -> {
             builder.addParameter(entry.getKey(), entry.getValue());
           });
@@ -115,6 +118,11 @@ public class TiTilerService
       if (params.containsKey(MULTISPECTRAL) && Boolean.valueOf(params.get(MULTISPECTRAL)))
       {
         this.calculateAndRescaleBands(builder, params);
+      }      
+      else if (params.containsKey(HILLSHADE) && Boolean.valueOf(params.get(HILLSHADE)))
+      {
+        builder.addParameter("algorithm", "hillshade");
+        builder.addParameter("colormap_name", "terrain");
       }
 
       httpGet.setURI(builder.build());

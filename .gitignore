@@ -1,3 +1,5 @@
 /logs/
 /.settings/
 /.project
+/know-stac-server-openapi/
+/openapi_pp.json

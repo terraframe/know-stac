@@ -77,37 +77,23 @@ public class StacItemBusinessService
   public StacItem put(StacItem item)
   {
     this.index.getItem(item.getId()).ifPresent(i -> {
-      System.out.println("Unable to add item already exists");
-      
       throw new GenericException("A STAC item already exists with the id [" + item.getId() + "]");
     });
 
     this.validateProperties(item);
 
-    System.out.println("Adding item to index");
-    
     this.index.put(item);
-    
-    System.out.println("Updating totals");
 
     // Update the totals for the new locations and organization values
     updateTotals(item, 1);
 
-    System.out.println("Finished");
-    
     return item;
   }
 
   private void validateProperties(StacItem item)
   {
-    System.out.println("Validating item: ");
-
-    
     // Validate location values
     this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.LOCATION)).forEach(property -> {
-      
-      System.out.println("Validating location");
-
 
       Optional<List<StacLocation>> optional = item.getProperty(property.getName());
 
@@ -122,8 +108,6 @@ public class StacItemBusinessService
 
           if (child == null)
           {
-            System.out.println("Invalid location: " + location.getUuid());
-
             throw new GenericException("A location doesn't exist with the UUID [" + location.getUuid() + "]");
           }
         }
@@ -131,8 +115,6 @@ public class StacItemBusinessService
     });
 
     this.propertyService.getAll().stream().filter(p -> p.getType().equals(PropertyType.ORGANIZATION)).forEach(property -> {
-      
-      System.out.println("Validating organization");
 
       Optional<List<StacOrganization>> optional = item.getProperty(property.getName());
 
@@ -143,15 +125,11 @@ public class StacItemBusinessService
 
           if (child == null)
           {
-            System.out.println("Invalid organization: " + organization.getCode());
-
             throw new GenericException("An organization doesn't exist with the code [" + organization.getCode() + "]");
           }
         }
       });
     });
-    
-    System.out.println("Validation passed");
   }
 
   private void updateTotals(final StacItem item, final int amount)

@@ -94,8 +94,8 @@ export default function StacItemCard(props) {
                         if (i.assets.thumbnail != null) {
                             setIcon(i.assets.thumbnail);
                         }
-                        else if (i.assets['thumbnail-hd'] != null) {
-                            setIcon(i.assets['thumbnail-hd']);
+                        else if (i.assets.overview != null) {
+                            setIcon(i.assets.overview);
                         }
 
                     });
@@ -159,7 +159,7 @@ export default function StacItemCard(props) {
                         <TableBody>
 
                             {item != null && properties != null && properties.map(field => (
-                                <Fragment key={field.name}>
+                                <Fragment key={item.id + field.name}>
                                     {item.properties[field.name] != null && (
                                         <TableRow>
                                             <TableCell component="th" scope="row">
@@ -172,7 +172,7 @@ export default function StacItemCard(props) {
                                                         case 'ORGANIZATION': return (
                                                             <List>
                                                                 {item.properties[field.name].map(organization => (
-                                                                    <ListItem key={organization.code}>
+                                                                    <ListItem key={item.id + organization.code}>
                                                                         {organization.label}
                                                                     </ListItem>
                                                                 ))}
@@ -181,7 +181,7 @@ export default function StacItemCard(props) {
                                                         case 'LOCATION': return (
                                                             <List>
                                                                 {item.properties[field.name].map(location => (
-                                                                    <ListItem key={location.uid}>
+                                                                    <ListItem key={item.id + location.uuid}>
                                                                         {location.label}
                                                                     </ListItem>
                                                                 ))}
@@ -216,7 +216,7 @@ export default function StacItemCard(props) {
                         <TableBody>
                             {item != null && Object.keys(item.assets).map((asset) => (
                                 <TableRow
-                                    key={asset}
+                                    key={item.id + asset}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
