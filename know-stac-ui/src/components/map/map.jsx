@@ -13,6 +13,7 @@ export default function Map() {
     const items = useSelector((state) => state.viewer.items)
     const collection = useSelector((state) => state.viewer.collection)
     const mBbox = useSelector((state) => state.viewer.bbox)
+    const visible = useSelector((state) => state.viewer.visible)
 
     const dispatch = useDispatch()
 
@@ -120,7 +121,7 @@ export default function Map() {
                 'type': 'fill',
                 'source': 'item-extent',
                 'paint': {
-                    "fill-color": "green",
+                    "fill-color": "#F8FF00",
                     "fill-opacity": 0.3,
                     "fill-outline-color": "black"
                 }
@@ -260,7 +261,7 @@ export default function Map() {
                 if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
                     params.append('multispectral', 'true');
                 }
-                else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+                else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
                     params.append('hillshade', 'true');
                 }
 
@@ -323,9 +324,11 @@ export default function Map() {
                     const data = featureCollection(features);
 
                     map.current.getSource('items').setData(data);
+
                 }
 
                 map.current.fitBounds(collectionBbox);
+                map.current.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
             }
             else {
                 // Update the collection layer
@@ -334,6 +337,12 @@ export default function Map() {
             }
         }
     }, [loaded, collection])
+
+    useEffect(() => {
+        if (loaded) {
+            map.current.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+        }
+    }, [visible])
 
     // If the state bbox has changed then update the map
     useEffect(() => {

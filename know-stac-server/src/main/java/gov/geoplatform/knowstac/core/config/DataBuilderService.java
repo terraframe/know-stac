@@ -51,7 +51,9 @@ import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 @Service
 public class DataBuilderService implements Runnable
 {
-  private static final Logger                                  logger = LoggerFactory.getLogger(DataBuilderService.class);
+  private static final String                                  NAMESPACE = "geoplatform";
+
+  private static final Logger                                  logger    = LoggerFactory.getLogger(DataBuilderService.class);
 
   @Autowired
   private LabeledPropertyGraphSynchronizationBusinessServiceIF lpgService;
@@ -120,22 +122,22 @@ public class DataBuilderService implements Runnable
 
     logger.error("Building STAC properties");
 
-    Property.create("agency", "Agency", PropertyType.ORGANIZATION);
-    Property.create("operational", label.getValue(), PropertyType.LOCATION, synchronization);
+    // Properties that are standard to STAC
     Property.create("title", "Title", PropertyType.STRING);
     Property.create("description", "Description", PropertyType.STRING);
     Property.create("datetime", "Date Time", PropertyType.DATE);
-    // Property.create("start_datetime", "Start Date", PropertyType.DATE_TIME);
-    // Property.create("end_datetime", "End Date", PropertyType.DATE_TIME);
-    // Property.create("created", "Create Date", PropertyType.DATE_TIME);
-    // Property.create("updated", "Last Update Date", PropertyType.DATE_TIME);
     Property.create("platform", "Platform", PropertyType.STRING);
-    Property.create("sensor", "Sensor", PropertyType.STRING);
-    Property.create("collection", "Collection", PropertyType.STRING);
-    Property.create("project", "Project", PropertyType.STRING);
-    Property.create("site", "Site", PropertyType.STRING);
-    Property.create("faaNumber", "UAV FAA Number", PropertyType.ENUMERATION);
-    Property.create("serialNumber", "UAV Serial Number", PropertyType.ENUMERATION);
+    Property.create("mission", "Mission", PropertyType.STRING);
+
+    // Custom knowstac property extensions
+    Property.create(NAMESPACE + ":agency", "Agency", PropertyType.ORGANIZATION);
+    Property.create(NAMESPACE + ":operational", label.getValue(), PropertyType.LOCATION, synchronization);
+    Property.create(NAMESPACE + ":sensor", "Sensor", PropertyType.STRING);
+    Property.create(NAMESPACE + ":collection", "Collection", PropertyType.STRING);
+    Property.create(NAMESPACE + ":project", "Project", PropertyType.STRING);
+    Property.create(NAMESPACE + ":site", "Site", PropertyType.STRING);
+    Property.create(NAMESPACE + ":faaNumber", "UAV FAA Number", PropertyType.ENUMERATION);
+    Property.create(NAMESPACE + ":serialNumber", "UAV Serial Number", PropertyType.ENUMERATION);
 
     logger.error("Building the index");
 
@@ -143,7 +145,7 @@ public class DataBuilderService implements Runnable
     this.index.createIndex();
 
     // This will populate the index with fake data
-//     populateIndex();
+    // populateIndex();
   }
 
   // Fake data builder

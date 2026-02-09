@@ -31,7 +31,9 @@ export const viewerSlice = createSlice({
         selectedItemId: null,
 
         // Search counter
-        count: 0
+        count: 0,
+
+        visibile: false
     },
     reducers: {
         setMapItem: (state, action) => {
@@ -54,7 +56,6 @@ export const viewerSlice = createSlice({
             state.messages = action.payload;
         },
         setCollection: (state, action) => {
-
             state.collection = action.payload;
         },
         setCriteria: (state, action) => {
@@ -77,12 +78,15 @@ export const viewerSlice = createSlice({
         incrementCount: (state) => {
             state.count += 1;
         },
+        toggleExtentVisibility: (state) => {
+            state.visible = !state.visible;
+        },
 
         default: {}
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox, setTab, setSelectedItemId, incrementCount } = viewerSlice.actions
+export const { setMapItem, setActive, setMessages, setCollection, setCriteria, setExtent, bbox, setTab, setSelectedItemId, incrementCount, toggleExtentVisibility } = viewerSlice.actions
 
 export default viewerSlice.reducer

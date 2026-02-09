@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Link, List, ListItem, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Grid, Link, List, ListItem, Paper, Tab, Tabs, Typography } from '@mui/material';
 import LoadingOverlay from 'react-loading-overlay-nextgen';
 import { useDispatch, useSelector } from 'react-redux';
-import ShareIcon from '@mui/icons-material/Share';
 
 import Alerts from '../alerts';
 import SearchForm from '../search-form/search-form';
 import StacItemCard from './stac-item-card';
-import { setTab } from '../viewer/viewer-slice';
+import { setTab, toggleExtentVisibility } from '../viewer/viewer-slice';
 
 function CustomTabPanel(props) {
     // eslint-disable-next-line react/prop-types
@@ -41,6 +40,7 @@ export default function SearchPanel() {
     const active = useSelector((state) => state.viewer.active)
     const messages = useSelector((state) => state.viewer.messages)
     const collection = useSelector((state) => state.viewer.collection)
+    const visible = useSelector((state) => state.viewer.visible)
     const tab = useSelector((state) => state.viewer.tab)
 
     const [properties, setProperties] = useState(null);
@@ -83,28 +83,24 @@ export default function SearchPanel() {
                 <CustomTabPanel value={tab} index={1}>
                     {collection != null && collection.links.length > 1 && (
                         <Box>
-                            {collection.links.filter(link => link.rel === 'self').map((row) => (
-                                <Grid
-                                    key={row.href}
-                                    justify="space-between"
-                                    container
-                                    spacing={3}
-                                >
-                                    <Grid item>
-                                        <Typography variant="h3" component="h3" style={{ flex: 1 }}>Collection</Typography>
-                                    </Grid>
-
-                                    <Grid item>
-                                        <Link href={row.href} color="primary" target='_blank'>
-                                            <ShareIcon />
-                                        </Link>
-                                    </Grid>
-                                </Grid>
-
-                            ))}
 
 
                             <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <FormControlLabel
+                                        control={<Checkbox checked={visible} />}
+                                        label="Show collection extent on map"
+                                        name="collectionExtent"
+                                        onChange={() => { dispatch(toggleExtentVisibility()) }}
+                                    />
+                                </Grid>
+                                {collection.links.filter(link => link.rel === 'self').map((row) => (
+                                    <Grid item xs={12}>
+                                        <Link href={row.href} color="primary" target='_blank'>
+                                            Share STAC collection
+                                        </Link>
+                                    </Grid>
+                                ))}
                                 <Grid item xs={12}>
                                     <Typography variant="h5" component="h5">Spatial Extent</Typography>
                                 </Grid>

@@ -242,7 +242,7 @@ export default function StacItemCard(props) {
                     {open ? 'Hide Details' : 'View Details'}
                 </Button>
                 <Button size="small" onClick={() => dispatch(bbox(link.bbox))}>
-                    Goto Map Extent
+                    Goto Item Extent
                 </Button>
 
             </CardActions>
