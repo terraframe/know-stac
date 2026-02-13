@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.geoplatform.knowstac.core.model.StacItem;
+import gov.geoplatform.knowstac.core.service.request.AccessControlService;
 import gov.geoplatform.knowstac.core.service.request.StacItemService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
@@ -39,27 +41,45 @@ public class StacItemController extends RunwaySpringController
   }
 
   @Autowired
-  private StacItemService service;
+  private StacItemService      service;
+
+  @Autowired
+  private AccessControlService accessControl;
 
   @PostMapping("item/put")
-  public ResponseEntity<StacItem> put(@Valid @RequestBody StacItem item) throws IOException
+  public ResponseEntity<StacItem> put(@Valid @RequestBody StacItem item, HttpServletRequest request) throws IOException
   {
+    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
     StacItem response = this.service.put(getSessionId(), item);
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
   @PostMapping("item/put-url")
-  public ResponseEntity<StacItem> putUrl(@Valid @RequestBody URLBody body) throws IOException
+  public ResponseEntity<StacItem> putUrl(@Valid @RequestBody URLBody body, HttpServletRequest request) throws IOException
   {
+    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
     StacItem response = this.service.putUrl(getSessionId(), body.getUrl());
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
   @PostMapping("item/remove")
-  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = true) String id) throws IOException
+  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = true) String id, HttpServletRequest request) throws IOException
   {
+    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
     this.service.remove(getSessionId(), id);
 
     return new ResponseEntity<Void>(HttpStatus.OK);

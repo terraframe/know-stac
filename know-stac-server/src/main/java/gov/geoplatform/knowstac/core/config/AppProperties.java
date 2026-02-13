@@ -83,4 +83,9 @@ public class AppProperties
   {
     return Singleton.getProps().getString("elasticsearch.index", "knowstac");
   }
+
+  public static String getWhitelist()
+  {
+    return Singleton.getProps().getString("ip.whitelist", "127.0.0.1");
+  }
 }
