@@ -86,6 +86,6 @@ public class AppProperties
 
   public static String getWhitelist()
   {
-    return Singleton.getProps().getString("ip.whitelist", "127.0.0.1");
+    return Singleton.getProps().getString("ip.whitelist", "*");
   }
 }

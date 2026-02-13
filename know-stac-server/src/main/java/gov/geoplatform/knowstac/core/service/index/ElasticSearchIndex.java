@@ -250,15 +250,11 @@ public class ElasticSearchIndex implements IndexIF, DisposableBean
   {
     if (item != null)
     {
-      System.out.println("Adding item to elastic search: ");
-
       try
       {
         ElasticsearchClient client = createClient();
 
         client.index(i -> i.index(AppProperties.getElasticsearchIndex()).id(item.getId()).document(item));
-
-        System.out.println("Elastic search updated");
       }
       catch (IOException e)
       {
