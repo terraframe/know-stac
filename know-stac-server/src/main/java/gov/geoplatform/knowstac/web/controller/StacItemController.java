@@ -49,7 +49,7 @@ public class StacItemController extends RunwaySpringController
   @PostMapping("item/put")
   public ResponseEntity<StacItem> put(@Valid @RequestBody StacItem item, HttpServletRequest request) throws IOException
   {
-    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
@@ -62,7 +62,7 @@ public class StacItemController extends RunwaySpringController
   @PostMapping("item/put-url")
   public ResponseEntity<StacItem> putUrl(@Valid @RequestBody URLBody body, HttpServletRequest request) throws IOException
   {
-    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
@@ -99,6 +99,25 @@ public class StacItemController extends RunwaySpringController
     Set<String> response = this.service.values(getSessionId(), field, text);
 
     return new ResponseEntity<Set<String>>(response, HttpStatus.OK);
+  }
+
+  private String getClientIpAddress(HttpServletRequest request)
+  {
+    String[] headersToCheck = { "X-Forwarded-For", "X-Real-IP" };
+
+    for (String header : headersToCheck)
+    {
+      String ipList = request.getHeader(header);
+
+      if (ipList != null && ipList.length() != 0 && !"unknown".equalsIgnoreCase(ipList))
+      {
+        // X-Forwarded-For can contain multiple IPs, first is the real client
+        return ipList.split(",")[0].trim();
+      }
+    }
+
+    // Fallback to direct remote address
+    return request.getRemoteAddr();
   }
 
 }
