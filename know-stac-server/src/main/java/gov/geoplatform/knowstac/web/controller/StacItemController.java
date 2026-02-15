@@ -75,7 +75,7 @@ public class StacItemController extends RunwaySpringController
   @PostMapping("item/remove")
   public ResponseEntity<Void> remove(@RequestParam(name = "id", required = true) String id, HttpServletRequest request) throws IOException
   {
-    if (!accessControl.hasAccess(request.getRemoteAddr()))
+    if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
