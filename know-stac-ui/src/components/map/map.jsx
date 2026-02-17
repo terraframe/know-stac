@@ -261,6 +261,9 @@ export default function Map() {
                 if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
                     params.append('multispectral', 'true');
                 }
+                else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
+                    params.append('thermal', 'true');
+                }
                 else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
                     params.append('hillshade', 'true');
                 }

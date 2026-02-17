@@ -51,6 +51,8 @@ public class TiTilerService
 
   private static final String HILLSHADE     = "hillshade";
 
+  private static final String THERMAL       = "thermal";
+
   private static final String URL           = "url";
 
   private static final String ASSETS        = "assets";
@@ -110,6 +112,7 @@ public class TiTilerService
 
       params.entrySet().stream() //
           .filter(entry -> !entry.getKey().equals(MULTISPECTRAL)) //
+          .filter(entry -> !entry.getKey().equals(THERMAL)) //
           .filter(entry -> !entry.getKey().equals(HILLSHADE)) //
           .forEach(entry -> {
             builder.addParameter(entry.getKey(), entry.getValue());
@@ -117,8 +120,12 @@ public class TiTilerService
 
       if (params.containsKey(MULTISPECTRAL) && Boolean.valueOf(params.get(MULTISPECTRAL)))
       {
-        this.calculateAndRescaleBands(builder, params);
-      }      
+        this.calculateAndRescaleBands(builder, params, "red", "green", "blue");
+      }
+      else if (params.containsKey(THERMAL) && Boolean.valueOf(params.get(THERMAL)))
+      {
+        this.calculateAndRescaleBands(builder, params, "red");
+      }
       else if (params.containsKey(HILLSHADE) && Boolean.valueOf(params.get(HILLSHADE)))
       {
         builder.addParameter("algorithm", "hillshade");
@@ -143,41 +150,41 @@ public class TiTilerService
     }
   }
 
-  protected void calculateAndRescaleBands(URIBuilder builder, Map<String, String> params)
+  protected void calculateAndRescaleBands(URIBuilder builder, Map<String, String> params, String... colors)
   {
     final String assetName = params.get(ASSETS);
 
     this.getStacInfo(params).ifPresent(info -> {
-      TiTilerStacAssetInfo asset = info.getAsset(assetName);
+      this.getStacStatistics(params).ifPresent(stats -> {
 
-      AtomicInteger redIdx = new AtomicInteger(asset.getColorinterp().indexOf("red"));
-      AtomicInteger greenIdx = new AtomicInteger(asset.getColorinterp().indexOf("green"));
-      AtomicInteger blueIdx = new AtomicInteger(asset.getColorinterp().indexOf("blue"));
+        TiTilerStacAssetInfo asset = info.getAsset(assetName);
 
-      if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
-      {
-        final TiTillerStacBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
-        final TiTillerStacBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
-        final TiTillerStacBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
+        List<Integer> indices = Arrays.asList(colors).stream().map(band -> asset.getColorinterp().indexOf(band)).filter(index -> index != -1).toList();
 
-        this.getStacStatistics(params).ifPresent(stats -> {
-
-          builder.addParameter("asset_bidx", assetName + "|" + String.valueOf(redIdx.intValue() + 1) + "," + String.valueOf(greenIdx.intValue() + 1) + "," + String.valueOf(blueIdx.intValue() + 1));
-
-          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
-              stats.getAssetBand(assetName + "_" + redMetadata.getName()), //
-              stats.getAssetBand(assetName + "_" + greenMetadata.getName()), //
-              stats.getAssetBand(assetName + "_" + blueMetadata.getName()));
+        if (indices.size() > 0)
+        {
+          List<TiTilerStacBandStatistic> bands = indices.stream() //
+              .map(index -> asset.getBandMetadata().get(index)) //
+              .map(metadata -> stats.getAssetBand(assetName + "_" + metadata.getName())) //
+              .filter(b -> b != null) //
+              .toList();
 
           Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
           Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
 
           if (min.isPresent() && max.isPresent())
           {
-            builder.addParameter("rescale", String.valueOf(min.get()) + "," + String.valueOf(max.get()));
+            Double minValue = min.get();
+            Double maxValue = max.get();
+
+            if (!minValue.equals(maxValue))
+            {
+              builder.addParameter("asset_bidx", assetName + "|" + String.join(",", indices.stream().map(i -> Integer.toString( ( i + 1 ))).toList()));
+              builder.addParameter("rescale", String.valueOf(minValue) + "," + String.valueOf(maxValue));
+            }
           }
-        });
-      }
+        }
+      });
     });
   }
 
