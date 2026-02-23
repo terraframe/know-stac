@@ -45,7 +45,6 @@ public class SessionFilter implements Filter
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException
   {
     HttpServletRequest request = (HttpServletRequest) req;
-    HttpServletResponse response = (HttpServletResponse) res;
 
     // response time logging
     req.setAttribute("startTime", (Long) ( new Date().getTime() ));
@@ -69,7 +68,7 @@ public class SessionFilter implements Filter
     req.setAttribute(ClientConstants.CLIENTREQUEST, clientSession.getRequest());
 
     chain.doFilter(req, res);
-    
+
     return;
   }
 }

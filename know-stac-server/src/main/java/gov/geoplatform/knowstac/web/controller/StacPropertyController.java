@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,14 +15,15 @@ import gov.geoplatform.knowstac.core.model.StacProperty;
 import gov.geoplatform.knowstac.core.service.request.StacPropertyService;
 import jakarta.validation.constraints.NotBlank;
 
-@RestController
+@RestController()
 @Validated
+@RequestMapping("/api/stac-property")
 public class StacPropertyController extends RunwaySpringController
 {
   @Autowired
   private StacPropertyService service;
 
-  @GetMapping("stac-property/get-all")
+  @GetMapping("/get-all")
   public ResponseEntity<List<StacProperty>> get()
   {
     List<StacProperty> response = this.service.getAll(getSessionId());
@@ -29,7 +31,7 @@ public class StacPropertyController extends RunwaySpringController
     return new ResponseEntity<List<StacProperty>>(response, HttpStatus.OK);
   }
 
-  @GetMapping("stac-property/get-for-organization")
+  @GetMapping("/get-for-organization")
   public ResponseEntity<List<StacProperty>> getForOrganization(@NotBlank @RequestParam(name = "code") String code)
   {
     List<StacProperty> response = this.service.getForOrganization(getSessionId(), code);

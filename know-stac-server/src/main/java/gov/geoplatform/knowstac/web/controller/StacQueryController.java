@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,12 +17,13 @@ import gov.geoplatform.knowstac.core.service.request.StacQueryService;
 
 @RestController
 @Validated
+@RequestMapping("/api/query")
 public class StacQueryController extends RunwaySpringController
 {
   @Autowired
   private StacQueryService service;
 
-  @GetMapping("query/collection")
+  @GetMapping("/collection")
   public ResponseEntity<StacCollection> collection(@RequestParam(name = "criteria", required = false) QueryCriteria criteria)
   {
     StacCollection response = this.service.collection(getSessionId(), criteria);
@@ -29,7 +31,7 @@ public class StacQueryController extends RunwaySpringController
     return new ResponseEntity<StacCollection>(response, HttpStatus.OK);
   }
 
-  @GetMapping("query/search")
+  @GetMapping("/search")
   public ResponseEntity<StacCollection> search(@RequestParam Map<String, String> params)
   {
     StacCollection response = this.service.search(getSessionId(), params);

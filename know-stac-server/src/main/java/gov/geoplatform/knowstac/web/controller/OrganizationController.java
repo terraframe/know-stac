@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,15 +37,14 @@ import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
+@RequestMapping("/api/organization")
 public class OrganizationController extends RunwaySpringController
 {
-  public static final String        API_PATH = "organization";
-
   @Autowired
   private OrganizationResultService service;
 
   @ResponseBody
-  @GetMapping(API_PATH + "/get")
+  @GetMapping("/get")
   public ResponseEntity<OrganizationResult> get(@NotBlank @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationResult org = this.service.get(this.getSessionId(), code);
@@ -53,7 +53,7 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @ResponseBody
-  @GetMapping(API_PATH + "/search")
+  @GetMapping("/search")
   public ResponseEntity<List<OrganizationResult>> search(@NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationResult> orgs = this.service.search(this.getSessionId(), text);
@@ -61,7 +61,7 @@ public class OrganizationController extends RunwaySpringController
     return new ResponseEntity<List<OrganizationResult>>(orgs, HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-children")
+  @GetMapping("/get-children")
   public ResponseEntity<String> getChildren( //
       @RequestParam(required = false, name = "code") String code, //
       @RequestParam(required = false, name = "pageSize") Integer pageSize, //
@@ -72,7 +72,7 @@ public class OrganizationController extends RunwaySpringController
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-ancestor-tree")
+  @GetMapping("/get-ancestor-tree")
   public ResponseEntity<String> getAncestorTree( //
       @RequestParam(required = false, name = "rootCode") String rootCode, //
       @NotBlank @RequestParam(name = "code") String code, //

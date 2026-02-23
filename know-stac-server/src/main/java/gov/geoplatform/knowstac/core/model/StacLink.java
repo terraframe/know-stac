@@ -3,10 +3,18 @@ package gov.geoplatform.knowstac.core.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+
 public class StacLink
 {
   // string REQUIRED. The actual link in the format of an URL. Relative and
   // absolute links are both allowed.
+  @Schema( //
+      description = "The actual link in the format of an URL. Relative and absolute links are both allowed", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "https://127.0.0.1/link.json" //
+  )
   private String href;
 
   /*
@@ -38,14 +46,26 @@ public class StacLink
    * A more complete list of potential rel types and their meaning in STAC can
    * be found in the Using Relation Types best practice.
    */
+  @Schema( //
+      description = "STAC Items use a variety of rel types in the link object, to describe the exact nature of the link between this Item and the entity it is linking to", //
+      example = "[\"self\"]" //
+  )
   private String rel;
 
   // string Media type of the referenced entity.
+  @Schema( //
+      description = "Media type of the referenced entity", //
+      example = "application/json" //
+  )  
   private String type;
 
   // string A human readable title to be used in rendered displays of the
   // link.
   @JsonInclude(Include.NON_NULL)
+  @Schema( //
+      description = "A human readable title to be used in rendered displays of the link", //
+      example = "Spring 2025" //
+  )
   private String title;
 
   public String getHref()

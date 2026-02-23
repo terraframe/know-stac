@@ -4,6 +4,7 @@ import java.util.concurrent.Executor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,40 +16,37 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import gov.geoplatform.knowstac.web.controller.Base64QueryCriteriaConverter;
-import gov.geoplatform.knowstac.web.service.SessionFilter;
-import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import net.geoprism.EncodingFilter;
 import net.geoprism.spring.web.JsonExceptionHandler;
 
 // Configuration of components which DO have web container dependencies
 @Configuration
-@EnableWebMvc
-@ComponentScan(
-    basePackages = { 
-        "gov.geoplatform.knowstac.core.config", 
-        "gov.geoplatform.knowstac.web.config", 
-        "gov.geoplatform.knowstac.web.service", 
-        "gov.geoplatform.knowstac.web.controller",
-        "net.geoprism.registry.service",
-        "net.geoprism.spring.web"
-},  excludeFilters = @ComponentScan.Filter(
-    type = FilterType.ASSIGNABLE_TYPE,
-    classes = {
-        net.geoprism.registry.service.SessionFilter.class
-})  )
+@ComponentScan(basePackages = { //
+    "gov.geoplatform.knowstac.core.config", //
+    "gov.geoplatform.knowstac.web.config", //
+    "gov.geoplatform.knowstac.web.service", //
+    "gov.geoplatform.knowstac.web.controller", //
+    "net.geoprism.registry.service", //
+    "net.geoprism.spring.web" //
+}, excludeFilters = @ComponentScan.Filter( //
+    type = FilterType.ASSIGNABLE_TYPE, //
+    classes = { //
+        net.geoprism.registry.service.SessionFilter.class //
+    }))
+@EnableAutoConfiguration
 public class WebConfig implements WebMvcConfigurer, AsyncConfigurer
 {
 
-  @Bean
-  Filter sessionFilter()
-  {
-    return new SessionFilter();
-  }
+  // @Bean
+  // Filter sessionFilter()
+  // {
+  // return new SessionFilter();
+  // }
 
   @Bean
   JsonExceptionHandler errorHandler()
@@ -114,9 +112,16 @@ public class WebConfig implements WebMvcConfigurer, AsyncConfigurer
   }
 
   @Bean
-  public MultipartConfigElement multipartConfigElement() {
-      // Unlimited file size (-1 for maxFileSize and maxRequestSize)
-      return new MultipartConfigElement(null, -1, -1, 0);
+  public MultipartConfigElement multipartConfigElement()
+  {
+    // Unlimited file size (-1 for maxFileSize and maxRequestSize)
+    return new MultipartConfigElement(null, -1, -1, 0);
+  }
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry)
+  {
+    registry.addMapping("/**").allowedOrigins("*");
   }
 
 }

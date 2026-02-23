@@ -17,7 +17,6 @@ public class Application extends SpringBootServletInitializer
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application)
   {
-    return application.sources(WebConfiguration.class, WebMvcAutoConfiguration.class);
+    return application.sources(WebConfig.class, WebMvcAutoConfiguration.class);
   }
-
 }

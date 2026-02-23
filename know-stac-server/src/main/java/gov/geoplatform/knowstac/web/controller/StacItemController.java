@@ -10,23 +10,33 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.geoplatform.knowstac.core.model.InvalidAccessException;
 import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.service.request.AccessControlService;
 import gov.geoplatform.knowstac.core.service.request.StacItemService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
+@RequestMapping("/api/item")
 public class StacItemController extends RunwaySpringController
 {
   public static class URLBody
   {
     @NotBlank
+    @Schema( //
+        description = "URL of Stac Item", //
+        example = "https://127.0.0.1/item.json" //
+    )
     private String url;
 
     public String getUrl()
@@ -46,12 +56,19 @@ public class StacItemController extends RunwaySpringController
   @Autowired
   private AccessControlService accessControl;
 
-  @PostMapping("item/put")
-  public ResponseEntity<StacItem> put(@Valid @RequestBody StacItem item, HttpServletRequest request) throws IOException
+  @PostMapping("/put")
+  public ResponseEntity<StacItem> put( //
+      @io.swagger.v3.oas.annotations.parameters.RequestBody( //
+          description = "Stac Item to put", //
+          required = true, //
+          content = @Content(mediaType = "application/json", //
+              schema = @Schema(implementation = StacItem.class) //
+          )) //
+      @Valid @RequestBody StacItem item, HttpServletRequest request) throws IOException
   {
     if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      throw new InvalidAccessException();
     }
 
     StacItem response = this.service.put(getSessionId(), item);
@@ -59,12 +76,19 @@ public class StacItemController extends RunwaySpringController
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
-  @PostMapping("item/put-url")
-  public ResponseEntity<StacItem> putUrl(@Valid @RequestBody URLBody body, HttpServletRequest request) throws IOException
+  @PostMapping("/put-url")
+  public ResponseEntity<StacItem> putUrl( //
+      @io.swagger.v3.oas.annotations.parameters.RequestBody( //
+          description = "URL of Stac Item to ingest", //
+          required = true, //
+          content = @Content(mediaType = "application/json", //
+              schema = @Schema(implementation = URLBody.class) //
+          )) //
+      @Valid @RequestBody URLBody body, HttpServletRequest request) throws IOException
   {
     if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      throw new InvalidAccessException();
     }
 
     StacItem response = this.service.putUrl(getSessionId(), body.getUrl());
@@ -72,12 +96,17 @@ public class StacItemController extends RunwaySpringController
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
-  @PostMapping("item/remove")
-  public ResponseEntity<Void> remove(@RequestParam(name = "id", required = true) String id, HttpServletRequest request) throws IOException
+  @PostMapping("/remove")
+  public ResponseEntity<Void> remove( //
+      @Parameter( //
+          description = "Id of the Stac item to remove", //
+          example = "item-1" //
+      ) //
+      @RequestParam(name = "id", required = true) String id, HttpServletRequest request) throws IOException
   {
     if (!accessControl.hasAccess(this.getClientIpAddress(request)))
     {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      throw new InvalidAccessException();
     }
 
     this.service.remove(getSessionId(), id);
@@ -85,16 +114,31 @@ public class StacItemController extends RunwaySpringController
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
-  @GetMapping("item/get")
-  public ResponseEntity<StacItem> get(@RequestParam(name = "id", required = true) String id) throws IOException
+  @GetMapping("/get")
+  public ResponseEntity<StacItem> get( //
+      @Parameter( //
+          description = "Id of the Stac item to retrieve", //
+          example = "item-1" //
+      ) //
+      @RequestParam(name = "id", required = true) String id) throws IOException
   {
     StacItem response = this.service.get(getSessionId(), id);
 
     return new ResponseEntity<StacItem>(response, HttpStatus.OK);
   }
 
-  @GetMapping("item/values")
-  public ResponseEntity<Set<String>> values(@RequestParam(name = "field", required = false) String field, @RequestParam(name = "text", required = false) String text) throws IOException
+  @GetMapping("/values")
+  public ResponseEntity<Set<String>> values( //
+      @Parameter( //
+          description = "name of the registered Stac property to get the distinct values", //
+          example = "mission" //
+      ) //
+      @RequestParam(name = "field", required = false) String field, //
+      @Parameter( //
+          description = "Value text to restrict the results", //
+          example = "Spring" //
+      ) //
+      @RequestParam(name = "text", required = false) String text) throws IOException
   {
     Set<String> response = this.service.values(getSessionId(), field, text);
 

@@ -15,10 +15,7 @@
  */
 package gov.geoplatform.knowstac.core.service.business;
 
-import java.util.HashMap;
-
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +26,6 @@ import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.constants.MdAttributeBooleanInfo;
 import com.runwaysdk.constants.graph.MdEdgeInfo;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
-import com.runwaysdk.dataaccess.graph.GraphDBService;
-import com.runwaysdk.dataaccess.graph.GraphRequest;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -46,19 +41,15 @@ import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.RegistryConstants;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
-import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 
 @Service(value = "ksLabeledPropertyGraphTypeVersionBusinessService")
 @Primary
 public class LabeledPropertyGraphTypeVersionBusinessService extends net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessService implements LabeledPropertyGraphTypeVersionBusinessServiceIF
 {
-  public static final String                     PREFIX = "ha_";
+  public static final String PREFIX = "ha_";
 
-  public static final String                     SPLIT  = "__";
-
-  @Autowired
-  private GeoObjectTypeSnapshotBusinessServiceIF gTypeService;
+  public static final String SPLIT  = "__";
 
   @Override
   @Transaction
@@ -80,12 +71,13 @@ public class LabeledPropertyGraphTypeVersionBusinessService extends net.geoprism
     super.truncate(version);
 
     // TODO delete all the orphaned item nodes
-//    GraphDBService service = GraphDBService.getInstance();
-//
-//    MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ItemTotal.CLASS);
-//
-//    GraphRequest request = service.getGraphDBRequest();
-//    service.command(request, "DELETE VERTEX FROM " + mdVertex.getDBClassName(), new HashMap<>());
+    // GraphDBService service = GraphDBService.getInstance();
+    //
+    // MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ItemTotal.CLASS);
+    //
+    // GraphRequest request = service.getGraphDBRequest();
+    // service.command(request, "DELETE VERTEX FROM " +
+    // mdVertex.getDBClassName(), new HashMap<>());
   }
 
   @Override

@@ -13,17 +13,41 @@
 	<description>The back-end database server for the know-stac project</description>
 
 	<properties>
-    <spring.version>6.2.7</spring.version>	
+    <spring.boot.version>3.4.2</spring.boot.version>	
     <s3.version>2.27.11</s3.version>
 	</properties>
 
 	<dependencies>
-		<!-- Spring! -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
+	  <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.8.5</version>
+    </dependency>
+	
+		<!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>${spring.boot.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <version>${spring.boot.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
     <dependency>
       <groupId>org.hibernate.validator</groupId>
@@ -78,6 +102,8 @@
       <artifactId>jakarta.websocket-client-api</artifactId>
       <version>2.2.0</version>
     </dependency>
+<!--
+  
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -93,6 +119,7 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>2.17.1</version>
 		</dependency>
+-->    
 
 		<!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
 		<dependency>

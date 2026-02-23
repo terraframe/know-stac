@@ -23,6 +23,8 @@ import gov.geoplatform.knowstac.core.serialization.GeoJsonDeserializer;
 import gov.geoplatform.knowstac.core.serialization.GeoJsonSerializer;
 import gov.geoplatform.knowstac.core.serialization.StacPropertyDeserializer;
 import gov.geoplatform.knowstac.core.serialization.StacPropertySerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 /*
  * This document explains the structure and content of a SpatioTemporal Asset
@@ -41,21 +43,38 @@ public class StacItem
   {
     // string REQUIRED. URI to the asset object. Relative and absolute URI are
     // both allowed.
+    @Schema( //
+        description = "URI to the asset object. Relative and absolute URI are both allowed", //
+        requiredMode = RequiredMode.REQUIRED, //
+        example = "https://127.0.0.1/asset.json" //
+    )
     private String       href;
 
     // string The displayed title for clients and users.
     @JsonInclude(Include.NON_NULL)
+    @Schema( //
+        description = "The displayed title for clients and users", //
+        example = "Ortho" //
+    )
     private String       title;
 
     // string A description of the Asset providing additional details, such as
     // how it was processed or created. CommonMark 0.29 syntax MAY be used for
     // rich text representation.
     @JsonInclude(Include.NON_NULL)
+    @Schema( //
+        description = "A description of the Asset providing additional details, such as how it was processed or created. CommonMark 0.29 syntax MAY be used for rich text representation", //
+        example = "Generated ortho produced by ODM" //
+    )
     private String       description;
 
     // string Media type of the asset. See the common media types in the best
     // practice doc for commonly used asset types.
     @JsonInclude(Include.NON_NULL)
+    @Schema( //
+        description = "Media type of the asset. See the common media types in the best practice doc for commonly used asset type", //
+        example = "image/tiff; application=geotiff; profile=cloud-optimized" //
+    )
     private String       type;
 
     // [string] The semantic roles of the asset, similar to the use of rel in
@@ -85,6 +104,10 @@ public class StacItem
      * example the Landsat-8 MTL file.
      */
     @JsonInclude(Include.NON_NULL)
+    @Schema( //
+        description = "The semantic roles of the asset", //
+        example = "[\"data\", \"thermal\"]" //
+    )
     private List<String> roles;
 
     public Asset()
@@ -149,18 +172,38 @@ public class StacItem
   }
 
   // string REQUIRED. Type of the GeoJSON Object. MUST be set to Feature.
+  @Schema( //
+      description = "Type of the GeoJSON Object. MUST be set to Feature", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "Feature" //
+  )
   private String              type;
 
   // string REQUIRED. The STAC version the Item implements.
   @JsonProperty("stac_version")
+  @Schema( //
+      description = "The STAC version the Item implements", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "1.1.0" //
+  )
   private String              stacVersion;
 
   // [string] A list of extensions the Item implements.
   @JsonProperty("stac_extensions")
+  @Schema( //
+      description = "A list of extensions the Item implements", //
+      requiredMode = RequiredMode.AUTO, //
+      example = "[]" //
+  )
   private List<String>        stacExtensions;
 
   // string REQUIRED. Provider identifier. The ID should be unique within the
   // Collection that contains the Item.
+  @Schema( //
+      description = "Provider identifier. The ID should be unique within the Collection that contains the Item", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "item-1" //
+  )
   private String              id;
 
   // GeoJSON Geometry Object | null REQUIRED. Defines the full footprint of the
@@ -170,26 +213,49 @@ public class StacItem
   // Longitude/Latitude or Longitude/Latitude/Elevation based on WGS 84.
   @JsonDeserialize(using = GeoJsonDeserializer.class)
   @JsonSerialize(using = GeoJsonSerializer.class)
+  @Schema( //
+      description = "Defines the full footprint of the asset represented by this item, formatted according to RFC 7946, section 3.1", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "{\"type\":\"Polygon\",\"coordinates\":[[[-111.12481587,39.32044814],[-111.12481587,39.32117906],[-111.12333352,39.32117906],[-111.12333352,39.32044814],[-111.12481587,39.32044814]]],\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:4326\"}}}" //
+  )
   private Geometry            geometry;
 
   // [number] REQUIRED if geometry is not null. Bounding Box of the asset
   // represented by this Item, formatted according to RFC 7946, section 5.
   @JsonDeserialize(using = EnvelopeDeserializer.class)
   @JsonSerialize(using = EnvelopeSerializer.class)
+  @Schema( //
+      description = "Bounding Box of the asset represented by this Item, formatted according to RFC 7946, section 5", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "[-111.12481586775012,39.32044813958673,-111.12333351564831,39.32117905850098]" //
+  )
   private Envelope            bbox;
 
   // Properties Object REQUIRED. A dictionary of additional metadata for the
   // Item.
   @JsonDeserialize(using = StacPropertyDeserializer.class)
   @JsonSerialize(using = StacPropertySerializer.class)
+  @Schema( //
+      description = "A dictionary of additional metadata for the Item", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "{\"datetime\":\"2026-01-01T00:00:00Z\",\"mission\":\"spring 2025\"}" //
+  )
   private Map<String, Object> properties;
 
   // [Link Object] REQUIRED. List of link objects to resources and related URLs.
   // A link with the rel set to self is strongly recommended.
+  @Schema( //
+      description = "List of link objects to resources and related URLs. A link with the rel set to self is strongly recommended", //
+      requiredMode = RequiredMode.REQUIRED //
+  )
   private List<StacLink>      links;
 
   // Map<string, Asset Object> REQUIRED. Dictionary of asset objects that can be
   // downloaded, each with a unique key.
+  @Schema( //
+      description = "Dictionary of asset objects that can be downloaded, each with a unique key", //
+      requiredMode = RequiredMode.REQUIRED //
+  )
   private Map<String, Asset>  assets;
 
   // string The id of the STAC Collection this Item references to (see
@@ -198,12 +264,16 @@ public class StacItem
   // for a user to search for any Items that belong in a specified Collection.
   // Must be a non-empty string.
   @JsonInclude(Include.NON_NULL)
+  @Schema( //
+      description = " The id of the STAC Collection this Item references to", //
+      example = "collection-1" //
+  )
   private String              collection;
 
   public StacItem()
   {
     this.type = "Feature";
-    this.stacVersion = "1.0.0";
+    this.stacVersion = "1.1.0";
     this.stacExtensions = new LinkedList<String>();
     this.properties = new HashMap<String, Object>();
     this.links = new LinkedList<StacLink>();
