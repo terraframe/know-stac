@@ -88,4 +88,9 @@ public class AppProperties
   {
     return Singleton.getProps().getString("ip.whitelist", "*");
   }
+
+  public static String getOpenApiUrl()
+  {
+    return Singleton.getProps().getString("openapi.url", "");
+  }
 }
