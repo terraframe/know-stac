@@ -18,6 +18,7 @@ import gov.geoplatform.knowstac.core.model.InvalidAccessException;
 import gov.geoplatform.knowstac.core.model.StacItem;
 import gov.geoplatform.knowstac.core.service.request.AccessControlService;
 import gov.geoplatform.knowstac.core.service.request.StacItemService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -57,6 +58,10 @@ public class StacItemController extends RunwaySpringController
   private AccessControlService accessControl;
 
   @PostMapping("/put")
+  @Operation( //
+      summary = "Put STAC item", //
+      description = "Puts the STAC item into the system and indexes it for querying" //
+  )
   public ResponseEntity<StacItem> put( //
       @io.swagger.v3.oas.annotations.parameters.RequestBody( //
           description = "Stac Item to put", //
@@ -77,6 +82,10 @@ public class StacItemController extends RunwaySpringController
   }
 
   @PostMapping("/put-url")
+  @Operation( //
+      summary = "Put a STAC item from a URL", //
+      description = "Puts the STAC item defined at the given URL into the system and indexes it for querying" //
+  )
   public ResponseEntity<StacItem> putUrl( //
       @io.swagger.v3.oas.annotations.parameters.RequestBody( //
           description = "URL of Stac Item to ingest", //
@@ -97,6 +106,10 @@ public class StacItemController extends RunwaySpringController
   }
 
   @PostMapping("/remove")
+  @Operation( //
+      summary = "Removes a STAC item", //
+      description = "Removes the STAC item from the system" //
+  )
   public ResponseEntity<Void> remove( //
       @Parameter( //
           description = "Id of the Stac item to remove", //
@@ -115,6 +128,10 @@ public class StacItemController extends RunwaySpringController
   }
 
   @GetMapping("/get")
+  @Operation( //
+      summary = "Get a STAC item", //
+      description = "Retrieves a STAC item from the system" //
+  )
   public ResponseEntity<StacItem> get( //
       @Parameter( //
           description = "Id of the Stac item to retrieve", //
@@ -128,6 +145,10 @@ public class StacItemController extends RunwaySpringController
   }
 
   @GetMapping("/values")
+  @Operation( //
+      summary = "Get distinct values", //
+      description = "Retrieves a list of distinct values for the given STAC property" //
+  )
   public ResponseEntity<Set<String>> values( //
       @Parameter( //
           description = "name of the registered Stac property to get the distinct values", //

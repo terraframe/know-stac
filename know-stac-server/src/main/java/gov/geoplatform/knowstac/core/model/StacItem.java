@@ -216,7 +216,7 @@ public class StacItem
   @Schema( //
       description = "Defines the full footprint of the asset represented by this item, formatted according to RFC 7946, section 3.1", //
       requiredMode = RequiredMode.REQUIRED, //
-      example = "{\"type\":\"Polygon\",\"coordinates\":[[[-111.12481587,39.32044814],[-111.12481587,39.32117906],[-111.12333352,39.32117906],[-111.12333352,39.32044814],[-111.12481587,39.32044814]]],\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:4326\"}}}" //
+      example = "{\"type\":\"Polygon\",\"coordinates\":[[[-111.12481587,39.32044814],[-111.12481587,39.32117906],[-111.12333352,39.32117906],[-111.12333352,39.32044814],[-111.12481587,39.32044814]]],\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"EPSG:4326\"}}}" //      
   )
   private Geometry            geometry;
 

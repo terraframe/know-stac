@@ -49,7 +49,7 @@ public class LocationController extends RunwaySpringController
   @GetMapping(API_PATH + "/get")
   @Operation( //
       summary = "Get a location", //
-      description = "Retrieves a signle location in the system." //
+      description = "Retrieves a single location in the system." //
   )
   public ResponseEntity<LocationResult> get( //
       @Parameter( //

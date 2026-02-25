@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.geoplatform.knowstac.core.serialization.EnvelopeDeserializer;
 import gov.geoplatform.knowstac.core.serialization.EnvelopeSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 // The object describes the spatial extents of the Collection.
 public class Spatial
@@ -22,6 +24,11 @@ public class Spatial
   @JsonInclude(Include.NON_NULL)
   @JsonDeserialize(contentUsing = EnvelopeDeserializer.class)
   @JsonSerialize(contentUsing = EnvelopeSerializer.class)
+  @Schema( //
+      description = "Potential spatial extents covered by the Collection.", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "[[-111.12481586775012,39.32044813958673,-111.12333351564831,39.32117905850098]]"
+  )
   private List<Envelope> bbox;
 
   public Spatial()

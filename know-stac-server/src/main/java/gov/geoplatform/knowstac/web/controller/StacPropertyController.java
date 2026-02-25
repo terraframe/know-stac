@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.geoplatform.knowstac.core.model.StacProperty;
 import gov.geoplatform.knowstac.core.service.request.StacPropertyService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController()
@@ -24,6 +26,10 @@ public class StacPropertyController extends RunwaySpringController
   private StacPropertyService service;
 
   @GetMapping("/get-all")
+  @Operation( //
+      summary = "Get all properties", //
+      description = "Retrieves a list of all registered properties in the system" //
+  )  
   public ResponseEntity<List<StacProperty>> get()
   {
     List<StacProperty> response = this.service.getAll(getSessionId());
@@ -32,7 +38,12 @@ public class StacPropertyController extends RunwaySpringController
   }
 
   @GetMapping("/get-for-organization")
-  public ResponseEntity<List<StacProperty>> getForOrganization(@NotBlank @RequestParam(name = "code") String code)
+  public ResponseEntity<List<StacProperty>> getForOrganization( //
+      @Parameter( //
+          description = "Returns a list of location properties which use locations that have been synchronized for the given organization", //
+          example = "DOI" //
+      ) //
+      @NotBlank @RequestParam(name = "code") String code)
   {
     List<StacProperty> response = this.service.getForOrganization(getSessionId(), code);
 
