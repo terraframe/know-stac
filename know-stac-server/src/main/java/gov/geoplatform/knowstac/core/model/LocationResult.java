@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import net.geoprism.registry.view.JsonSerializable;
 
 public class LocationResult implements JsonSerializable
@@ -15,16 +17,44 @@ public class LocationResult implements JsonSerializable
   @JsonIgnore
   private Object  rid;
 
+  @Schema( //
+      description = "Local ID of the location", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "9b031c88-6e3a-4420-92ab-8aefe160cb60" //
+  )
   private String  oid;
 
+  @Schema( //
+      description = "Universal ID of the location", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "29c374b2-03cb-4297-b30e-c334ef31340e" //
+  )
   private String  uid;
 
+  @Schema( //
+      description = "Location code", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "CO" //
+  )
   private String  code;
 
+  @Schema( //
+      description = "Location label", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "Colorado" //
+  )
   private String  label;
 
+  @Schema( //
+      description = "Number of children locations", //
+      example = "10" //
+  )
   private Integer size;
 
+  @Schema( //
+      description = "Number of Stac Items assigned to the location", //
+      example = "10" //
+  )
   private Integer items;
 
   public Object getRid()
@@ -46,12 +76,12 @@ public class LocationResult implements JsonSerializable
   {
     this.oid = oid;
   }
-  
+
   public String getUid()
   {
     return uid;
   }
-  
+
   public void setUid(String uid)
   {
     this.uid = uid;

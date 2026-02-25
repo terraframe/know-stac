@@ -31,6 +31,8 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.knowstac.core.model.LocationResult;
 import gov.geoplatform.knowstac.core.service.request.LocationServiceIF;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotBlank;
 import net.geoprism.registry.controller.RunwaySpringController;
 
@@ -45,7 +47,21 @@ public class LocationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/get")
-  public ResponseEntity<LocationResult> get(@NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, @NotBlank @RequestParam(name = "uid") String uid) throws ParseException
+  @Operation( //
+      summary = "Get a location", //
+      description = "Retrieves a signle location in the system." //
+  )
+  public ResponseEntity<LocationResult> get( //
+      @Parameter( //
+          description = "Synchronization profile ID which loaded the location data", //
+          example = "d6156b28-6f62-4408-8fb3-b4641e1e9dcc" //
+      ) //
+      @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @Parameter( //
+          description = "Universal ID of the location to retrieve", //
+          example = "597a2963-6f71-4373-87ec-ca3d332bb148" //
+      ) //
+      @NotBlank @RequestParam(name = "uid") String uid) throws ParseException
   {
     LocationResult location = this.service.get(this.getSessionId(), synchronizationId, uid);
 
@@ -54,7 +70,21 @@ public class LocationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping(API_PATH + "/search")
-  public ResponseEntity<List<LocationResult>> search(@NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, @NotBlank @RequestParam(name = "text") String text) throws ParseException
+  @Operation( //
+      summary = "Get all locations which contain the provided label", //
+      description = "Retrieves a list of all registered locations in the system which contain the location label." //
+  )
+  public ResponseEntity<List<LocationResult>> search( //
+      @Parameter( //
+          description = "Synchronization profile ID which loaded the location data", //
+          example = "d6156b28-6f62-4408-8fb3-b4641e1e9dcc" //
+      ) //
+      @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @Parameter( //
+          description = "Location label in which to search", //
+          example = "Colo" //
+      ) //
+      @NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<LocationResult> locations = this.service.search(this.getSessionId(), synchronizationId, text);
 
@@ -62,10 +92,30 @@ public class LocationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-children")
+  @Operation( //
+      summary = "Pagination list of the children locations for a location", //
+      description = "Retrieves a paginated list of the children locations of a location according to the synchronized hierarchy." //
+  )
   public ResponseEntity<String> getChildren( //
+      @Parameter( //
+          description = "Synchronization profile ID which loaded the location data", //
+          example = "d6156b28-6f62-4408-8fb3-b4641e1e9dcc" //
+      ) //
       @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @Parameter( //
+          description = "Universal ID of the location to retrieve", //
+          example = "597a2963-6f71-4373-87ec-ca3d332bb148" //
+      ) //
       @NotBlank @RequestParam(name = "uid", required = false) String uid, //
+      @Parameter( //
+          description = "Pagination page size", //
+          example = "20" //
+      ) //
       @RequestParam(name = "pageSize", required = false) Integer pageSize, //
+      @Parameter( //
+          description = "Pagination page number", //
+          example = "1" //
+      ) //
       @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), synchronizationId, uid, pageSize, pageNumber);
@@ -74,10 +124,30 @@ public class LocationController extends RunwaySpringController
   }
 
   @GetMapping(API_PATH + "/get-ancestor-tree")
+  @Operation( //
+      summary = "Flatened list of the ancestor locations for a location", //
+      description = "Retrieves a flatened list of the ancestor locations of a location according to the synchronized hierarchy." //
+  )
   public ResponseEntity<String> getAncestorTree( //
+      @Parameter( //
+          description = "Synchronization profile ID which loaded the location data", //
+          example = "d6156b28-6f62-4408-8fb3-b4641e1e9dcc" //
+      ) //
       @NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, //
+      @Parameter( //
+          description = "Universal ID of the ancestor location to stop at", //
+          example = "597a2963-6f71-4373-87ec-ca3d332bb148" //
+      ) //
       @RequestParam(required = false, name = "rootUid") String rootUid, //
+      @Parameter( //
+          description = "Universal ID of the location to retrieve", //
+          example = "597a2963-6f71-4373-87ec-ca3d332bb148" //
+      ) //
       @NotBlank @RequestParam(name = "uid") String uid, //
+      @Parameter( //
+          description = "Page size to limit the results", //
+          example = "10" //
+      ) //
       @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), synchronizationId, rootUid, uid, pageSize);
