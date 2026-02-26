@@ -32,6 +32,8 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
 import gov.geoplatform.knowstac.core.service.request.OrganizationResultService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotBlank;
 import net.geoprism.registry.controller.RunwaySpringController;
 
@@ -45,6 +47,10 @@ public class OrganizationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping("/get")
+  @Operation( //
+      summary = "Get an organization", //
+      description = "Retrieves an organization in the system." //
+  )
   public ResponseEntity<OrganizationResult> get(@NotBlank @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationResult org = this.service.get(this.getSessionId(), code);
@@ -54,6 +60,10 @@ public class OrganizationController extends RunwaySpringController
 
   @ResponseBody
   @GetMapping("/search")
+  @Operation( //
+      summary = "Get all organizations which contain the provided label", //
+      description = "Retrieves a list of all registered organizations in the system which contain the label." //
+  )
   public ResponseEntity<List<OrganizationResult>> search(@NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationResult> orgs = this.service.search(this.getSessionId(), text);
@@ -62,10 +72,26 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @GetMapping("/get-children")
+  @Operation( //
+      summary = "Pagination list of the sub organizations under the given organization", //
+      description = "Retrieves a paginated list of the sub organizations under the given organization ." //
+  )
   public ResponseEntity<String> getChildren( //
+      @Parameter( //
+          description = "Universal organization code", //
+          example = "DOI" //
+      ) //
       @RequestParam(required = false, name = "code") String code, //
-      @RequestParam(required = false, name = "pageSize") Integer pageSize, //
-      @RequestParam(required = false, name = "pageNumber") Integer pageNumber)
+      @Parameter( //
+          description = "Pagination page size", //
+          example = "20" //
+      ) //
+      @RequestParam(name = "pageSize", required = false) Integer pageSize, //
+      @Parameter( //
+          description = "Pagination page number", //
+          example = "1" //
+      ) //
+      @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
 
@@ -73,9 +99,25 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @GetMapping("/get-ancestor-tree")
+  @Operation( //
+      summary = "Flatened list of the ancestor organizations for an organization", //
+      description = "Retrieves a flatened list of the ancestor organizations of a sub organization." //
+  )
   public ResponseEntity<String> getAncestorTree( //
+      @Parameter( //
+          description = "Universal organization code of root level organization", //
+          example = "DOI" //
+      ) //
       @RequestParam(required = false, name = "rootCode") String rootCode, //
+      @Parameter( //
+          description = "Universal organization code of starting organization", //
+          example = "DOI" //
+      ) //
       @NotBlank @RequestParam(name = "code") String code, //
+      @Parameter( //
+          description = "Pagination page size", //
+          example = "20" //
+      ) //
       @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);

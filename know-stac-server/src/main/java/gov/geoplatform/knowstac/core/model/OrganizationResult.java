@@ -11,6 +11,8 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.OrganizationQuery;
 import net.geoprism.registry.cache.ServerOrganizationCache;
@@ -22,14 +24,37 @@ public class OrganizationResult implements JsonSerializable
   @JsonIgnore
   private Object  rid;
 
+  @Schema( //
+      description = "Local ID of the organization", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "9b031c88-6e3a-4420-92ab-8aefe160cb60" //
+  )
   private String  oid;
 
+  @Schema( //
+      description = "Universal code of the organization", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "DOI" //
+  )
   private String  code;
 
+  @Schema( //
+      description = "Organization label", //
+      requiredMode = RequiredMode.REQUIRED, //
+      example = "Department of Interior" //
+  )
   private String  label;
 
+  @Schema( //
+      description = "Number of direct sub organizations", //
+      example = "10" //
+  )
   private Integer size;
 
+  @Schema( //
+      description = "Number of Stac Items assigned to the organization or sub organizations", //
+      example = "10" //
+  )
   private Integer items;
 
   public Object getRid()
@@ -156,19 +181,19 @@ public class OrganizationResult implements JsonSerializable
 
   @Request
   public static synchronized void populateCache(ServerOrganizationCache cache)
-  { 
+  {
     cache.rebuild();
 
     try
-    {  
-      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory());  
+    {
+      OrganizationQuery oQ = new OrganizationQuery(new QueryFactory());
 
       try (OIterator<? extends Organization> iterator = oQ.getIterator())
       {
         while (iterator.hasNext())
         {
           Organization organization = iterator.next();
- 
+
           cache.addOrganization(ServerOrganization.get(organization));
         }
       }

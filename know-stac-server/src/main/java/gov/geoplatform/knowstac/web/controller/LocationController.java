@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,15 +39,14 @@ import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
+@RequestMapping("/api/location")
 public class LocationController extends RunwaySpringController
 {
-  public static final String API_PATH = "location";
-
   @Autowired
   private LocationServiceIF  service;
 
   @ResponseBody
-  @GetMapping(API_PATH + "/get")
+  @GetMapping("/get")
   @Operation( //
       summary = "Get a location", //
       description = "Retrieves a single location in the system." //
@@ -69,7 +69,7 @@ public class LocationController extends RunwaySpringController
   }
 
   @ResponseBody
-  @GetMapping(API_PATH + "/search")
+  @GetMapping("/search")
   @Operation( //
       summary = "Get all locations which contain the provided label", //
       description = "Retrieves a list of all registered locations in the system which contain the location label." //
@@ -91,7 +91,7 @@ public class LocationController extends RunwaySpringController
     return new ResponseEntity<List<LocationResult>>(locations, HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-children")
+  @GetMapping("/get-children")
   @Operation( //
       summary = "Pagination list of the children locations for a location", //
       description = "Retrieves a paginated list of the children locations of a location according to the synchronized hierarchy." //
@@ -123,7 +123,7 @@ public class LocationController extends RunwaySpringController
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-ancestor-tree")
+  @GetMapping("/get-ancestor-tree")
   @Operation( //
       summary = "Flatened list of the ancestor locations for a location", //
       description = "Retrieves a flatened list of the ancestor locations of a location according to the synchronized hierarchy." //
