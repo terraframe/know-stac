@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonObject;
-
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.model.ResultPage;
+import gov.geoplatform.knowstac.core.model.TreeNode;
 import gov.geoplatform.knowstac.core.service.request.OrganizationResultService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,7 +85,7 @@ public class OrganizationController extends RunwaySpringController
       summary = "Pagination list of the sub organizations under the given organization", //
       description = "Retrieves a paginated list of the sub organizations under the given organization ." //
   )
-  public ResponseEntity<String> getChildren( //
+  public ResponseEntity<ResultPage<OrganizationResult>> getChildren( //
       @Parameter( //
           description = "Universal organization code", //
           example = "DOI", //
@@ -102,9 +102,9 @@ public class OrganizationController extends RunwaySpringController
           required = false) //
       @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
-    JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
+    ResultPage<OrganizationResult> page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
 
-    return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
+    return ResponseEntity.ok(page);
   }
 
   @GetMapping("/get-ancestor-tree")
@@ -112,7 +112,7 @@ public class OrganizationController extends RunwaySpringController
       summary = "Flatened list of the ancestor organizations for an organization", //
       description = "Retrieves a flatened list of the ancestor organizations of a sub organization." //
   )
-  public ResponseEntity<String> getAncestorTree( //
+  public ResponseEntity<TreeNode<OrganizationResult>> getAncestorTree( //
       @Parameter( //
           description = "Universal organization code of root level organization", //
           example = "DOI", //
@@ -129,8 +129,8 @@ public class OrganizationController extends RunwaySpringController
           required = false) //
       @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
-    JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
+    TreeNode<OrganizationResult> node = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 
-    return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
+    return ResponseEntity.ok(node);
   }
 }

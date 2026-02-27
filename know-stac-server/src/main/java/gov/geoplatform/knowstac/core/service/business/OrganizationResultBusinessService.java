@@ -30,9 +30,9 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.knowstac.ItemTotal;
 import gov.geoplatform.knowstac.core.model.OrganizationResult;
+import gov.geoplatform.knowstac.core.model.ResultPage;
+import gov.geoplatform.knowstac.core.model.TreeNode;
 import net.geoprism.registry.graph.GraphOrganization;
-import net.geoprism.registry.model.GraphNode;
-import net.geoprism.registry.view.Page;
 
 @Service
 public class OrganizationResultBusinessService
@@ -139,19 +139,19 @@ public class OrganizationResultBusinessService
     return query.getSingleResult();
   }
 
-  public GraphNode<OrganizationResult> getAncestorTree(OrganizationResult child, String rootCode, Integer pageSize)
+  public TreeNode<OrganizationResult> getAncestorTree(OrganizationResult child, String rootCode, Integer pageSize)
   {
     List<OrganizationResult> ancestors = this.getAncestors(child, rootCode);
     Integer count = this.getCount(child);
 
-    GraphNode<OrganizationResult> prev = null;
+    TreeNode<OrganizationResult> prev = null;
 
     for (OrganizationResult ancestor : ancestors)
     {
       List<OrganizationResult> results = this.getDirectChildren(ancestor, pageSize, 1);
 
-      List<GraphNode<OrganizationResult>> transform = results.stream().map(r -> {
-        return new GraphNode<OrganizationResult>(r);
+      List<TreeNode<OrganizationResult>> transform = results.stream().map(r -> {
+        return new TreeNode<OrganizationResult>(r);
       }).collect(Collectors.toList());
 
       if (prev != null)
@@ -168,9 +168,13 @@ public class OrganizationResultBusinessService
         }
       }
 
-      Page<GraphNode<OrganizationResult>> page = new Page<GraphNode<OrganizationResult>>(count, 1, pageSize, transform);
+      ResultPage<TreeNode<OrganizationResult>> page = new ResultPage<TreeNode<OrganizationResult>>();
+      page.setCount(count);
+      page.setPageNumber(1);
+      page.setPageSize(pageSize);
+      page.setResultSet(transform);
 
-      GraphNode<OrganizationResult> node = new GraphNode<OrganizationResult>();
+      TreeNode<OrganizationResult> node = new TreeNode<OrganizationResult>();
       node.setObject(ancestor);
       node.setChildren(page);
 
@@ -180,7 +184,7 @@ public class OrganizationResultBusinessService
     return prev;
   }
 
-  public Page<OrganizationResult> getChildren(OrganizationResult parent, Integer pageSize, Integer pageNumber)
+  public ResultPage<OrganizationResult> getChildren(OrganizationResult parent, Integer pageSize, Integer pageNumber)
   {
 
     if (parent != null)
@@ -189,12 +193,25 @@ public class OrganizationResultBusinessService
 
       List<OrganizationResult> children = this.getDirectChildren(parent, pageSize, pageNumber);
 
-      return new Page<OrganizationResult>(count, pageNumber, pageSize, children);
+      ResultPage<OrganizationResult> page = new ResultPage<OrganizationResult>();
+      page.setCount(count);
+      page.setPageNumber(pageNumber);
+      page.setPageSize(pageSize);
+      page.setResultSet(children);
+
+      return page;
     }
 
     List<OrganizationResult> roots = this.getRoots();
 
-    return new Page<OrganizationResult>(roots.size(), pageNumber, pageSize, roots);
+    
+    ResultPage<OrganizationResult> page = new ResultPage<OrganizationResult>();
+    page.setCount(roots.size());
+    page.setPageNumber(pageNumber);
+    page.setPageSize(pageSize);
+    page.setResultSet(roots);
+
+    return page;
   }
 
   private List<OrganizationResult> getRoots()
