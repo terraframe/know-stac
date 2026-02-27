@@ -31,15 +31,15 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.knowstac.TotalEdge;
 import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.model.ResultPage;
+import gov.geoplatform.knowstac.core.model.TreeNode;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.registry.model.GraphNode;
 import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
-import net.geoprism.registry.view.Page;
 
 @Service
 public class LocationBusinessService implements LocationBusinessServiceIF
@@ -171,7 +171,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
   }
 
   @Override
-  public GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize)
+  public TreeNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize)
   {
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
     LabeledPropertyGraphType graphType = synchronization.getGraphType();
@@ -183,14 +183,14 @@ public class LocationBusinessService implements LocationBusinessServiceIF
     List<LocationResult> ancestors = this.getAncestors(version, rootType, hierarchyType, child, rootUid);
     Integer count = this.getCount(hierarchyType, child);
 
-    GraphNode<LocationResult> prev = null;
+    TreeNode<LocationResult> prev = null;
 
     for (LocationResult ancestor : ancestors)
     {
       List<LocationResult> results = this.getChildren(version, hierarchyType, ancestor, pageSize, 1);
 
-      List<GraphNode<LocationResult>> transform = results.stream().map(r -> {
-        return new GraphNode<LocationResult>(r);
+      List<TreeNode<LocationResult>> transform = results.stream().map(r -> {
+        return new TreeNode<LocationResult>(r);
       }).collect(Collectors.toList());
 
       if (prev != null)
@@ -207,9 +207,13 @@ public class LocationBusinessService implements LocationBusinessServiceIF
         }
       }
 
-      Page<GraphNode<LocationResult>> page = new Page<GraphNode<LocationResult>>(count, 1, pageSize, transform);
+      ResultPage<TreeNode<LocationResult>> page = new ResultPage<TreeNode<LocationResult>>();
+      page.setCount(count);
+      page.setPageNumber(1);
+      page.setPageSize(pageSize);
+      page.setResultSet(transform);
 
-      GraphNode<LocationResult> node = new GraphNode<LocationResult>();
+      TreeNode<LocationResult> node = new TreeNode<LocationResult>();
       node.setObject(ancestor);
       node.setChildren(page);
 
@@ -220,7 +224,7 @@ public class LocationBusinessService implements LocationBusinessServiceIF
   }
 
   @Override
-  public Page<LocationResult> getChildren(String synchronizationId, LocationResult parent, Integer pageSize, Integer pageNumber)
+  public ResultPage<LocationResult> getChildren(String synchronizationId, LocationResult parent, Integer pageSize, Integer pageNumber)
   {
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(synchronizationId);
     LabeledPropertyGraphType graphType = synchronization.getGraphType();
@@ -237,12 +241,24 @@ public class LocationBusinessService implements LocationBusinessServiceIF
 
       List<LocationResult> children = this.getChildren(version, hierarchyType, parent, pageSize, pageNumber);
 
-      return new Page<LocationResult>(count, pageNumber, pageSize, children);
+      ResultPage<LocationResult> page = new ResultPage<LocationResult>();
+      page.setCount(count);
+      page.setPageNumber(pageNumber);
+      page.setPageSize(pageSize);
+      page.setResultSet(children);
+
+      return page;
     }
 
     List<LocationResult> roots = this.getRoots(version, rootType, hierarchyType);
 
-    return new Page<LocationResult>(roots.size(), pageNumber, pageSize, roots);
+    ResultPage<LocationResult> page = new ResultPage<LocationResult>();
+    page.setCount(roots.size());
+    page.setPageNumber(pageNumber);
+    page.setPageSize(pageSize);
+    page.setResultSet(roots);
+
+    return page;
   }
 
   private List<LocationResult> getRoots(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType)

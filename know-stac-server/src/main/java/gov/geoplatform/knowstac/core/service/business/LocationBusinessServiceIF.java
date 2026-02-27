@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.model.ResultPage;
+import gov.geoplatform.knowstac.core.model.TreeNode;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
-import net.geoprism.registry.model.GraphNode;
-import net.geoprism.registry.view.Page;
 
 @Component
 public interface LocationBusinessServiceIF
@@ -19,9 +19,9 @@ public interface LocationBusinessServiceIF
 
   LocationResult get(String synchronizationId, String uid);
 
-  GraphNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize);
+  TreeNode<LocationResult> getAncestorTree(String synchronizationId, LocationResult child, String rootUid, Integer pageSize);
 
-  Page<LocationResult> getChildren(String synchronizationId, LocationResult parent, Integer pageSize, Integer pageNumber);
+  ResultPage<LocationResult> getChildren(String synchronizationId, LocationResult parent, Integer pageSize, Integer pageNumber);
 
   List<LocationResult> getAncestors(LabeledPropertyGraphTypeVersion version, GeoObjectTypeSnapshot rootType, HierarchyTypeSnapshot hierarchyType, LocationResult child, String uid);
 

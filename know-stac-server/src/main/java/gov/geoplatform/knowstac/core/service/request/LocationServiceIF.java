@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 
 import gov.geoplatform.knowstac.core.model.LocationResult;
+import gov.geoplatform.knowstac.core.model.ResultPage;
+import gov.geoplatform.knowstac.core.model.TreeNode;
 
 @Component
 public interface LocationServiceIF
@@ -16,8 +18,8 @@ public interface LocationServiceIF
 
   LocationResult get(String sessionId, String synchronizationId, String uid);
 
-  JsonObject getChildren(String sessionId, String synchronizationId, String uid, Integer pageSize, Integer pageNumber);
+  ResultPage<LocationResult> getChildren(String sessionId, String synchronizationId, String uid, Integer pageSize, Integer pageNumber);
 
-  JsonObject getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uid, Integer pageSize);
+  TreeNode<LocationResult> getAncestorTree(String sessionId, String synchronizationId, String rootUuid, String uid, Integer pageSize);
 
 }

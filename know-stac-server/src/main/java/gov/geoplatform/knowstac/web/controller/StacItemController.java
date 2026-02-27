@@ -152,12 +152,14 @@ public class StacItemController extends RunwaySpringController
   public ResponseEntity<Set<String>> values( //
       @Parameter( //
           description = "name of the registered Stac property to get the distinct values", //
-          example = "mission" //
+          example = "mission", //
+          required = false
       ) //
       @RequestParam(name = "field", required = false) String field, //
       @Parameter( //
           description = "Value text to restrict the results", //
-          example = "Spring" //
+          example = "Spring", //
+          required = false
       ) //
       @RequestParam(name = "text", required = false) String text) throws IOException
   {

@@ -51,7 +51,11 @@ public class OrganizationController extends RunwaySpringController
       summary = "Get an organization", //
       description = "Retrieves an organization in the system." //
   )
-  public ResponseEntity<OrganizationResult> get(@NotBlank @RequestParam(name = "code") String code) throws ParseException
+  public ResponseEntity<OrganizationResult> get( //
+      @Parameter( //
+          description = "Organization code", //
+          example = "DOI") //
+      @NotBlank @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationResult org = this.service.get(this.getSessionId(), code);
 
@@ -64,7 +68,12 @@ public class OrganizationController extends RunwaySpringController
       summary = "Get all organizations which contain the provided label", //
       description = "Retrieves a list of all registered organizations in the system which contain the label." //
   )
-  public ResponseEntity<List<OrganizationResult>> search(@NotBlank @RequestParam(name = "text") String text) throws ParseException
+  public ResponseEntity<List<OrganizationResult>> search( //
+      @Parameter( //
+          description = "Text to restirct the organizations", //
+          example = "Department", //
+          required = false) //
+      @NotBlank @RequestParam(name = "text", required = false, defaultValue = "") String text) throws ParseException
   {
     List<OrganizationResult> orgs = this.service.search(this.getSessionId(), text);
 
@@ -79,18 +88,18 @@ public class OrganizationController extends RunwaySpringController
   public ResponseEntity<String> getChildren( //
       @Parameter( //
           description = "Universal organization code", //
-          example = "DOI" //
-      ) //
+          example = "DOI", //
+          required = false) //
       @RequestParam(required = false, name = "code") String code, //
       @Parameter( //
           description = "Pagination page size", //
-          example = "20" //
-      ) //
+          example = "20", //
+          required = false) //
       @RequestParam(name = "pageSize", required = false) Integer pageSize, //
       @Parameter( //
           description = "Pagination page number", //
-          example = "1" //
-      ) //
+          example = "1", //
+          required = false) //
       @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
@@ -106,18 +115,18 @@ public class OrganizationController extends RunwaySpringController
   public ResponseEntity<String> getAncestorTree( //
       @Parameter( //
           description = "Universal organization code of root level organization", //
-          example = "DOI" //
-      ) //
+          example = "DOI", //
+          required = false) //
       @RequestParam(required = false, name = "rootCode") String rootCode, //
       @Parameter( //
           description = "Universal organization code of starting organization", //
-          example = "DOI" //
-      ) //
+          example = "USFS", //
+          required = false) //
       @NotBlank @RequestParam(name = "code") String code, //
       @Parameter( //
           description = "Pagination page size", //
-          example = "20" //
-      ) //
+          example = "20", //
+          required = false) //
       @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
